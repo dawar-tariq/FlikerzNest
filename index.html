@@ -87,17 +87,18 @@
   <script>
     (() => {
       // 1. HARDCODED CONFIGURATION & CENTRALIZED STATE
+ 
       const state = {
-        config: {
-          tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04'
-          supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co'
-          supabaseKey: 'sb_publishable_4BX5xVy7t6lxpDltwkq2WA_JXb0tVC'
-        },
-        supabase: null,
-        watchlist: [],
-        customStreams: {},
-        searchSequence: 0
-      };
+  config: {
+    tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04',
+    supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
+    supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
+  },
+  supabase: null,
+  watchlist: [],
+  customStreams: {},
+  searchSequence: 0
+};
 
       const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
       const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
