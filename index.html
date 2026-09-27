@@ -12,14 +12,11 @@
     .movie-card:hover .card-overlay { opacity: 1; }
     html { scroll-behavior: smooth; }
 
-    /* Fire Animation Effects for 404 Page */
     @keyframes flameGlow {
       0%, 100% { text-shadow: 0 0 20px #ff2200, 0 0 40px #ff6600, 0 0 60px #ffae00; }
       50% { text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4400, 0 0 90px #ffcc00; }
     }
-    .fire-text {
-      animation: flameGlow 2s infinite alternate ease-in-out;
-    }
+    .fire-text { animation: flameGlow 2s infinite alternate ease-in-out; }
     
     @keyframes particleRise {
       0% { transform: translateY(0) scale(1); opacity: 0.8; }
@@ -50,17 +47,27 @@
           <a href="#movies-section" onclick="window.showHome()" class="hover:text-white transition">Films</a>
           <a href="#series-section" onclick="window.showHome()" class="hover:text-white transition">Series</a>
           <a href="#watchlist-section" onclick="window.showHome()" class="hover:text-white transition">My List</a>
+          <a href="#watched-section" onclick="window.showHome()" class="hover:text-white transition">Watched History</a>
         </nav>
       </div>
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-3">
         <div class="relative">
           <input type="text" id="search-input" placeholder="Search titles..." 
-                 class="bg-neutral-900 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-36 sm:w-64 focus:outline-none focus:border-red-600 transition-all placeholder-neutral-500">
+                 class="bg-neutral-900 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-32 sm:w-64 focus:outline-none focus:border-red-600 transition-all placeholder-neutral-500">
           <svg class="w-4 h-4 text-neutral-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
+        </div>
+        <a href="admin.html" class="text-xs text-neutral-300 hover:text-white bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded-full transition flex items-center space-x-1">
+          <span>Admin Panel</span>
+        </a>
+        <button onclick="window.show404()" class="text-xs text-neutral-400 hover:text-red-500 transition border border-neutral-800 px-2 py-1.5 rounded-full">404</button>
+      </div>
     </div>
   </header>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-neutral-900 border border-neutral-700 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl hidden transition-all duration-300"></div>
 
   <!-- MAIN WRAPPER -->
   <div id="app-container" class="flex-grow flex flex-col justify-between w-full">
@@ -77,7 +84,7 @@
       <!-- Main Content Sections -->
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
         
-        <!-- Dynamic Search Section -->
+        <!-- Search Results Section -->
         <section id="search-results-section" class="hidden pt-20">
           <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
             <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
@@ -104,10 +111,19 @@
           <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
         </section>
 
+        <!-- Watched Movies & History Section -->
+        <section id="watched-section" class="scroll-mt-20">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
+            <span class="text-red-600">✓</span>
+            <span>Watched History</span>
+          </h2>
+          <div id="watched-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+        </section>
+
       </main>
     </div>
 
-    <!-- DEDICATED DETAILS PAGE VIEW -->
+    <!-- DETAILS VIEW -->
     <div id="details-view" class="hidden pt-16 min-h-screen w-full flex-grow">
       <div class="relative w-full h-[50vh] sm:h-[65vh] bg-neutral-900 overflow-hidden">
         <div id="details-backdrop" class="absolute inset-0 bg-cover bg-center brightness-50"></div>
@@ -122,20 +138,16 @@
           <img id="details-poster" src="" class="w-48 sm:w-64 rounded-lg shadow-2xl border border-neutral-800 flex-none object-cover" />
           <div class="flex-grow space-y-4">
             <h1 id="details-title" class="text-3xl sm:text-5xl font-black tracking-tight"></h1>
-            <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-neutral-400" id="details-meta"></div>
-            <div class="flex flex-wrap gap-2" id="details-genres"></div>
             <p id="details-overview" class="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl"></p>
-            <div class="flex space-x-4 pt-4" id="details-actions"></div>
+            <div class="flex flex-wrap gap-3 pt-4" id="details-actions"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- FIERY 404 NOT FOUND VIEW -->
+    <!-- 404 NOT FOUND VIEW -->
     <div id="not-found-view" class="hidden pt-16 min-h-[85vh] w-full flex flex-col items-center justify-center relative overflow-hidden text-center px-4">
       <div class="absolute inset-0 bg-gradient-to-t from-red-950/40 via-neutral-950 to-neutral-950 pointer-events-none"></div>
-      
-      <!-- Animated Fire Particles Container -->
       <div id="fire-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
 
       <div class="relative z-10 max-w-xl mx-auto space-y-6">
@@ -157,31 +169,24 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-neutral-900 bg-neutral-950/90 py-8 text-center text-xs text-neutral-500 space-y-3 relative z-30">
-    <p>
-      Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong>
-    </p>
-    <p>
-      Connect on Instagram: 
-      <a href="https://instagram.com/starterkartt" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-400 font-semibold underline transition">
-        @starterkartt
-      </a>
-    </p>
+    <p>Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong></p>
+    <p>Connect on Instagram: <a href="https://instagram.com/starterkartt" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-400 font-semibold underline transition">@starterkartt</a></p>
     <p class="text-[10px] text-neutral-600">© 2026 Flickerz Nest. All rights reserved.</p>
   </footer>
 
   <!-- STREAM PLAYER MODAL -->
   <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex flex-col items-center justify-center p-2 sm:p-6">
     <div class="w-full max-w-5xl flex justify-between items-center mb-2 px-2">
-      <div id="provider-selector" class="flex space-x-2 text-xs">
-        <button id="server1-btn" onclick="window.switchProvider('vidsrc')" class="bg-red-600 px-3 py-1 rounded text-white font-medium">Server 1 (VidSrc)</button>
-        <button id="server2-btn" onclick="window.switchProvider('2embed')" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium">Server 2 (2Embed)</button>
+      <div class="flex space-x-2 text-xs">
+        <button onclick="window.switchProvider('vidsrc')" class="bg-red-600 px-3 py-1 rounded text-white font-medium">Server 1 (VidSrc)</button>
+        <button onclick="window.switchProvider('2embed')" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium">Server 2 (2Embed)</button>
       </div>
       <button id="close-player" class="bg-neutral-800 hover:bg-neutral-700 text-white rounded-full p-2 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
     <div class="relative w-full max-w-5xl aspect-video bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
-      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
+      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -196,16 +201,19 @@
         },
         supabase: null,
         watchlist: [],
+        watched: [],
         currentMedia: { id: null, type: 'movie' }
       };
 
       const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
       const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
 
-      const fallbackMovies = [
-        { id: 823464, title: 'Godzilla x Kong: The New Empire', media_type: 'movie', poster_path: '/z19A13mR2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'An epic battle continues...' },
-        { id: 693134, title: 'Dune: Part Two', media_type: 'movie', poster_path: '/1pdfL2iA83S2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'Paul Atreides unites with Chani...' }
-      ];
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3000);
+      }
 
       function init() {
         initSupabase();
@@ -217,12 +225,11 @@
       function initSupabase() {
         if (state.config.supabaseUrl && state.config.supabaseKey && window.supabase) {
           state.supabase = window.supabase.createClient(state.config.supabaseUrl, state.config.supabaseKey);
-          syncWatchlist();
+          syncData();
         }
       }
 
       async function tmdbFetch(endpoint) {
-        if (!state.config.tmdbApiKey) return null;
         try {
           const url = `https://api.themoviedb.org/3${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${state.config.tmdbApiKey}`;
           const res = await fetch(url);
@@ -236,23 +243,30 @@
       async function fetchTrendingData() {
         const movies = await tmdbFetch('/trending/movie/week');
         const tv = await tmdbFetch('/trending/tv/week');
-
-        const movieData = (movies && movies.results && movies.results.length) ? movies.results : fallbackMovies;
-        const tvData = (tv && tv.results && tv.results.length) ? tv.results : fallbackMovies;
-
-        if (movieData.length > 0) renderHero(movieData[0]);
-        renderCarousel('trending-movies', movieData, 'movie');
-        renderCarousel('popular-tv', tvData, 'tv');
+        if (movies?.results?.length) renderHero(movies.results[0]);
+        renderCarousel('trending-movies', movies?.results || [], 'movie');
+        renderCarousel('popular-tv', tv?.results || [], 'tv');
       }
 
-      async function syncWatchlist() {
+      async function syncData() {
         if (!state.supabase) return;
-        const { data, error } = await state.supabase.from('watchlist').select('*');
-        if (!error && data) {
-          state.watchlist = data;
+
+        // Fetch Watchlist
+        const { data: wl } = await state.supabase.from('watchlist').select('*');
+        if (wl) {
+          state.watchlist = wl;
           renderWatchlist();
-          fetchTrendingData();
         }
+
+        // Fetch Watched History
+        const { data: wd } = await state.supabase.from('watched_history').select('*');
+        if (wd) {
+          state.watched = wd;
+          renderWatched();
+        }
+        
+        // Re-render carousels to sync button states
+        fetchTrendingData();
       }
 
       window.toggleWatchlist = async (e, id, title, poster_path, media_type) => {
@@ -264,6 +278,7 @@
 
         if (exists) {
           await state.supabase.from('watchlist').delete().eq('media_id', mediaIdStr);
+          showToast('Removed from My List');
         } else {
           await state.supabase.from('watchlist').insert([{
             media_id: mediaIdStr,
@@ -271,17 +286,36 @@
             poster_path: poster_path || '',
             media_type: media_type || 'movie'
           }]);
+          showToast('Added to My List');
         }
-        await syncWatchlist();
-        if (!document.getElementById('details-view').classList.contains('hidden')) {
-          window.openDetails(id, media_type);
+        await syncData();
+      };
+
+      window.toggleWatched = async (e, id, title, poster_path, media_type) => {
+        if (e) e.stopPropagation();
+        if (!state.supabase) return;
+
+        const mediaIdStr = id.toString();
+        const exists = state.watched.some(w => w.media_id === mediaIdStr);
+
+        if (exists) {
+          await state.supabase.from('watched_history').delete().eq('media_id', mediaIdStr);
+          showToast('Removed from Watched History');
+        } else {
+          await state.supabase.from('watched_history').insert([{
+            media_id: mediaIdStr,
+            title: title || 'Untitled',
+            poster_path: poster_path || '',
+            media_type: media_type || 'movie'
+          }]);
+          showToast('Marked as Watched');
         }
+        await syncData();
       };
 
       function renderHero(item) {
         const heroBg = document.getElementById('hero-bg');
         const heroContent = document.getElementById('hero-content');
-        
         heroBg.style.backgroundImage = `url('${item.backdrop_path ? TMDB_HERO_BASE + item.backdrop_path : ''}')`;
         heroContent.innerHTML = `
           <h1 class="text-3xl sm:text-5xl font-extrabold mb-3 tracking-tight">${item.title || item.name}</h1>
@@ -291,9 +325,7 @@
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
               <span>Play Now</span>
             </button>
-            <button onclick="window.openDetails('${item.id}', '${item.media_type || 'movie'}')" class="bg-neutral-800/80 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition border border-neutral-700">
-              <span>Details</span>
-            </button>
+            <button onclick="window.openDetails('${item.id}', '${item.media_type || 'movie'}')" class="bg-neutral-800/80 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md transition border border-neutral-700">Details</button>
           </div>
         `;
       }
@@ -308,18 +340,17 @@
         const poster = item.poster_path ? TMDB_IMAGE_BASE + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
         const title = (item.title || item.name || 'Untitled').replace(/'/g, "\\'");
         const inWatchlist = state.watchlist.some(w => w.media_id === item.id.toString());
+        const isWatched = state.watched.some(w => w.media_id === item.id.toString());
 
         return `
           <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openDetails('${item.id}', '${type}')">
             <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-            <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-3">
-              <h3 class="text-xs sm:text-sm font-bold text-white truncate mb-2">${item.title || item.name}</h3>
-              <div class="flex space-x-1">
-                <button onclick="event.stopPropagation(); window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded hover:bg-red-700 font-medium">Play</button>
-                <button onclick="window.toggleWatchlist(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" 
-                        class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] sm:text-xs px-2 py-1 rounded font-medium border border-neutral-700">
-                  ${inWatchlist ? '✓ Listed' : '+ List'}
-                </button>
+            <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-2.5 space-y-1.5">
+              <h3 class="text-xs font-bold text-white truncate">${item.title || item.name}</h3>
+              <div class="flex flex-col space-y-1">
+                <button onclick="event.stopPropagation(); window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-[10px] py-1 rounded hover:bg-red-700 font-medium">Play</button>
+                <button onclick="window.toggleWatchlist(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] py-1 rounded border border-neutral-700">${inWatchlist ? '✓ Listed' : '+ List'}</button>
+                <button onclick="window.toggleWatched(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] py-1 rounded border border-neutral-700 ${isWatched ? 'text-green-400 font-bold' : ''}">${isWatched ? '✓ Watched' : 'Mark Watched'}</button>
               </div>
             </div>
           </div>
@@ -329,28 +360,28 @@
       function renderWatchlist() {
         const container = document.getElementById('watchlist-grid');
         if (state.watchlist.length === 0) {
-          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is currently empty.</p>`;
+          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is empty.</p>`;
           return;
         }
-        container.innerHTML = state.watchlist.map(item => createMediaCard({
-          id: item.media_id,
-          title: item.title,
-          poster_path: item.poster_path
-        }, item.media_type)).join('');
+        container.innerHTML = state.watchlist.map(item => createMediaCard({ id: item.media_id, title: item.title, poster_path: item.poster_path }, item.media_type)).join('');
       }
 
-      // VIEW SWITCHING FUNCTIONS
+      function renderWatched() {
+        const container = document.getElementById('watched-grid');
+        if (state.watched.length === 0) {
+          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">No watched history recorded yet.</p>`;
+          return;
+        }
+        container.innerHTML = state.watched.map(item => createMediaCard({ id: item.media_id, title: item.title, poster_path: item.poster_path }, item.media_type)).join('');
+      }
+
       window.showHome = () => {
         document.getElementById('details-view').classList.add('hidden');
         document.getElementById('not-found-view').classList.add('hidden');
         document.getElementById('home-view').classList.remove('hidden');
-
-        // Restore hero if query is empty
-        const query = document.getElementById('search-input').value.trim();
-        if (!query) {
+        if (!document.getElementById('search-input').value.trim()) {
           document.getElementById('hero').classList.remove('hidden');
         }
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
@@ -363,41 +394,21 @@
 
       window.openDetails = async (id, type) => {
         const detailsData = await tmdbFetch(`/${type}/${id}`);
-        if (!detailsData) {
-          window.show404();
-          return;
-        }
+        if (!detailsData) return window.show404();
 
-        const inWatchlist = state.watchlist.some(w => w.media_id === id.toString());
         document.getElementById('home-view').classList.add('hidden');
         document.getElementById('not-found-view').classList.add('hidden');
         document.getElementById('details-view').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         const backdrop = detailsData.backdrop_path ? TMDB_HERO_BASE + detailsData.backdrop_path : '';
-        const poster = detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
-        const title = detailsData.title || detailsData.name || 'Untitled Title';
-        const overview = detailsData.overview || 'No description available for this title.';
-
+        const poster = detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : '';
+        const title = detailsData.title || detailsData.name || 'Untitled';
+        
         document.getElementById('details-backdrop').style.backgroundImage = `url('${backdrop}')`;
         document.getElementById('details-poster').src = poster;
         document.getElementById('details-title').textContent = title;
-        document.getElementById('details-overview').textContent = overview;
-
-        const releaseDate = detailsData.release_date || detailsData.first_air_date || 'N/A';
-        const vote = detailsData.vote_average ? `${detailsData.vote_average.toFixed(1)} / 10 ★` : '';
-        document.getElementById('details-meta').innerHTML = `
-          <span>Release: ${releaseDate}</span>
-          ${vote ? `<span>•</span><span class="text-amber-400 font-semibold">${vote}</span>` : ''}
-          <span>•</span><span class="uppercase tracking-wider px-2 py-0.5 bg-neutral-800 rounded border border-neutral-700">${type}</span>
-        `;
-
-        const genresContainer = document.getElementById('details-genres');
-        if (detailsData.genres) {
-          genresContainer.innerHTML = detailsData.genres.map(g => `<span class="text-xs bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-full text-neutral-300">${g.name}</span>`).join('');
-        } else {
-          genresContainer.innerHTML = '';
-        }
+        document.getElementById('details-overview').textContent = detailsData.overview || '';
 
         const safeTitle = title.replace(/'/g, "\\'");
         const posterPath = detailsData.poster_path || '';
@@ -406,13 +417,11 @@
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
             <span>Play Now</span>
           </button>
-          <button onclick="window.toggleWatchlist(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md transition border border-neutral-700">
-            ${inWatchlist ? '✓ Remove from List' : '+ Add to My List'}
-          </button>
+          <button onclick="window.toggleWatchlist(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2.5 rounded-md transition border border-neutral-700">Add to List</button>
+          <button onclick="window.toggleWatched(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2.5 rounded-md transition border border-neutral-700">Mark Watched</button>
         `;
       };
 
-      // STREAM PLAYER
       window.openPlayer = (id, type) => {
         state.currentMedia = { id, type };
         window.switchProvider('vidsrc');
@@ -421,26 +430,15 @@
 
       window.switchProvider = (provider) => {
         const { id, type } = state.currentMedia;
-        if (!id) return;
-        
         const playerFrame = document.getElementById('player-frame');
-        const btn1 = document.getElementById('server1-btn');
-        const btn2 = document.getElementById('server2-btn');
-
-        if (provider === 'vidsrc') {
-          playerFrame.src = type === 'tv' ? `https://vidsrc.cc/v2/embed/tv/${id}` : `https://vidsrc.cc/v2/embed/movie/${id}`;
-          btn1.className = "bg-red-600 px-3 py-1 rounded text-white font-medium";
-          btn2.className = "bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium";
-        } else {
-          playerFrame.src = type === 'tv' ? `https://www.2embed.cc/embedtv/${id}` : `https://www.2embed.cc/embed/${id}`;
-          btn2.className = "bg-red-600 px-3 py-1 rounded text-white font-medium";
-          btn1.className = "bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium";
-        }
+        playerFrame.src = provider === 'vidsrc' 
+          ? `https://vidsrc.cc/v2/embed/${type}/${id}`
+          : `https://www.2embed.cc/embed/${type === 'tv' ? 'tv' : ''}/${id}`;
       };
 
       function generateFireParticles() {
         const container = document.getElementById('fire-container');
-        for (let i = 0; i < 35; i++) {
+        for (let i = 0; i < 30; i++) {
           const p = document.createElement('div');
           p.className = 'particle';
           const size = Math.random() * 8 + 4;
@@ -448,63 +446,46 @@
           p.style.height = `${size}px`;
           p.style.left = `${Math.random() * 100}%`;
           p.style.animationDelay = `${Math.random() * 2.5}s`;
-          p.style.animationDuration = `${1.5 + Math.random() * 2}s`;
           container.appendChild(p);
         }
       }
 
       function setupEventListeners() {
         document.getElementById('close-player').addEventListener('click', () => {
-          const playerModal = document.getElementById('player-modal');
-          const playerFrame = document.getElementById('player-frame');
-          playerFrame.src = '';
-          playerModal.classList.add('hidden');
+          document.getElementById('player-frame').src = '';
+          document.getElementById('player-modal').classList.add('hidden');
         });
 
         const searchInput = document.getElementById('search-input');
         let searchTimeout;
         
-        const executeSearch = async () => {
+        searchInput.addEventListener('input', () => {
           clearTimeout(searchTimeout);
           const query = searchInput.value.trim();
           const searchSection = document.getElementById('search-results-section');
           const heroSection = document.getElementById('hero');
           const grid = document.getElementById('search-grid');
-          
+
           if (!query) {
             searchSection.classList.add('hidden');
-            heroSection.classList.remove('hidden'); // Show Hero back when input is empty
-            grid.innerHTML = '';
+            heroSection.classList.remove('hidden');
             return;
           }
 
           window.showHome();
-          heroSection.classList.add('hidden'); // Hide Hero Banner to give search grid top priority
+          heroSection.classList.add('hidden');
           searchSection.classList.remove('hidden');
-          grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4 animate-pulse">Searching for "${query}"...</p>`;
+          grid.innerHTML = `<p class="col-span-full text-xs text-neutral-400">Searching...</p>`;
 
           searchTimeout = setTimeout(async () => {
-            let results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
-            if (!results || !results.results || results.results.length === 0) {
-              results = await tmdbFetch(`/search/movie?query=${encodeURIComponent(query)}`);
-            }
-            
-            if (results && results.results && results.results.length > 0) {
-              const validItems = results.results.filter(r => r.poster_path);
-              if (validItems.length > 0) {
-                grid.innerHTML = validItems.map(r => createMediaCard(r, r.media_type || 'movie')).join('');
-              } else {
-                grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No posters found for "${query}".</p>`;
-              }
+            const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
+            if (results?.results?.length) {
+              grid.innerHTML = results.results.filter(r => r.poster_path).map(r => createMediaCard(r, r.media_type || 'movie')).join('');
             } else {
-              grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No results found for "${query}".</p>`;
+              grid.innerHTML = `<p class="col-span-full text-xs text-neutral-400">No titles found.</p>`;
             }
           }, 300);
-        };
-
-        searchInput.addEventListener('input', executeSearch);
-        searchInput.addEventListener('keyup', executeSearch);
-        searchInput.addEventListener('change', executeSearch);
+        });
       }
 
       document.addEventListener('DOMContentLoaded', init);
