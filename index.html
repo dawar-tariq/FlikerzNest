@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flickerz Nest</title>
+
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#E50914',
+              dark: '#141414',
+              card: '#181818',
+              hover: '#282828'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-dark text-white min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-40 bg-brand-dark/95 backdrop-blur-md border-b border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-8">
+        <a href="#" onclick="showSection('home')" class="text-2xl font-bold tracking-wider text-brand-red flex items-center gap-2">
+          <i data-lucide="clapperboard"></i> FLICKERZ NEST
+        </a>
+        <nav class="hidden md:flex space-x-6 text-sm font-medium">
+          <button onclick="showSection('home')" class="hover:text-brand-red transition">Home</button>
+          <button onclick="showSection('movies')" class="hover:text-brand-red transition">Movies</button>
+          <button onclick="showSection('tv')" class="hover:text-brand-red transition">TV Shows</button>
+          <button id="watchlist-nav-btn" onclick="showSection('watchlist')" class="hidden hover:text-brand-red transition">Watchlist</button>
+          <button id="admin-nav-btn" onclick="showSection('admin')" class="hidden text-amber-400 hover:text-amber-300 transition">Admin Panel</button>
+        </nav>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Search Bar -->
+        <div class="relative">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search titles..." 
+            class="bg-neutral-800 text-sm rounded-full px-4 py-1.5 pl-9 focus:outline-none focus:ring-2 focus:ring-brand-red w-40 sm:w-60 transition-all"
+            onkeyup="handleSearch(event)"
+          />
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-neutral-400"></i>
+        </div>
+
+        <!-- Auth Actions -->
+        <div id="auth-container">
+          <button id="login-btn" onclick="toggleAuthModal(true)" class="bg-brand-red text-white text-sm font-semibold px-4 py-1.5 rounded hover:bg-red-700 transition">
+            Sign In
+          </button>
+          <div id="user-menu" class="hidden flex items-center space-x-3">
+            <span id="user-display-name" class="text-sm font-medium text-neutral-300"></span>
+            <button onclick="handleSignOut()" class="text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-1.5 rounded transition">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Areas -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Home Section -->
+    <section id="home-section" class="space-y-8">
+      <!-- Hero Banner -->
+      <div id="hero-banner" class="relative rounded-xl overflow-hidden bg-neutral-900 h-80 sm:h-96 flex items-end p-6 sm:p-10 border border-neutral-800">
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent z-10"></div>
+        <img id="hero-bg" class="absolute inset-0 w-full h-full object-cover hidden" alt="Hero background" />
+        <div class="relative z-20 max-w-2xl space-y-3">
+          <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold tracking-tight">Welcome to Flickerz Nest</h1>
+          <p id="hero-desc" class="text-neutral-300 text-sm sm:text-base line-clamp-3">Discover movies, TV shows, and custom streams all in one place.</p>
+        </div>
+      </div>
+
+      <!-- Trending Section -->
+      <div>
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="flame" class="text-brand-red"></i> Trending Now</h2>
+        <div id="trending-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- Movies Section -->
+    <section id="movies-section" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">Popular Movies</h2>
+      <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+    </section>
+
+    <!-- TV Shows Section -->
+    <section id="tv-section" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">Popular TV Shows</h2>
+      <div id="tv-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+    </section>
+
+    <!-- Search Results Section -->
+    <section id="search-section" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">Search Results</h2>
+      <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+    </section>
+
+    <!-- Watchlist Section -->
+    <section id="watchlist-section" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold">Your Watchlist</h2>
+      <div id="watchlist-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+    </section>
+
+    <!-- Admin Panel Section -->
+    <section id="admin-section" class="hidden space-y-6">
+      <h2 class="text-2xl font-bold text-amber-400">Admin Controls</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Add Custom Stream Override -->
+        <div class="bg-brand-card p-6 rounded-lg border border-neutral-800 space-y-4">
+          <h3 class="text-lg font-semibold">Custom Stream Override</h3>
+          <form onsubmit="handleSaveCustomStream(event)" class="space-y-3">
+            <input type="number" id="admin-tmdb-id" placeholder="TMDB ID" required class="w-full bg-neutral-800 px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-brand-red" />
+            <input type="url" id="admin-stream-url" placeholder="Stream Embed URL (https://...)" required class="w-full bg-neutral-800 px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-brand-red" />
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 rounded transition text-sm">Save Stream Override</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Player Modal -->
+    <div id="player-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+      <div class="relative w-full max-w-5xl bg-brand-card rounded-lg overflow-hidden border border-neutral-800">
+        <button onclick="closePlayer()" class="absolute top-3 right-3 text-neutral-400 hover:text-white z-10 bg-black/50 p-1.5 rounded-full">
+          <i data-lucide="x"></i>
+        </button>
+        <div class="aspect-video w-full">
+          <iframe id="player-iframe" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-brand-card p-6 rounded-lg max-w-md w-full border border-neutral-800 relative space-y-4">
+        <button onclick="toggleAuthModal(false)" class="absolute top-3 right-3 text-neutral-400 hover:text-white">
+          <i data-lucide="x"></i>
+        </button>
+        <h3 class="text-xl font-bold text-center" id="auth-title">Sign In</h3>
+        <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <input type="email" id="auth-email" placeholder="Email Address" required class="w-full bg-neutral-800 px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-brand-red" />
+          <input type="password" id="auth-password" placeholder="Password" required class="w-full bg-neutral-800 px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-brand-red" />
+          <button type="submit" class="w-full bg-brand-red hover:bg-red-700 text-white font-semibold py-2 rounded transition text-sm">Submit</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // ------------------------------------------------------------------
+    // CONFIGURATION & INITIALIZATION
+    // ------------------------------------------------------------------
+    // Supabase credentials
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    
+    // TMDB API Configuration (Set your central API Key or Proxy Endpoint here)
+    const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE'; // Replace with your TMDB API Key
+    const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+    const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+    let userRole = 'user';
+
+    // ------------------------------------------------------------------
+    // APP STARTUP
+    // ------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', async () => {
+      initAuthListener();
+      loadHomeData();
+    });
+
+    // ------------------------------------------------------------------
+    // TMDB DATA FETCHING
+    // ------------------------------------------------------------------
+    async function fetchTMDB(endpoint, params = '') {
+      try {
+        const res = await fetch(`${TMDB_BASE_URL}/${endpoint}?api_key=${TMDB_API_KEY}${params}`);
+        if (!res.ok) throw new Error('Network response was not ok');
+        return await res.json();
+      } catch (err) {
+        console.error('TMDB Fetch Error:', err);
+        return null;
+      }
+    }
+
+    async function loadHomeData() {
+      const trending = await fetchTMDB('trending/all/day');
+      if (trending && trending.results) {
+        renderGrid('trending-grid', trending.results);
+        if (trending.results.length > 0) {
+          const hero = trending.results[0];
+          document.getElementById('hero-title').textContent = hero.title || hero.name;
+          document.getElementById('hero-desc').textContent = hero.overview;
+          if (hero.backdrop_path) {
+            const heroImg = document.getElementById('hero-bg');
+            heroImg.src = `https://image.tmdb.org/t/p/original${hero.backdrop_path}`;
+            heroImg.classList.remove('hidden');
+          }
+        }
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // RENDER FUNCTIONS
+    // ------------------------------------------------------------------
+    function renderGrid(containerId, items) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = items.map(item => {
+        const title = item.title || item.name;
+        const poster = item.poster_path ? `${TMDB_IMAGE_BASE}${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster';
+        const type = item.media_type || (item.title ? 'movie' : 'tv');
+        
+        return `
+          <div class="bg-brand-card rounded-lg overflow-hidden border border-neutral-800 hover:border-neutral-700 transition cursor-pointer group flex flex-col" onclick="openPlayer('${item.id}', '${type}')">
+            <div class="relative aspect-[2/3] overflow-hidden">
+              <img src="${poster}" alt="${title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
+            </div>
+            <div class="p-3 flex-grow flex flex-col justify-between">
+              <h3 class="font-semibold text-sm line-clamp-1">${title}</h3>
+              <p class="text-xs text-neutral-400 capitalize mt-1">${type}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ------------------------------------------------------------------
+    // MEDIA PLAYER
+    // ------------------------------------------------------------------
+    async function openPlayer(tmdbId, mediaType) {
+      const iframe = document.getElementById('player-iframe');
+      
+      // Check Supabase for custom stream overrides set by admin
+      const { data: customStream } = await supabase
+        .from('custom_streams')
+        .select('stream_url')
+        .eq('tmdb_id', tmdbId)
+        .single();
+
+      if (customStream && customStream.stream_url) {
+        iframe.src = customStream.stream_url;
+      } else {
+        // Fallback default embed provider
+        iframe.src = mediaType === 'tv' 
+          ? `https://vidsrc.to/embed/tv/${tmdbId}`
+          : `https://vidsrc.to/embed/movie/${tmdbId}`;
+      }
+
+      document.getElementById('player-modal').classList.remove('hidden');
+    }
+
+    function closePlayer() {
+      const modal = document.getElementById('player-modal');
+      const iframe = document.getElementById('player-iframe');
+      iframe.src = '';
+      modal.classList.add('hidden');
+    }
+
+    // ------------------------------------------------------------------
+    // NAVIGATION & SECTIONS
+    // ------------------------------------------------------------------
+    function showSection(sectionId) {
+      ['home', 'movies', 'tv', 'search', 'watchlist', 'admin'].forEach(s => {
+        document.getElementById(`${s}-section`)?.classList.add('hidden');
+      });
+
+      const activeSection = document.getElementById(`${sectionId}-section`);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      if (sectionId === 'movies') fetchTMDB('movie/popular').then(d => renderGrid('movies-grid', d.results));
+      if (sectionId === 'tv') fetchTMDB('tv/popular').then(d => renderGrid('tv-grid', d.results));
+    }
+
+    async function handleSearch(e) {
+      const query = e.target.value.trim();
+      if (!query) return;
+      
+      if (e.key === 'Enter') {
+        const data = await fetchTMDB('search/multi', `&query=${encodeURIComponent(query)}`);
+        if (data && data.results) {
+          renderGrid('search-grid', data.results);
+          showSection('search');
+        }
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // AUTHENTICATION & SUPABASE
+    // ------------------------------------------------------------------
+    function initAuthListener() {
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        currentUser = session?.user || null;
+        if (currentUser) {
+          // Fetch Profile Role
+          const { data } = await supabase.from('profiles').select('role, display_name').eq('id', currentUser.id).single();
+          userRole = data?.role || 'user';
+          
+          document.getElementById('login-btn').classList.add('hidden');
+          document.getElementById('user-menu').classList.remove('hidden');
+          document.getElementById('user-display-name').textContent = data?.display_name || currentUser.email;
+          document.getElementById('watchlist-nav-btn').classList.remove('hidden');
+          
+          if (userRole === 'admin') {
+            document.getElementById('admin-nav-btn').classList.remove('hidden');
+          }
+        } else {
+          document.getElementById('login-btn').classList.remove('hidden');
+          document.getElementById('user-menu').classList.add('hidden');
+          document.getElementById('watchlist-nav-btn').classList.add('hidden');
+          document.getElementById('admin-nav-btn').classList.add('hidden');
+          userRole = 'user';
+        }
+      });
+    }
+
+    function toggleAuthModal(show) {
+      document.getElementById('auth-modal').classList.toggle('hidden', !show);
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        // Attempt Sign Up if Sign In fails
+        const { error: signUpErr } = await supabase.auth.signUp({ email, password });
+        if (signUpErr) alert(signUpErr.message);
+      }
+      toggleAuthModal(false);
+    }
+
+    async function handleSignOut() {
+      await supabase.auth.signOut();
+      showSection('home');
+    }
+
+    // ------------------------------------------------------------------
+    // ADMIN ACTIONS
+    // ------------------------------------------------------------------
+    async function handleSaveCustomStream(e) {
+      e.preventDefault();
+      if (userRole !== 'admin') return alert('Unauthorized access.');
+
+      const tmdb_id = document.getElementById('admin-tmdb-id').value;
+      const stream_url = document.getElementById('admin-stream-url').value;
+
+      const { error } = await supabase.from('custom_streams').upsert({
+        tmdb_id: parseInt(tmdb_id, 10),
+        stream_url,
+        updated_by: currentUser.id
+      });
+
+      if (error) {
+        alert(`Error saving stream: ${error.message}`);
+      } else {
+        alert('Custom stream updated successfully!');
+        e.target.reset();
+      }
+    }
+  </script>
+</body>
+</html>
