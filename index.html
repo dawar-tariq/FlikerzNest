@@ -12,7 +12,7 @@
     .movie-card:hover .card-overlay { opacity: 1; }
     html { scroll-behavior: smooth; }
 
-    /* Fire Animation Effects */
+    /* Fire Animation Effects for 404 Page */
     @keyframes flameGlow {
       0%, 100% { text-shadow: 0 0 20px #ff2200, 0 0 40px #ff6600, 0 0 60px #ffae00; }
       50% { text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4400, 0 0 90px #ffcc00; }
@@ -38,7 +38,7 @@
 <body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col justify-between">
 
   <!-- HEADER NAVIGATION -->
-  <header class="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800/60" id="navbar">
+  <header class="fixed top-0 left-0 right-0 z-40 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/60" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-8">
         <a href="#" onclick="window.showHome()" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
@@ -68,7 +68,7 @@
     <!-- HOME VIEW CONTAINER -->
     <div id="home-view" class="w-full">
       <!-- Hero Banner -->
-      <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
+      <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16 transition-all">
         <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
@@ -78,7 +78,7 @@
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
         
         <!-- Dynamic Search Section -->
-        <section id="search-results-section" class="hidden">
+        <section id="search-results-section" class="hidden pt-20">
           <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
             <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
             <span>Search Results</span>
@@ -344,6 +344,13 @@
         document.getElementById('details-view').classList.add('hidden');
         document.getElementById('not-found-view').classList.add('hidden');
         document.getElementById('home-view').classList.remove('hidden');
+
+        // Restore hero if query is empty
+        const query = document.getElementById('search-input').value.trim();
+        if (!query) {
+          document.getElementById('hero').classList.remove('hidden');
+        }
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
@@ -461,15 +468,18 @@
           clearTimeout(searchTimeout);
           const query = searchInput.value.trim();
           const searchSection = document.getElementById('search-results-section');
+          const heroSection = document.getElementById('hero');
           const grid = document.getElementById('search-grid');
           
           if (!query) {
             searchSection.classList.add('hidden');
+            heroSection.classList.remove('hidden'); // Show Hero back when input is empty
             grid.innerHTML = '';
             return;
           }
 
           window.showHome();
+          heroSection.classList.add('hidden'); // Hide Hero Banner to give search grid top priority
           searchSection.classList.remove('hidden');
           grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4 animate-pulse">Searching for "${query}"...</p>`;
 
