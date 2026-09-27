@@ -63,7 +63,7 @@
 
       <!-- Watched History & Watchlist Management Table -->
       <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-4">
-        <h3 class="text-sm font-bold tracking-wide">Database Records</h3>
+        <h3 class="text-sm font-bold tracking-wide">Database Records (Watchlist)</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-neutral-300">
             <thead class="bg-neutral-950 text-neutral-400 uppercase text-[10px] border-b border-neutral-800">
@@ -98,32 +98,43 @@
 
     const supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
 
-    async function checkSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
+    function checkSession() {
+      if (sessionStorage.getItem('flickerz_admin_logged_in') === 'true') {
         showDashboard();
       }
     }
 
     async function handleLogin(event) {
       event.preventDefault();
-      const email = document.getElementById('email-input').value;
+      const email = document.getElementById('email-input').value.trim();
       const password = document.getElementById('password-input').value;
       const errorEl = document.getElementById('auth-error');
 
       errorEl.classList.add('hidden');
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-      if (error) {
-        errorEl.textContent = error.message;
+      const { data, error } = await supabaseClient
+        .from('admin_users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (error || !data) {
+        errorEl.textContent = 'Invalid email or password.';
         errorEl.classList.remove('hidden');
-      } else {
+        return;
+      }
+
+      if (data.password_hash === password || data.password === password) {
+        sessionStorage.setItem('flickerz_admin_logged_in', 'true');
         showDashboard();
+      } else {
+        errorEl.textContent = 'Invalid email or password.';
+        errorEl.classList.remove('hidden');
       }
     }
 
-    async function handleLogout() {
-      await supabaseClient.auth.signOut();
+    function handleLogout() {
+      sessionStorage.removeItem('flickerz_admin_logged_in');
       document.getElementById('dashboard-container').classList.add('hidden');
       document.getElementById('auth-container').classList.remove('hidden');
     }
@@ -137,7 +148,6 @@
     async function fetchAdminData() {
       const tbody = document.getElementById('admin-data-list');
       
-      // Fetching watchlist for demonstration of data management
       const { data, error } = await supabaseClient.from('watchlist').select('*');
       
       if (error || !data || data.length === 0) {
@@ -148,18 +158,18 @@
       tbody.innerHTML = data.map(item => `
         <tr class="hover:bg-neutral-950/50">
           <td class="p-3 font-medium text-white">${item.title}</td>
-          <td class="p-3 uppercase text-[10px]"><span class="bg-neutral-800 px-2 py-0.5 rounded">${item.media_type}</span></td>
-          <td class="p-3 text-neutral-500">${item.media_id}</td>
+          <td class="p-3 uppercase text-[10px]"><span class="bg-neutral-800 px-2 py-0.5 rounded">${item.media_type || 'movie'}</span></td>
+          <td class="p-3 text-neutral-500 font-mono">${item.media_id}</td>
           <td class="p-3 text-right">
-            <button onclick="deleteRecord('${item.id}')" class="text-red-500 hover:text-red-400 font-medium">Delete</button>
+            <button onclick="deleteRecord('${item.media_id}')" class="text-red-500 hover:text-red-400 font-medium">Delete</button>
           </td>
         </tr>
       `).join('');
     }
 
-    async function deleteRecord(id) {
+    async function deleteRecord(mediaId) {
       if (!confirm('Are you sure you want to delete this record?')) return;
-      await supabaseClient.from('watchlist').delete().eq('id', id);
+      await supabaseClient.from('watchlist').delete().eq('media_id', mediaId);
       fetchAdminData();
     }
 
