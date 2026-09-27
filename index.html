@@ -3,1260 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0c10">
-  <meta name="description" content="Flickerz Nest brings your next favorite film or series a little closer.">
-  <title>Flickerz Nest | Stories worth staying in for</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <title>Flickerz Nest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      color-scheme: dark;
-      --ink: #0b0c10;
-      --surface: #13151a;
-      --surface-raised: #1a1c22;
-      --muted: #9a9da7;
-      --text: #f5f5f6;
-      --red: #e50914;
-      --red-bright: #fb2835;
-      --line: rgba(255, 255, 255, .1);
-      font-family: "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; background: var(--ink); }
-    body { margin: 0; min-width: 320px; background: var(--ink); color: var(--text); font-family: inherit; overflow-x: hidden; }
-    body.modal-open { overflow: hidden; }
-    button, input, textarea { font: inherit; }
-    button { color: inherit; }
-    button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #ff5660; outline-offset: 3px; }
-    a { color: inherit; text-decoration: none; }
-    [hidden] { display: none !important; }
-    .topbar {
-      position: fixed; inset: 0 0 auto; z-index: 50; height: 78px; display: flex; align-items: center;
-      padding: 0 clamp(20px, 5vw, 76px); gap: clamp(22px, 4vw, 64px);
-      background: linear-gradient(180deg, rgba(7, 8, 11, .88), rgba(7, 8, 11, .48));
-      border-bottom: 1px solid rgba(255,255,255,.035); backdrop-filter: blur(17px); -webkit-backdrop-filter: blur(17px);
-      transition: background .25s ease, height .25s ease;
-    }
-    .topbar.scrolled { height: 68px; background: rgba(11, 12, 16, .91); }
-    .brand { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; font-size: 20px; font-weight: 800; letter-spacing: -.07em; }
-    .brand-mark { width: 29px; height: 29px; display: grid; place-items: center; color: #fff; background: var(--red); border-radius: 8px 8px 8px 2px; font-size: 16px; letter-spacing: -.08em; box-shadow: 0 5px 24px rgba(229,9,20,.26); }
-    .brand-name span, .hero-brand > span:last-child span { color: var(--red-bright); }
-    .nav-links { display: flex; align-items: center; gap: clamp(18px, 2vw, 34px); color: rgba(245,245,246,.74); font-size: 13px; font-weight: 600; }
-    .nav-links a { transition: color .18s ease; }
-    .nav-links a:hover, .nav-links a.active { color: #fff; }
-    .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 15px; }
-    .icon-button { width: 39px; height: 39px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #f3f3f4; cursor: pointer; transition: background .2s ease, transform .2s ease, color .2s ease; }
-    .icon-button:hover { background: rgba(255,255,255,.1); transform: translateY(-1px); color: #fff; }
-    .profile-trigger { display: flex; align-items: center; gap: 9px; padding: 4px 5px 4px 4px; border: 0; border-radius: 30px; background: transparent; cursor: pointer; }
-    .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #76222a, #d9333b); font-size: 12px; font-weight: 800; color: #fff; }
-    .profile-caret { color: #c6c6cb; font-size: 10px; }
-    .profile-menu { position: absolute; top: 67px; right: clamp(18px, 5vw, 76px); width: 238px; padding: 9px; background: rgba(22,24,30,.97); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 20px 55px rgba(0,0,0,.42); backdrop-filter: blur(20px); animation: popIn .16s ease-out; }
-    .profile-menu-head { padding: 12px 12px 14px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
-    .profile-menu-head strong { display: block; font-size: 13px; }
-    .profile-menu-head span { display: block; overflow: hidden; margin-top: 4px; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .menu-item { width: 100%; display: flex; align-items: center; gap: 11px; padding: 11px 12px; border: 0; border-radius: 7px; background: transparent; color: #e6e6e8; cursor: pointer; text-align: left; font-size: 13px; }
-    .menu-item i { width: 16px; color: #a8aab2; text-align: center; }
-    .menu-item:hover { background: rgba(255,255,255,.08); }
-    .menu-item.danger { color: #ff737b; }
-    .menu-item.danger i { color: #ff737b; }
-    .hero { position: relative; width: 100%; height: min(91vh, 900px); min-height: 680px; max-height: 900px; overflow: hidden; isolation: isolate; background: #101116; }
-    .hero-visual { position: absolute; z-index: -2; inset: 0; background-color: #101116; background-position: center 36%; background-size: cover; transform: scale(1.045); animation: heroArrival 1.2s cubic-bezier(.2,.75,.2,1) both, heroDrift 24s ease-in-out 1.2s infinite alternate; }
-    .hero-shade { position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(11,12,16,.97) 0%, rgba(11,12,16,.82) 27%, rgba(11,12,16,.38) 55%, rgba(11,12,16,.1) 100%), linear-gradient(0deg, #0b0c10 0%, rgba(11,12,16,.8) 11%, rgba(11,12,16,.03) 58%); }
-    .hero-content { position: absolute; left: max(5vw, calc((100vw - 1500px) / 2)); bottom: clamp(112px, 14vh, 165px); width: min(650px, 83vw); animation: copyArrival .75s .13s both; }
-    .hero-brand { display: inline-flex; align-items: center; gap: 13px; margin-bottom: 27px; font-size: clamp(34px, 4vw, 52px); font-weight: 800; letter-spacing: -.075em; line-height: 1; text-shadow: 0 2px 20px rgba(0,0,0,.4); }
-    .hero-brand-mark { width: 45px; height: 45px; display: grid; place-items: center; border-radius: 12px 12px 12px 3px; background: var(--red); color: #fff; font-size: 23px; letter-spacing: -.08em; }
-    .hero-eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 10px; color: #f2f2f4; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-    .hero-eyebrow::before { width: 19px; height: 2px; content: ""; background: var(--red); }
-    .hero-title { max-width: 680px; margin: 0; font-size: clamp(2rem, 3.4vw, 2.8rem); line-height: 1.03; letter-spacing: -.055em; font-weight: 700; text-wrap: balance; }
-    .hero-copy { max-width: 540px; min-height: 48px; margin: 16px 0 23px; color: rgba(245,245,246,.82); font-size: 15px; line-height: 1.65; text-shadow: 0 1px 8px rgba(0,0,0,.45); }
-    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 11px; }
-    .button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 45px; padding: 0 20px; border: 1px solid transparent; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 700; transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease; }
-    .button:hover { transform: translateY(-2px); }
-    .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-    .button-primary { background: var(--red); color: #fff; box-shadow: 0 7px 25px rgba(229,9,20,.19); }
-    .button-primary:hover { background: var(--red-bright); }
-    .button-light { background: rgba(245,245,247,.93); color: #101116; }
-    .button-light:hover { background: #fff; }
-    .button-glass { border-color: rgba(255,255,255,.24); background: rgba(15,16,20,.44); color: #fff; backdrop-filter: blur(8px); }
-    .button-glass:hover { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.1); }
-    .content-shell { position: relative; z-index: 2; width: min(100%, 1680px); margin: -20px auto 0; padding: 0 clamp(20px, 5vw, 76px) 88px; }
-    .media-section { margin: 0 0 48px; opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
-    .media-section.visible { opacity: 1; transform: translateY(0); }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 0 0 17px; }
-    .section-heading h2 { margin: 0; font-size: clamp(19px, 2vw, 24px); font-weight: 700; letter-spacing: -.045em; }
-    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
-    .row-controls { display: flex; gap: 7px; }
-    .row-arrow { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; background: rgba(255,255,255,.045); color: #eee; cursor: pointer; transition: background .18s, border-color .18s; }
-    .row-arrow:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.4); }
-    .media-scroller { display: flex; gap: clamp(12px, 1.5vw, 21px); overflow-x: auto; overflow-y: hidden; padding: 2px 2px 13px; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
-    .media-scroller::-webkit-scrollbar { display: none; }
-    .media-tile { position: relative; flex: 0 0 clamp(126px, 14.2vw, 194px); min-width: 0; scroll-snap-align: start; }
-    .poster-button { position: relative; display: block; width: 100%; aspect-ratio: 2 / 3; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,.045); border-radius: 4px; background: linear-gradient(145deg, #26242a, #121318 70%); cursor: pointer; text-align: left; }
-    .poster-button img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .42s cubic-bezier(.2,.65,.2,1), filter .28s ease; }
-    .poster-button::after { position: absolute; inset: 0; content: ""; opacity: 0; background: linear-gradient(0deg, rgba(4,5,7,.76), transparent 58%); transition: opacity .25s ease; }
-    .poster-play { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; color: white; opacity: 0; transform: scale(.84); transition: opacity .22s, transform .22s; }
-    .poster-play i { width: 47px; height: 47px; display: grid; place-items: center; padding-left: 3px; border: 1px solid rgba(255,255,255,.76); border-radius: 50%; background: rgba(12,13,17,.45); backdrop-filter: blur(5px); }
-    .poster-button:hover img, .poster-button:focus-visible img { transform: scale(1.07); filter: brightness(.8); }
-    .poster-button:hover::after, .poster-button:focus-visible::after, .poster-button:hover .poster-play, .poster-button:focus-visible .poster-play { opacity: 1; }
-    .poster-button:hover .poster-play, .poster-button:focus-visible .poster-play { transform: scale(1); }
-    .poster-empty { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,.3); font-size: 28px; }
-    .tile-watch { position: absolute; z-index: 3; top: 9px; right: 9px; width: 31px; height: 31px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; background: rgba(8,9,12,.62); color: #fff; cursor: pointer; opacity: 0; transform: translateY(-3px); backdrop-filter: blur(6px); transition: opacity .2s, transform .2s, background .2s; }
-    .media-tile:hover .tile-watch, .media-tile:focus-within .tile-watch { opacity: 1; transform: translateY(0); }
-    .tile-watch.is-saved { opacity: 1; transform: translateY(0); color: white; background: var(--red); border-color: var(--red); }
-    .tile-watch:hover { background: var(--red); border-color: var(--red); }
-    .media-title { overflow: hidden; margin: 10px 0 2px; color: #f1f1f2; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-    .media-meta { display: block; color: #878992; font-size: 11px; }
-    .empty-row { min-height: 125px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0 25px; border-top: 1px solid rgba(255,255,255,.07); border-bottom: 1px solid rgba(255,255,255,.07); color: #aeb0b8; font-size: 13px; }
-    .empty-row .button { flex: 0 0 auto; min-height: 38px; padding-inline: 15px; font-size: 12px; }
-    .search-trigger { position: relative; }
-    .search-trigger::after { position: absolute; inset: -5px; border: 1px solid transparent; border-radius: 50%; content: ""; transition: border-color .18s; }
-    .search-trigger:hover::after { border-color: rgba(255,255,255,.23); }
-    .floating-settings { position: fixed; z-index: 40; right: 22px; bottom: 22px; width: 46px; height: 46px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; background: rgba(26,28,34,.88); color: #f4f4f5; box-shadow: 0 8px 35px rgba(0,0,0,.35); cursor: pointer; backdrop-filter: blur(12px); transition: transform .2s, background .2s, color .2s; }
-    .floating-settings:hover { transform: rotate(30deg); background: var(--red); color: #fff; }
-    .site-footer { display: flex; justify-content: space-between; gap: 20px; width: min(100%, 1680px); margin: 0 auto; padding: 24px clamp(20px, 5vw, 76px) 40px; border-top: 1px solid rgba(255,255,255,.07); color: #7d8089; font-size: 11px; }
-    .site-footer strong { color: #d5d5d8; font-weight: 700; }
-    .modal-backdrop { position: fixed; z-index: 100; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; overflow: auto; background: rgba(3,4,7,.8); backdrop-filter: blur(13px); animation: fadeIn .17s ease-out; }
-    .dialog { position: relative; width: min(480px, 100%); max-height: min(88vh, 900px); overflow: auto; border: 1px solid rgba(255,255,255,.12); border-radius: 13px; background: #15171d; box-shadow: 0 35px 120px rgba(0,0,0,.58); animation: modalIn .22s cubic-bezier(.2,.8,.2,1) both; }
-    .dialog-wide { width: min(900px, 100%); }
-    .dialog-head { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 19px 22px; border-bottom: 1px solid rgba(255,255,255,.09); background: rgba(21,23,29,.94); backdrop-filter: blur(12px); }
-    .dialog-head h2 { margin: 0; font-size: 17px; letter-spacing: -.025em; }
-    .dialog-close { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border: 0; border-radius: 50%; background: rgba(255,255,255,.07); color: #ddd; cursor: pointer; }
-    .dialog-close:hover { background: rgba(255,255,255,.14); color: white; }
-    .dialog-body { padding: 23px; }
-    .form-stack { display: grid; gap: 16px; }
-    .field { display: grid; gap: 7px; }
-    .field label { color: #d7d8dc; font-size: 12px; font-weight: 600; }
-    .field input, .field textarea { width: 100%; min-height: 43px; padding: 10px 12px; border: 1px solid rgba(255,255,255,.13); border-radius: 6px; background: #0f1015; color: #f6f6f7; font-size: 13px; outline: none; transition: border-color .18s, box-shadow .18s; }
-    .field textarea { min-height: 92px; resize: vertical; line-height: 1.5; }
-    .field input::placeholder, .field textarea::placeholder { color: #6d707a; }
-    .field input:focus, .field textarea:focus { border-color: rgba(229,9,20,.75); box-shadow: 0 0 0 3px rgba(229,9,20,.12); }
-    .field-hint, .fine-print { margin: 0; color: #858892; font-size: 11px; line-height: 1.55; }
-    .form-actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-    .form-actions .button { min-height: 42px; }
-    .status-message { min-height: 18px; margin: 0; color: #aeb0b8; font-size: 12px; line-height: 1.5; }
-    .status-message.error { color: #ff777e; }
-    .status-message.success { color: #70d5a0; }
-    .auth-brand { margin-bottom: 18px; text-align: center; }
-    .auth-brand .brand { justify-content: center; font-size: 21px; }
-    .auth-intro { margin: 8px 0 0; color: #999ca5; font-size: 12px; }
-    .auth-switch { width: 100%; margin-top: 18px; border: 0; background: transparent; color: #d4d5da; cursor: pointer; font-size: 12px; }
-    .auth-switch span { color: #ff646e; font-weight: 700; }
-    .search-dialog { width: min(730px, 100%); align-self: flex-start; margin-top: min(11vh, 100px); overflow: hidden; }
-    .search-top { display: flex; align-items: center; gap: 13px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
-    .search-top i { color: #999ca5; }
-    .search-top input { flex: 1; min-width: 0; height: 38px; border: 0; outline: 0; background: transparent; color: #fff; font-size: 17px; }
-    .search-top input::placeholder { color: #777a84; }
-    .search-results-wrap { max-height: min(63vh, 590px); overflow-y: auto; padding: 11px 12px 14px; scrollbar-color: #3a3c43 transparent; }
-    .search-section-label { padding: 8px 9px 10px; color: #858892; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-    .search-result { width: 100%; display: flex; align-items: center; gap: 13px; padding: 8px; border: 0; border-radius: 7px; background: transparent; color: #f3f3f4; cursor: pointer; text-align: left; transition: background .18s; }
-    .search-result:hover { background: rgba(255,255,255,.075); }
-    .search-result img { width: 43px; height: 62px; flex: 0 0 auto; object-fit: cover; border-radius: 3px; background: #25272e; }
-    .search-result-copy { min-width: 0; flex: 1; }
-    .search-result-copy strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-    .search-result-copy span { display: block; margin-top: 5px; color: #92949d; font-size: 11px; }
-    .search-result > i { padding: 0 7px; color: #81838b; font-size: 13px; }
-    .search-empty { padding: 36px 15px; color: #9a9da6; text-align: center; font-size: 13px; }
-    .details-dialog { width: min(770px, 100%); overflow: hidden; }
-    .details-art { position: relative; min-height: 245px; background-color: #101116; background-position: center 38%; background-size: cover; }
-    .details-art::after { position: absolute; inset: 0; content: ""; background: linear-gradient(0deg, #15171d 0%, rgba(21,23,29,.05) 80%); }
-    .details-art-close { position: absolute; z-index: 2; top: 15px; right: 15px; }
-    .details-content { position: relative; z-index: 1; margin-top: -51px; padding: 0 26px 27px; }
-    .details-kicker { margin: 0 0 6px; color: #ff6972; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-    .details-content h2 { margin: 0; font-size: clamp(25px, 5vw, 37px); letter-spacing: -.055em; line-height: 1.1; }
-    .details-meta { display: flex; gap: 13px; margin: 12px 0 13px; color: #b4b6be; font-size: 11px; }
-    .details-meta span + span::before { margin-right: 13px; content: "/"; color: #686b74; }
-    .details-copy { max-width: 640px; margin: 0; color: #c1c2c8; font-size: 13px; line-height: 1.65; }
-    .details-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-    .player-backdrop { padding: 0; background: rgba(0,0,0,.94); backdrop-filter: blur(16px); }
-    .player-dialog { width: min(1320px, 100%); max-height: 100vh; overflow: auto; border: 0; border-radius: 0; background: #08090c; box-shadow: none; }
-    .player-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px clamp(18px, 3vw, 39px); }
-    .player-heading-copy { min-width: 0; }
-    .player-heading-copy span { display: block; margin-bottom: 3px; color: #a6a8b0; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    .player-heading-copy h2 { overflow: hidden; margin: 0; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
-    .player-options { display: flex; align-items: center; gap: 9px; }
-    .server-group { display: flex; gap: 6px; padding: 4px; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; background: #111217; }
-    .server-button { min-height: 31px; padding: 0 11px; border: 0; border-radius: 4px; background: transparent; color: #a4a6ae; cursor: pointer; font-size: 11px; font-weight: 600; }
-    .server-button.active { background: #2a2c33; color: #fff; }
-    .player-stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 128px); background: #000; }
-    .player-stage iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; }
-    .player-below { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 13px; padding: 13px clamp(18px, 3vw, 39px) 18px; color: #8e9099; font-size: 11px; }
-    .tv-controls { display: flex; align-items: center; gap: 8px; }
-    .tv-controls label { display: flex; align-items: center; gap: 5px; }
-    .tv-controls input { width: 49px; height: 30px; padding: 4px 6px; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; background: #13151a; color: #fff; }
-    .admin-tabs { display: flex; gap: 6px; padding: 0 22px; border-bottom: 1px solid rgba(255,255,255,.09); overflow-x: auto; }
-    .admin-tab { position: relative; padding: 13px 11px 12px; border: 0; background: transparent; color: #9699a2; cursor: pointer; white-space: nowrap; font-size: 12px; font-weight: 600; }
-    .admin-tab.active { color: #fff; }
-    .admin-tab.active::after { position: absolute; right: 9px; bottom: -1px; left: 9px; height: 2px; content: ""; background: var(--red); }
-    .admin-panel { padding: 22px; }
-    .admin-panel h3 { margin: 0 0 5px; font-size: 15px; }
-    .admin-panel > p { margin: 0 0 17px; color: #8f929c; font-size: 11px; line-height: 1.55; }
-    .admin-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .85fr); gap: 25px; }
-    .admin-form { display: grid; gap: 13px; }
-    .admin-form .field input, .admin-form .field textarea { min-height: 39px; }
-    .admin-form .field textarea { min-height: 75px; }
-    .admin-list { border-top: 1px solid rgba(255,255,255,.09); }
-    .admin-list-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 57px; padding: 9px 3px; border-bottom: 1px solid rgba(255,255,255,.08); }
-    .admin-list-row > div { min-width: 0; }
-    .admin-list-row strong { display: block; overflow: hidden; color: #e6e7e9; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .admin-list-row small { display: block; overflow: hidden; max-width: 380px; margin-top: 4px; color: #878a94; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-    .small-action { flex: 0 0 auto; padding: 6px 9px; border: 1px solid rgba(255,255,255,.14); border-radius: 4px; background: transparent; color: #dbdce0; cursor: pointer; font-size: 10px; }
-    .small-action:hover { border-color: #ff7178; color: #ff8a90; }
-    .small-action.promote { border-color: rgba(229,9,20,.42); color: #ff7b83; }
-    .table-scroll { overflow-x: auto; }
-    .user-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-    .user-table th { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.12); color: #92959e; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
-    .user-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.07); color: #d5d6da; font-size: 11px; }
-    .role-label { display: inline-block; padding: 4px 7px; border-radius: 3px; background: rgba(255,255,255,.08); color: #b8bac2; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-    .role-label.admin { background: rgba(229,9,20,.17); color: #ff8289; }
-    .toast-region { position: fixed; z-index: 200; right: 22px; bottom: 82px; display: grid; gap: 8px; width: min(360px, calc(100vw - 36px)); pointer-events: none; }
-    .toast { padding: 12px 15px; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; background: rgba(27,29,35,.96); color: #f2f2f4; box-shadow: 0 13px 35px rgba(0,0,0,.36); font-size: 12px; animation: toastIn .24s ease-out; }
-    .toast.error { border-color: rgba(255,97,107,.4); }
-    .toast.success { border-color: rgba(99,207,146,.35); }
-    .mobile-search { display: none; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes modalIn { from { opacity: 0; transform: translateY(11px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes popIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes copyArrival { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes heroArrival { from { opacity: .5; transform: scale(1.1); } to { opacity: 1; transform: scale(1.045); } }
-    @keyframes heroDrift { from { transform: scale(1.045) translate3d(0,0,0); } to { transform: scale(1.095) translate3d(-.7%,.4%,0); } }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 860px) {
-      .topbar { height: 68px; gap: 25px; }
-      .nav-links { gap: 17px; }
-      .hero { min-height: 650px; height: 83vh; }
-      .hero-content { bottom: 117px; }
-      .hero-shade { background: linear-gradient(90deg, rgba(11,12,16,.95) 0%, rgba(11,12,16,.68) 52%, rgba(11,12,16,.2) 100%), linear-gradient(0deg, #0b0c10 0%, rgba(11,12,16,.72) 13%, transparent 60%); }
-      .media-tile { flex-basis: clamp(130px, 21vw, 178px); }
-    }
-    @media (max-width: 620px) {
-      .topbar { height: 62px; padding-inline: 17px; gap: 0; }
-      .topbar.scrolled { height: 60px; }
-      .brand { gap: 8px; font-size: 18px; }
-      .brand-mark { width: 26px; height: 26px; border-radius: 7px 7px 7px 2px; }
-      .nav-links { display: none; }
-      .nav-actions { gap: 5px; }
-      .profile-trigger { gap: 3px; padding-right: 1px; }
-      .profile-caret { display: none; }
-      .avatar { width: 31px; height: 31px; }
-      .profile-menu { top: 57px; right: 14px; }
-      .hero { min-height: 630px; height: 82vh; max-height: 780px; }
-      .hero-visual { background-position: 59% center; }
-      .hero-shade { background: linear-gradient(90deg, rgba(11,12,16,.88), rgba(11,12,16,.37) 80%), linear-gradient(0deg, #0b0c10 0%, rgba(11,12,16,.76) 17%, transparent 65%); }
-      .hero-content { left: 21px; bottom: 104px; width: calc(100% - 42px); }
-      .hero-brand { gap: 10px; margin-bottom: 23px; font-size: 32px; }
-      .hero-brand-mark { width: 31px; height: 31px; border-radius: 9px 9px 9px 2px; font-size: 17px; }
-      .hero-title { font-size: clamp(1.5rem, 7vw, 2rem); }
-      .hero-copy { max-width: 440px; min-height: 0; margin: 13px 0 19px; font-size: 13px; line-height: 1.55; }
-      .button { min-height: 42px; padding-inline: 15px; font-size: 12px; }
-      .content-shell { margin-top: -12px; padding: 0 17px 64px; }
-      .media-section { margin-bottom: 37px; }
-      .section-heading { margin-bottom: 13px; }
-      .section-heading h2 { font-size: 18px; }
-      .section-heading p { font-size: 11px; }
-      .row-arrow { width: 31px; height: 31px; }
-      .media-scroller { gap: 11px; margin-right: -17px; padding-right: 17px; }
-      .media-tile { flex-basis: 128px; }
-      .tile-watch { top: 7px; right: 7px; width: 29px; height: 29px; opacity: 1; transform: none; }
-      .media-title { margin-top: 8px; font-size: 12px; }
-      .media-meta { font-size: 10px; }
-      .empty-row { min-height: 114px; align-items: flex-start; flex-direction: column; padding: 16px 0; font-size: 12px; }
-      .floating-settings { right: 15px; bottom: 15px; width: 42px; height: 42px; }
-      .site-footer { flex-direction: column; padding: 21px 18px 30px; }
-      .modal-backdrop { padding: 12px; }
-      .dialog { max-height: 92vh; border-radius: 10px; }
-      .dialog-head { padding: 16px 17px; }
-      .dialog-body { padding: 19px 17px; }
-      .search-dialog { margin-top: 9vh; }
-      .search-top { padding: 13px 15px; }
-      .search-top input { font-size: 15px; }
-      .search-results-wrap { max-height: 70vh; }
-      .details-art { min-height: 190px; }
-      .details-content { padding: 0 19px 22px; }
-      .details-content h2 { font-size: 27px; }
-      .player-backdrop { padding: 0; }
-      .player-dialog { height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; border-radius: 0; }
-      .player-head { padding: 13px 14px; }
-      .player-heading-copy h2 { font-size: 14px; }
-      .player-options { gap: 6px; }
-      .server-group { gap: 2px; padding: 3px; }
-      .server-button { padding: 0 8px; font-size: 10px; }
-      .player-stage { flex: 0 0 auto; max-height: initial; aspect-ratio: 16 / 9; }
-      .player-below { align-items: flex-start; flex-direction: column; padding: 12px 14px; }
-      .admin-grid { grid-template-columns: 1fr; }
-      .admin-panel { padding: 18px 16px; }
-      .admin-tabs { padding-inline: 10px; }
-      .toast-region { right: 12px; bottom: 68px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .movie-card:hover .card-overlay { opacity: 1; }
   </style>
 </head>
-<body>
-  <header class="topbar" id="topbar">
-    <a class="brand" href="#top" aria-label="Flickerz Nest home">
-      <span class="brand-mark">F</span>
-      <span class="brand-name">Flickerz <span>Nest</span></span>
-    </a>
-    <nav class="nav-links" aria-label="Main navigation">
-      <a class="active" href="#top">Home</a>
-      <a href="#section-trending">Films</a>
-      <a href="#section-tv">Series</a>
-      <a href="#section-watchlist">My List</a>
-    </nav>
-    <div class="nav-actions">
-      <button class="icon-button search-trigger" type="button" aria-label="Search titles" data-action="open-search"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Open profile menu" aria-expanded="false" data-action="toggle-profile">
-        <span class="avatar" id="avatarInitials">FN</span><i class="fa-solid fa-chevron-down profile-caret"></i>
-      </button>
-    </div>
-    <div class="profile-menu" id="profileMenu" hidden>
-      <div class="profile-menu-head"><strong id="profileName">Your Nest</strong><span id="profileEmail">Connect an account to sync your list</span></div>
-      <button class="menu-item" type="button" data-action="open-auth" id="profileAuthAction"><i class="fa-regular fa-user"></i><span>Sign in or create account</span></button>
-      <button class="menu-item" type="button" data-action="open-admin" id="adminMenuAction" hidden><i class="fa-solid fa-sliders"></i><span>Admin control</span></button>
-      <button class="menu-item" type="button" data-action="open-settings"><i class="fa-solid fa-gear"></i><span>App configuration</span></button>
-      <button class="menu-item danger" type="button" data-action="sign-out" id="signOutAction" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
+<body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white">
+
+  <!-- Header Navigation -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-gradient-to-b from-black/80 to-transparent" id="navbar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-8">
+        <a href="#" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
+          <span class="bg-red-600 text-white rounded p-1 text-xs">F</span>
+          <span>Flickerz Nest</span>
+        </a>
+        <nav class="hidden md:flex space-x-6 text-sm font-medium text-neutral-300">
+          <a href="#" class="hover:text-white transition">Home</a>
+          <a href="#movies" class="hover:text-white transition">Films</a>
+          <a href="#series" class="hover:text-white transition">Series</a>
+          <a href="#watchlist" class="hover:text-white transition">My List</a>
+        </nav>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <input type="text" id="search-input" placeholder="Titles, people, genres..." 
+                 class="bg-neutral-900/80 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-36 sm:w-64 focus:outline-none focus:border-neutral-600 transition-all placeholder-neutral-500">
+          <svg class="w-4 h-4 text-neutral-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main id="top">
-    <section class="hero" aria-label="Featured title">
-      <div class="hero-visual" id="heroVisual"></div>
-      <div class="hero-shade"></div>
-      <div class="hero-content">
-        <div class="hero-brand"><span class="hero-brand-mark">F</span><span>Flickerz <span>Nest</span></span></div>
-        <p class="hero-eyebrow" id="heroEyebrow">Curated for your next movie night</p>
-        <h1 class="hero-title" id="heroTitle">Find your next favorite.</h1>
-        <p class="hero-copy" id="heroCopy">A little wonder, right where you want it. Set up a TMDB key to bring the latest picks into your Nest.</p>
-        <div class="hero-actions">
-          <button class="button button-light" id="heroPlay" type="button"><i class="fa-solid fa-play"></i> Play Now</button>
-          <button class="button button-glass" id="heroDetails" type="button"><i class="fa-solid fa-circle-info"></i> Details</button>
-          <button class="button button-glass" id="heroWatch" type="button"><i class="fa-solid fa-plus"></i> My List</button>
-        </div>
-      </div>
+  <!-- Hero Banner -->
+  <section id="hero" class="relative h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden">
+    <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content">
+      <!-- Dynamic Hero Content Rendered Here -->
+    </div>
+  </section>
+
+  <!-- Main Content Areas -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-10 pb-16">
+    <section id="search-results-section" class="hidden">
+      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Search Results</h2>
+      <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
     </section>
 
-    <div class="content-shell" id="catalogRows"></div>
+    <section>
+      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Trending Movies</h2>
+      <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Popular TV Shows</h2>
+      <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+    </section>
+
+    <section id="watchlist-section">
+      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My Watchlist</h2>
+      <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+    </section>
   </main>
 
-  <footer class="site-footer">
-    <span><strong>Flickerz Nest</strong> &nbsp;Stories worth staying in for.</span>
-    <span>Discovery powered by TMDB. Your keys stay in this browser.</span>
-  </footer>
-
-  <button class="floating-settings" type="button" title="Configure API keys and Supabase" aria-label="Open app configuration" data-action="open-settings"><i class="fa-solid fa-gear"></i></button>
-  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
-
-  <div class="modal-backdrop" id="searchModal" role="dialog" aria-modal="true" aria-label="Search movies and shows" hidden>
-    <div class="dialog search-dialog">
-      <div class="search-top"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Search movies and shows" autocomplete="off" aria-label="Search movies and shows"><button class="dialog-close" type="button" aria-label="Close search" data-close="searchModal"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="search-results-wrap" id="searchResults" aria-live="polite"></div>
+  <!-- Video Stream Player Modal -->
+  <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-2 sm:p-6">
+    <div class="relative w-full max-w-5xl aspect-video bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
+      <button id="close-player" class="absolute top-3 right-3 z-10 bg-neutral-800/80 hover:bg-neutral-700 text-white rounded-full p-2 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <iframe id="player-frame" class="w-full h-full border-0" allowfullscreen></iframe>
     </div>
   </div>
 
-  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
-    <div class="dialog">
-      <div class="dialog-head"><h2 id="settingsTitle">Make this Nest yours</h2><button class="dialog-close" type="button" aria-label="Close settings" data-close="settingsModal"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="dialog-body">
-        <form class="form-stack" id="settingsForm">
-          <div class="field"><label for="tmdbKeyInput">TMDB API key</label><input id="tmdbKeyInput" type="password" autocomplete="off" placeholder="TMDB v3 key or v4 read token"><p class="field-hint">Loads trending titles, artwork, and live search. Get a key from your TMDB account settings.</p></div>
-          <div class="field"><label for="supabaseUrlInput">Supabase project URL</label><input id="supabaseUrlInput" type="url" inputmode="url" autocomplete="url" placeholder="https://your-project.supabase.co"></div>
-          <div class="field"><label for="supabaseAnonInput">Supabase anon / publishable key</label><input id="supabaseAnonInput" type="password" autocomplete="off" placeholder="eyJ... or sb_publishable_..."><p class="field-hint">Use only the public anon/publishable key. Never add a service_role key to a browser app.</p></div>
-          <p class="fine-print">Values are saved in this browser's local storage. Supabase RLS protects account data; the anon key is designed for public clients.</p>
-          <p class="status-message" id="settingsStatus" role="status"></p>
-          <div class="form-actions"><button class="button button-primary" type="submit">Save configuration</button><button class="button button-glass" type="button" data-close="settingsModal">Cancel</button></div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
-    <div class="dialog">
-      <div class="dialog-head"><h2 id="authTitle">Welcome back</h2><button class="dialog-close" type="button" aria-label="Close sign in" data-close="authModal"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="dialog-body">
-        <div class="auth-brand"><div class="brand"><span class="brand-mark">F</span><span class="brand-name">Flickerz <span>Nest</span></span></div><p class="auth-intro" id="authIntro">Sign in to keep your watchlist in sync.</p></div>
-        <form class="form-stack" id="authForm">
-          <div class="field" id="displayNameWrap" hidden><label for="displayNameInput">Your name</label><input id="displayNameInput" type="text" autocomplete="name" maxlength="80" placeholder="How should we call you?"></div>
-          <div class="field"><label for="emailInput">Email address</label><input id="emailInput" type="email" autocomplete="email" required placeholder="you@example.com"></div>
-          <div class="field"><label for="passwordInput">Password</label><input id="passwordInput" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"></div>
-          <p class="status-message" id="authStatus" role="status"></p>
-          <button class="button button-primary" type="submit" id="authSubmit">Sign in</button>
-        </form>
-        <button class="auth-switch" type="button" id="authSwitch">New to Flickerz Nest? <span>Create an account</span></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" hidden>
-    <div class="dialog details-dialog">
-      <div class="details-art" id="detailsArt"><button class="dialog-close details-art-close" type="button" aria-label="Close details" data-close="detailsModal"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="details-content">
-        <p class="details-kicker" id="detailsKicker">Featured title</p>
-        <h2 id="detailsTitle">Title</h2>
-        <div class="details-meta"><span id="detailsType">Movie</span><span id="detailsYear">2025</span><span id="detailsRating">TMDB</span></div>
-        <p class="details-copy" id="detailsCopy"></p>
-        <div class="details-actions"><button class="button button-light" id="detailsPlay" type="button"><i class="fa-solid fa-play"></i> Play now</button><button class="button button-glass" id="detailsWatch" type="button"><i class="fa-solid fa-plus"></i> Add to My List</button></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop player-backdrop" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle" hidden>
-    <div class="dialog player-dialog">
-      <div class="player-head">
-        <div class="player-heading-copy"><span id="playerMediaLabel">Now playing</span><h2 id="playerTitle">Title</h2></div>
-        <div class="player-options"><div class="server-group" aria-label="Stream server"><button class="server-button active" type="button" id="server1Btn" data-server="1" aria-pressed="true">Server 1</button><button class="server-button" type="button" id="server2Btn" data-server="2" aria-pressed="false">Server 2</button></div><button class="dialog-close" type="button" aria-label="Close video player" data-close="playerModal"><i class="fa-solid fa-xmark"></i></button></div>
-      </div>
-      <div class="player-stage"><iframe id="playerFrame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe></div>
-      <div class="player-below"><span id="playerStatus">Choose a stream server if playback does not start.</span><div class="tv-controls" id="tvControls" hidden><label for="seasonInput">Season <input type="number" id="seasonInput" min="1" max="99" value="1"></label><label for="episodeInput">Episode <input type="number" id="episodeInput" min="1" max="999" value="1"></label></div></div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle" hidden>
-    <div class="dialog dialog-wide">
-      <div class="dialog-head"><h2 id="adminTitle">Nest control room</h2><button class="dialog-close" type="button" aria-label="Close admin panel" data-close="adminModal"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="admin-tabs" role="tablist" aria-label="Admin tools">
-        <button class="admin-tab active" type="button" role="tab" aria-selected="true" data-admin-tab="streams">Stream overrides</button>
-        <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="content">Custom content</button>
-        <button class="admin-tab" type="button" role="tab" aria-selected="false" data-admin-tab="users">User management</button>
-      </div>
-      <section class="admin-panel" id="adminStreamsPanel" role="tabpanel">
-        <div class="admin-grid">
-          <div><h3>Custom stream override</h3><p>Route a TMDB title to a trusted, https video embed URL. Server 1 will use this override.</p>
-            <form class="admin-form" id="streamForm">
-              <div class="field"><label for="streamTmdbId">TMDB ID</label><input id="streamTmdbId" type="number" min="1" required placeholder="For example, 693134"></div>
-              <div class="field"><label for="streamUrl">Stream URL</label><input id="streamUrl" type="url" required placeholder="https://your-player.example/embed/..."></div>
-              <p class="status-message" id="streamStatus" role="status"></p>
-              <button class="button button-primary" type="submit">Save override</button>
-            </form>
-          </div>
-          <div><h3>Saved overrides</h3><p>Each TMDB ID can have one active override.</p><div class="admin-list" id="streamList"><div class="admin-list-row"><small>No overrides loaded.</small></div></div></div>
-        </div>
-      </section>
-      <section class="admin-panel" id="adminContentPanel" role="tabpanel" hidden>
-        <div class="admin-grid">
-          <div><h3>Add a film or announcement</h3><p>Custom content appears in the Flickerz Nest row. Add an image and optional https stream to make it playable.</p>
-            <form class="admin-form" id="contentForm">
-              <div class="field"><label for="contentTitle">Title</label><input id="contentTitle" type="text" maxlength="180" required placeholder="A title for your Nest"></div>
-              <div class="field"><label for="contentDescription">Description</label><textarea id="contentDescription" maxlength="2000" placeholder="A short description or announcement"></textarea></div>
-              <div class="field"><label for="contentBanner">Banner / poster image URL</label><input id="contentBanner" type="url" placeholder="https://..."></div>
-              <div class="field"><label for="contentStream">Custom stream URL (optional)</label><input id="contentStream" type="url" placeholder="https://..."></div>
-              <p class="status-message" id="contentStatus" role="status"></p>
-              <button class="button button-primary" type="submit">Publish content</button>
-            </form>
-          </div>
-          <div><h3>Published content</h3><p>Remove items that are no longer relevant.</p><div class="admin-list" id="contentAdminList"><div class="admin-list-row"><small>No content loaded.</small></div></div></div>
-        </div>
-      </section>
-      <section class="admin-panel" id="adminUsersPanel" role="tabpanel" hidden>
-        <h3>Registered users</h3><p>Promote trusted users to admin or return them to the standard role.</p>
-        <div class="table-scroll" id="userTableWrap"><p class="fine-print">Users have not loaded yet.</p></div>
-        <p class="status-message" id="userStatus" role="status"></p>
-      </section>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Core Application Script -->
   <script>
     (() => {
-      const TMDB_API = "https://api.themoviedb.org/3";
-      const TMDB_IMAGE = "https://image.tmdb.org/t/p/";
-      const CONFIG_KEY = "flickerz-nest-config-v1";
-      const $ = (id) => document.getElementById(id);
-      const safeParse = (value, fallback) => { try { return JSON.parse(value) || fallback; } catch { return fallback; } };
-      const escapeHTML = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-      const getStoredConfig = () => {
-        try { return { tmdbKey: "", supabaseUrl: "", supabaseAnonKey: "", ...safeParse(localStorage.getItem(CONFIG_KEY), {}) }; }
-        catch { return { tmdbKey: "", supabaseUrl: "", supabaseAnonKey: "" }; }
-      };
-      const imageUrl = (path, size = "w500") => {
-        if (!path) return "";
-        if (String(path).startsWith("/")) return `${TMDB_IMAGE}${size}${path}`;
-        try {
-          const url = new URL(path);
-          return url.protocol === "https:" ? url.href : "";
-        } catch { return ""; }
-      };
-      const safeStreamUrl = (value) => {
-        try {
-          const url = new URL(String(value || "").trim());
-          return url.protocol === "https:" ? url.href : "";
-        } catch { return ""; }
-      };
-      const fallbackMovies = [
-        { id: 693134, title: "Dune: Part Two", overview: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.", poster_path: "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", backdrop_path: "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg", release_date: "2024-02-27", vote_average: 8.2, media_type: "movie" },
-        { id: 872585, title: "Oppenheimer", overview: "The story of J. Robert Oppenheimer and his role in the development of the atomic bomb.", poster_path: "/ptpr0kGAckfQkJeJIt8st5dglvd.jpg", backdrop_path: "/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg", release_date: "2023-07-19", vote_average: 8.1, media_type: "movie" },
-        { id: 569094, title: "Spider-Man: Across the Spider-Verse", overview: "Miles Morales is catapulted across the Multiverse, where he meets a team of Spider-People charged with protecting it.", poster_path: "/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg", backdrop_path: "/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg", release_date: "2023-05-31", vote_average: 8.4, media_type: "movie" },
-        { id: 792307, title: "Poor Things", overview: "The incredible tale and fantastical evolution of Bella Baxter, a young woman brought back to life by an unorthodox scientist.", poster_path: "/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg", backdrop_path: "/bQS43HSLZzMjZkcHJz4fGc7fNdz.jpg", release_date: "2023-12-07", vote_average: 7.8, media_type: "movie" },
-        { id: 414906, title: "The Batman", overview: "Batman ventures into Gotham City's underworld when a sadistic killer leaves behind a trail of cryptic clues.", poster_path: "/74xTEgt7R36Fpooo50r9T25onhq.jpg", backdrop_path: "/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg", release_date: "2022-03-01", vote_average: 7.7, media_type: "movie" },
-        { id: 157336, title: "Interstellar", overview: "A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.", poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", backdrop_path: "/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg", release_date: "2014-11-05", vote_average: 8.7, media_type: "movie" },
-        { id: 335984, title: "Blade Runner 2049", overview: "A young blade runner discovers a secret that could destabilize what's left of society.", poster_path: "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg", backdrop_path: "/ilRyazdMJwN05exqhwK4tMKBYZs.jpg", release_date: "2017-10-04", vote_average: 8.0, media_type: "movie" },
-        { id: 346698, title: "Barbie", overview: "Barbie and Ken are having the time of their lives in the colorful world of Barbie Land.", poster_path: "/iuFnmNHe8tiKJY4z9SgC5dVw2S3.jpg", backdrop_path: "/ctMserH8g2SeOAnCw5gFjdQF8mo.jpg", release_date: "2023-07-19", vote_average: 7.0, media_type: "movie" }
-      ];
-      const fallbackTV = [
-        { id: 100088, title: "The Last of Us", overview: "Twenty years after civilization was destroyed, a hardened survivor is hired to smuggle a teenager out of a quarantine zone.", poster_path: "/dmo6TYuuJgaYinXBPjrgG9mB5od.jpg", backdrop_path: "/uDgy6hyPd82kOHh6I95FLtLnj6p.jpg", first_air_date: "2023-01-15", vote_average: 8.6, media_type: "tv" },
-        { id: 95396, title: "Severance", overview: "At a mysterious company, employees undergo a procedure that separates their work and personal memories.", poster_path: "/lFf6LLrQjYldcZItzOkGmMMigP7.jpg", backdrop_path: "/pwBvk8LQ1a01Sc1jqj5jJ5uPlu1.jpg", first_air_date: "2022-02-17", vote_average: 8.7, media_type: "tv" },
-        { id: 136315, title: "The Bear", overview: "A young chef returns to Chicago to run his family's sandwich shop after a heartbreaking loss.", poster_path: "/sHFlbKS3WLqMnp9t2ghADIJFnuQ.jpg", backdrop_path: "/8bcn8vE2BV5O6s6a0C0z4cL88wJ.jpg", first_air_date: "2022-06-23", vote_average: 8.3, media_type: "tv" },
-        { id: 106379, title: "Fallout", overview: "Two hundred years after the apocalypse, a sheltered vault dweller ventures into the strange and violent wasteland.", poster_path: "/AnsSKR9LuK0T9bAOcPkaFWwHsB4.jpg", backdrop_path: "/a2tys4sD7xzVaogPnt7FA0ADQ5s.jpg", first_air_date: "2024-04-10", vote_average: 8.3, media_type: "tv" },
-        { id: 94997, title: "House of the Dragon", overview: "The history of House Targaryen, set 200 years before the events of Game of Thrones.", poster_path: "/z2yahl2uefxDCl0nogcRBstwruJ.jpg", backdrop_path: "/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg", first_air_date: "2022-08-21", vote_average: 8.4, media_type: "tv" },
-        { id: 107113, title: "Only Murders in the Building", overview: "Three strangers share an obsession with true crime and suddenly find themselves wrapped up in one.", poster_path: "/5y9L9uXGqN8e8zI3X5QW3JoHF4A.jpg", backdrop_path: "/s1VzVhXlqsevi8zeCMG9Azdn9yI.jpg", first_air_date: "2021-08-31", vote_average: 8.0, media_type: "tv" }
-      ];
+      // 1. HARDCODED CONFIGURATION & CENTRALIZED STATE
       const state = {
-        config: getStoredConfig(),
-        trending: fallbackMovies,
-        popularTv: fallbackTV,
-        topRated: [...fallbackMovies].sort((a, b) => b.vote_average - a.vote_average),
-        watchlist: [],
-        customContent: [],
-        itemMap: new Map(),
-        heroItem: fallbackMovies[0],
-        activePlayer: null,
-        activeDetails: null,
-        customStreamUrl: "",
-        playerServer: 1,
-        authMode: "signin",
+        config: {
+          tmdbApiKey: 'YOUR_TMDB_API_KEY_HERE', // Insert your TMDB Key here
+          supabaseUrl: 'https://your-project.supabase.co', // Insert your Supabase URL
+          supabaseKey: 'YOUR_SUPABASE_ANON_KEY_HERE' // Insert your Supabase Anon Key
+        },
         supabase: null,
-        supabaseSignature: "",
-        authSubscription: null,
-        watchlistChannel: null,
-        user: null,
-        profile: null,
-        searchTimer: null,
-        searchSequence: 0,
-        catalogSequence: 0,
-        revealObserver: null
+        watchlist: [],
+        customStreams: {},
+        searchSequence: 0
       };
 
-      function showToast(message, kind = "") {
-        const toast = document.createElement("div");
-        toast.className = `toast ${kind}`.trim();
-        toast.textContent = message;
-        $("toastRegion").appendChild(toast);
-        window.setTimeout(() => toast.remove(), 3600);
+      const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+      const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
+
+      // Fallback Data
+      const fallbackMovies = [
+        { id: 823464, title: 'Godzilla x Kong', media_type: 'movie', poster_path: '/z19A13mR2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'An epic battle continues...' },
+        { id: 693134, title: 'Dune: Part Two', media_type: 'movie', poster_path: '/1pdfL2iA83S2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'Paul Atreides unites with Chani...' }
+      ];
+
+      // 2. INITIALIZATION
+      function init() {
+        initSupabase();
+        setupEventListeners();
+        fetchTrendingData();
       }
 
-      function showModal(id) {
-        const modal = $(id);
-        if (!modal) return;
-        closeProfileMenu();
-        modal.hidden = false;
-        document.body.classList.add("modal-open");
-      }
-
-      function hideModal(id) {
-        const modal = $(id);
-        if (!modal || modal.hidden) return;
-        modal.hidden = true;
-        if (![...document.querySelectorAll(".modal-backdrop")].some((item) => !item.hidden)) document.body.classList.remove("modal-open");
-        if (id === "playerModal") {
-          $("playerFrame").src = "about:blank";
-          state.activePlayer = null;
-          state.customStreamUrl = "";
+      function initSupabase() {
+        if (state.config.supabaseUrl && state.config.supabaseKey && window.supabase) {
+          state.supabase = window.supabase.createClient(state.config.supabaseUrl, state.config.supabaseKey);
+          syncWatchlist();
+          subscribeToRealtime();
         }
       }
 
-      function closeProfileMenu() {
-        $("profileMenu").hidden = true;
-        $("profileTrigger").setAttribute("aria-expanded", "false");
-      }
-
-      function getItemKey(item) { return `${item.media_type || "movie"}:${item.id}`; }
-      function isInWatchlist(item) {
-        return state.watchlist.some((entry) => Number(entry.id) === Number(item.id) && entry.media_type === item.media_type);
-      }
-      function releaseYear(item) {
-        const date = item.release_date || item.first_air_date || "";
-        return date ? String(date).slice(0, 4) : "";
-      }
-      function normalizeTitle(item, mediaType) {
-        return { ...item, title: item.title || item.name || "Untitled", media_type: item.media_type || mediaType || "movie" };
-      }
-
-      function renderHero(item) {
-        if (!item) return;
-        state.heroItem = item;
-        const image = imageUrl(item.backdrop_path || item.poster_path, "original");
-        $("heroVisual").style.backgroundImage = image ? `url("${image}")` : "linear-gradient(120deg, #27202b, #111218 66%)";
-        $("heroTitle").textContent = item.title || item.name || "Find your next favorite.";
-        $("heroCopy").textContent = item.overview || "A little wonder, right where you want it. Discover your next favorite in the Flickerz Nest.";
-        $("heroEyebrow").textContent = item.media_type === "tv" ? "Popular series, ready to explore" : "Trending now, ready to play";
-        const saved = isInWatchlist(item);
-        $("heroWatch").innerHTML = `<i class="fa-solid ${saved ? "fa-check" : "fa-plus"}"></i> ${saved ? "In My List" : "My List"}`;
-      }
-
-      function tileMarkup(item, allowWatch = true) {
-        const key = getItemKey(item);
-        state.itemMap.set(key, item);
-        const poster = imageUrl(item.poster_path, "w500");
-        const title = item.title || item.name || "Untitled";
-        const type = item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Movie");
-        const saved = allowWatch && isInWatchlist(item);
-        return `<article class="media-tile">
-          <button class="poster-button" type="button" data-open-key="${escapeHTML(key)}" aria-label="Play ${escapeHTML(title)}">
-            ${poster ? `<img src="${escapeHTML(poster)}" alt="${escapeHTML(title)} poster" loading="lazy" data-fallback>` : `<span class="poster-empty"><i class="fa-solid fa-film"></i></span>`}
-            <span class="poster-play"><i class="fa-solid fa-play"></i></span>
-          </button>
-          ${allowWatch ? `<button class="tile-watch ${saved ? "is-saved" : ""}" type="button" data-watch-key="${escapeHTML(key)}" aria-label="${saved ? "Remove from" : "Add to"} My List: ${escapeHTML(title)}"><i class="fa-solid ${saved ? "fa-check" : "fa-plus"}"></i></button>` : ""}
-          <p class="media-title" title="${escapeHTML(title)}">${escapeHTML(title)}</p>
-          <span class="media-meta">${escapeHTML(type)}${releaseYear(item) ? ` | ${escapeHTML(releaseYear(item))}` : ""}</span>
-        </article>`;
-      }
-
-      function mediaSection(id, title, caption, items, emptyHTML = "") {
-        const content = items.length ? `<div class="media-scroller" id="scroller-${id}">${items.map((item) => tileMarkup(item, !item.is_custom)).join("")}</div>` : `<div class="empty-row">${emptyHTML || "<span>Nothing here yet. Check back soon.</span>"}</div>`;
-        return `<section class="media-section" id="section-${id}" data-reveal>
-          <div class="section-heading"><div><h2>${escapeHTML(title)}</h2>${caption ? `<p>${escapeHTML(caption)}</p>` : ""}</div>
-          ${items.length > 2 ? `<div class="row-controls"><button class="row-arrow" type="button" data-scroll="${id}" data-direction="-1" aria-label="Scroll ${escapeHTML(title)} left"><i class="fa-solid fa-chevron-left"></i></button><button class="row-arrow" type="button" data-scroll="${id}" data-direction="1" aria-label="Scroll ${escapeHTML(title)} right"><i class="fa-solid fa-chevron-right"></i></button></div>` : ""}</div>
-          ${content}
-        </section>`;
-      }
-
-      function renderRows() {
-        state.itemMap.clear();
-        const customItems = state.customContent.map((row) => ({ ...row, id: `custom-${row.id}`, media_type: "custom", is_custom: true }));
-        const customMarkup = customItems.length ? mediaSection("custom", "From the Nest", "A little something selected just for you.", customItems, "") : "";
-        let watchEmpty = "<span>Your watchlist will live here.</span>";
-        if (!state.user) watchEmpty = `<span>Sign in to keep your favorite films and series close.</span><button class="button button-glass" type="button" data-action="open-auth">Sign in to sync</button>`;
-        else if (!state.watchlist.length) watchEmpty = `<span>Your list is ready for its first favorite.</span><a class="button button-glass" href="#section-trending">Browse trending</a>`;
-        const markup = [
-          mediaSection("trending", "Trending Movies", "The titles everyone's talking about.", state.trending),
-          mediaSection("tv", "Popular TV Shows", "Settle in for your next series.", state.popularTv),
-          mediaSection("rated", "Top Rated", "Stories that stay with you.", state.topRated),
-          customMarkup,
-          mediaSection("watchlist", "My Watchlist", "Your own little corner of the cinema.", state.watchlist, watchEmpty)
-        ].join("");
-        $("catalogRows").innerHTML = markup;
-        wireImages($("catalogRows"));
-        observeSections();
-        if (state.heroItem) renderHero(state.heroItem);
-      }
-
-      function wireImages(root) {
-        root.querySelectorAll("img[data-fallback]").forEach((image) => image.addEventListener("error", () => {
-          image.hidden = true;
-        }, { once: true }));
-      }
-
-      function observeSections() {
-        if (!("IntersectionObserver" in window)) {
-          document.querySelectorAll("[data-reveal]").forEach((section) => section.classList.add("visible"));
-          return;
-        }
-        if (state.revealObserver) state.revealObserver.disconnect();
-        state.revealObserver = new IntersectionObserver((entries, observer) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) { entry.target.classList.add("visible"); observer.unobserve(entry.target); }
-          });
-        }, { threshold: .06 });
-        document.querySelectorAll("[data-reveal]").forEach((section) => state.revealObserver.observe(section));
-      }
-
-      async function tmdbFetch(path, params = {}) {
-        const key = String(state.config.tmdbKey || "").trim();
-        if (!key) throw new Error("Add a TMDB API key in app configuration to load live titles.");
-        const url = new URL(`${TMDB_API}${path}`);
-        Object.entries(params).forEach(([name, value]) => url.searchParams.set(name, value));
-        const headers = { Accept: "application/json" };
-        if (/^eyJ/.test(key)) headers.Authorization = `Bearer ${key}`;
-        else url.searchParams.set("api_key", key);
-        const response = await fetch(url, { headers });
-        if (!response.ok) throw new Error(`TMDB returned ${response.status}. Check your API key in settings.`);
-        return response.json();
-      }
-
-      async function loadCatalog() {
-        const sequence = ++state.catalogSequence;
-        if (!String(state.config.tmdbKey || "").trim()) {
-          state.trending = fallbackMovies;
-          state.popularTv = fallbackTV;
-          state.topRated = [...fallbackMovies].sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
-          renderHero(state.trending[0]);
-          renderRows();
-          return;
-        }
-        const results = await Promise.allSettled([
-          tmdbFetch("/trending/movie/week", { language: "en-US" }),
-          tmdbFetch("/tv/popular", { language: "en-US", page: "1" }),
-          tmdbFetch("/movie/top_rated", { language: "en-US", page: "1" })
-        ]);
-        if (sequence !== state.catalogSequence) return;
-        const unpack = (result, fallback, mediaType) => result.status === "fulfilled" && Array.isArray(result.value.results) && result.value.results.length
-          ? result.value.results.map((item) => normalizeTitle(item, mediaType)) : fallback;
-        state.trending = unpack(results[0], fallbackMovies, "movie");
-        state.popularTv = unpack(results[1], fallbackTV, "tv");
-        state.topRated = unpack(results[2], [...fallbackMovies].sort((a, b) => b.vote_average - a.vote_average), "movie");
-        renderHero(state.trending[0]);
-        renderRows();
-        const failure = results.find((result) => result.status === "rejected");
-        if (failure && !results.some((result) => result.status === "fulfilled")) showToast(failure.reason?.message || "Could not load TMDB titles. Showing the demo collection.", "error");
-      }
-
-      function localSearch(query) {
-        const q = query.toLowerCase();
-        const all = [...state.trending, ...state.popularTv, ...state.topRated];
-        const unique = new Map();
-        all.forEach((item) => unique.set(getItemKey(item), item));
-        return [...unique.values()].filter((item) => (item.title || item.name || "").toLowerCase().includes(q)).slice(0, 9);
-      }
-
-      function renderSearchResults(items, query, searching = false) {
-        const results = $("searchResults");
-        const list = items || [];
-        if (!query.trim()) {
-          const starters = [...state.trending, ...state.popularTv].slice(0, 5);
-          results.innerHTML = `<div class="search-section-label">A good place to start</div>${starters.map((item) => searchItemMarkup(item)).join("")}`;
-          wireImages(results);
-          return;
-        }
-        if (!list.length) {
-          results.innerHTML = `<div class="search-empty">${searching ? "Searching the catalog..." : `No titles found for &quot;${escapeHTML(query)}&quot;.`}</div>`;
-          return;
-        }
-        results.innerHTML = `<div class="search-section-label">${searching ? "Searching titles" : `${list.length} title${list.length === 1 ? "" : "s"}`}</div>${list.map((item) => searchItemMarkup(item)).join("")}`;
-        wireImages(results);
-      }
-
-      function searchItemMarkup(item) {
-        const key = getItemKey(item);
-        state.itemMap.set(key, item);
-        const title = item.title || item.name || "Untitled";
-        const poster = imageUrl(item.poster_path, "w185");
-        const type = item.media_type === "tv" ? "Series" : "Movie";
-        return `<button class="search-result" type="button" data-open-key="${escapeHTML(key)}">
-          ${poster ? `<img src="${escapeHTML(poster)}" alt="" loading="lazy" data-fallback>` : `<span class="search-poster-empty"></span>`}
-          <span class="search-result-copy"><strong>${escapeHTML(title)}</strong><span>${escapeHTML(type)}${releaseYear(item) ? ` | ${escapeHTML(releaseYear(item))}` : ""}</span></span><i class="fa-solid fa-play"></i>
-        </button>`;
-      }
-
-      function updateSearch(query) {
-        const sequence = ++state.searchSequence;
-        if (state.searchTimer) clearTimeout(state.searchTimer);
-        const local = query.trim() ? localSearch(query.trim()) : [];
-        renderSearchResults(local, query, false);
-        if (query.trim().length < 2 || !String(state.config.tmdbKey || "").trim()) return;
-        state.searchTimer = window.setTimeout(async () => {
-          try {
-            const response = await tmdbFetch("/search/multi", { query: query.trim(), include_adult: "false", language: "en-US", page: "1" });
-            if (sequence !== state.searchSequence || $("searchModal").hidden) return;
-            const remote = (response.results || []).filter((item) => item.media_type === "movie" || item.media_type === "tv").map((item) => normalizeTitle(item));
-            const combined = new Map();
-            [...remote, ...local].forEach((item) => combined.set(getItemKey(item), item));
-            renderSearchResults([...combined.values()].slice(0, 12), query, false);
-          } catch {
-            if (sequence === state.searchSequence && !local.length) renderSearchResults([], query, false);
-          }
-        }, 260);
-      }
-
-      function openSearch() {
-        showModal("searchModal");
-        $("searchInput").value = "";
-        renderSearchResults([], "");
-        window.setTimeout(() => $("searchInput").focus(), 20);
-      }
-
-      function openDetails(item) {
-        if (!item) return;
-        state.activeDetails = item;
-        const artwork = imageUrl(item.backdrop_path || item.poster_path, "original");
-        $("detailsArt").style.backgroundImage = artwork ? `url("${artwork}")` : "linear-gradient(120deg, #28222a, #111218)";
-        $("detailsTitle").textContent = item.title || item.name || "Untitled";
-        $("detailsCopy").textContent = item.description || item.overview || "A new story is waiting in the Flickerz Nest.";
-        $("detailsKicker").textContent = item.is_custom ? "From the Nest" : "Featured title";
-        $("detailsType").textContent = item.is_custom ? "Flickerz Nest" : (item.media_type === "tv" ? "Series" : "Movie");
-        $("detailsYear").textContent = releaseYear(item) || "Just added";
-        $("detailsRating").textContent = item.vote_average ? `${Number(item.vote_average).toFixed(1)} / 10` : "Selected for you";
-        const playable = item.is_custom ? Boolean(safeStreamUrl(item.custom_stream_url)) : true;
-        $("detailsPlay").disabled = !playable;
-        $("detailsPlay").innerHTML = `<i class="fa-solid fa-play"></i> ${playable ? "Play now" : "No stream"}`;
-        const canSave = !item.is_custom;
-        $("detailsWatch").hidden = !canSave;
-        const saved = canSave && isInWatchlist(item);
-        $("detailsWatch").innerHTML = `<i class="fa-solid ${saved ? "fa-check" : "fa-plus"}"></i> ${saved ? "In My List" : "Add to My List"}`;
-        showModal("detailsModal");
-      }
-
-      function makePlayerUrl(item, server) {
-        if (!item) return "";
-        if (item.is_custom) return safeStreamUrl(item.custom_stream_url);
-        const id = Number(item.id);
-        if (!Number.isSafeInteger(id) || id <= 0) return "";
-        const domain = server === 2 ? "https://vidsrc.to/embed" : "https://vidsrc.net/embed";
-        if (item.media_type === "tv") {
-          const season = Math.max(1, Number($("seasonInput").value) || 1);
-          const episode = Math.max(1, Number($("episodeInput").value) || 1);
-          return `${domain}/tv/${id}/${season}/${episode}`;
-        }
-        return `${domain}/movie/${id}`;
-      }
-
-      function updateServerState(server) {
-        state.playerServer = server;
-        $("server1Btn").classList.toggle("active", server === 1);
-        $("server2Btn").classList.toggle("active", server === 2);
-        $("server1Btn").setAttribute("aria-pressed", String(server === 1));
-        $("server2Btn").setAttribute("aria-pressed", String(server === 2));
-        const url = server === 1 && state.customStreamUrl && !state.activePlayer?.is_custom ? state.customStreamUrl : makePlayerUrl(state.activePlayer, server);
-        if (!url) {
-          $("playerFrame").src = "about:blank";
-          $("playerStatus").textContent = "This custom announcement has no stream URL.";
-          return;
-        }
-        $("playerFrame").src = url;
-        $("playerStatus").textContent = server === 1 && state.customStreamUrl ? "Playing the custom stream override." : "If playback does not start, try the other server.";
-      }
-
-      async function openPlayer(item) {
-        if (!item) return;
-        hideModal("detailsModal");
-        hideModal("searchModal");
-        state.activePlayer = item;
-        state.customStreamUrl = item.is_custom ? safeStreamUrl(item.custom_stream_url) : "";
-        state.playerServer = 1;
-        $("playerTitle").textContent = item.title || item.name || "Now playing";
-        $("playerMediaLabel").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Movie");
-        $("tvControls").hidden = item.is_custom || item.media_type !== "tv";
-        $("seasonInput").value = "1";
-        $("episodeInput").value = "1";
-        showModal("playerModal");
-        $("playerFrame").src = "about:blank";
-        $("playerStatus").textContent = "Checking for a custom stream...";
-        $("server1Btn").disabled = true;
-        $("server2Btn").disabled = true;
-        if (!item.is_custom && state.supabase && Number.isSafeInteger(Number(item.id))) {
-          try {
-            const { data, error } = await state.supabase.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
-            if (error) throw error;
-            if (data?.stream_url) state.customStreamUrl = safeStreamUrl(data.stream_url);
-          } catch {
-            if (state.activePlayer === item) $("playerStatus").textContent = "No custom override found; using the selected server.";
-          }
-        }
-        if (state.activePlayer === item && !$("playerModal").hidden) {
-          $("server1Btn").disabled = false;
-          $("server2Btn").disabled = false;
-          updateServerState(1);
-        }
-      }
-
-      async function toggleWatchlist(item) {
-        if (!item || item.is_custom) return;
-        if (!state.user || !state.supabase) {
-          showToast("Sign in with Supabase to sync your watchlist.");
-          openAuth();
-          return;
-        }
-        const tmdbId = Number(item.id);
-        if (!Number.isSafeInteger(tmdbId) || tmdbId <= 0) { showToast("This title cannot be added to the watchlist.", "error"); return; }
-        const existing = isInWatchlist(item);
-        const request = existing
-          ? state.supabase.from("watchlists").delete().eq("user_id", state.user.id).eq("tmdb_id", tmdbId).eq("media_type", item.media_type)
-          : state.supabase.from("watchlists").insert({ user_id: state.user.id, tmdb_id: tmdbId, title: item.title || item.name || "Untitled", poster_path: item.poster_path || null, media_type: item.media_type || "movie" });
-        const { error } = await request;
-        if (error) { showToast(error.message || "Could not update your watchlist.", "error"); return; }
-        showToast(existing ? "Removed from My List." : "Added to My List.", "success");
-        await loadWatchlist();
-        if (state.heroItem && getItemKey(state.heroItem) === getItemKey(item)) renderHero(state.heroItem);
-        if (state.activeDetails && getItemKey(state.activeDetails) === getItemKey(item)) openDetails(item);
-      }
-
-      function setAuthMode(mode) {
-        state.authMode = mode;
-        const signup = mode === "signup";
-        $("authTitle").textContent = signup ? "Create your account" : "Welcome back";
-        $("authIntro").textContent = signup ? "One account, your list wherever you go." : "Sign in to keep your watchlist in sync.";
-        $("displayNameWrap").hidden = !signup;
-        $("authSubmit").textContent = signup ? "Create account" : "Sign in";
-        $("authSwitch").innerHTML = signup ? "Already have an account? <span>Sign in</span>" : "New to Flickerz Nest? <span>Create an account</span>";
-        $("passwordInput").autocomplete = signup ? "new-password" : "current-password";
-        $("authStatus").textContent = "";
-        $("authStatus").className = "status-message";
-      }
-
-      function openAuth() {
-        closeProfileMenu();
-        setAuthMode("signin");
-        showModal("authModal");
-        window.setTimeout(() => $("emailInput").focus(), 20);
-      }
-
-      function disconnectSupabase() {
-        if (state.watchlistChannel && state.supabase) state.supabase.removeChannel(state.watchlistChannel);
-        if (state.authSubscription) state.authSubscription.unsubscribe();
-        state.watchlistChannel = null;
-        state.authSubscription = null;
-        state.supabase = null;
-        state.supabaseSignature = "";
-      }
-
-      async function handleAuthSubmit(event) {
-        event.preventDefault();
-        if (!state.supabase) {
-          $("authStatus").textContent = "Add your Supabase project URL and anon key in App configuration first.";
-          $("authStatus").className = "status-message error";
-          return;
-        }
-        const email = $("emailInput").value.trim();
-        const password = $("passwordInput").value;
-        const button = $("authSubmit");
-        button.disabled = true;
-        $("authStatus").textContent = state.authMode === "signup" ? "Creating your account..." : "Signing in...";
-        $("authStatus").className = "status-message";
+      // 3. DATA FETCHING & API INTERACTION
+      async function tmdbFetch(endpoint) {
+        if (!state.config.tmdbApiKey) return null;
         try {
-          const result = state.authMode === "signup"
-            ? await state.supabase.auth.signUp({ email, password, options: { data: { display_name: $("displayNameInput").value.trim() || email.split("@")[0] } } })
-            : await state.supabase.auth.signInWithPassword({ email, password });
-          if (result.error) throw result.error;
-          if (state.authMode === "signup" && !result.data.session) {
-            $("authStatus").textContent = "Account created. Check your email to confirm, then sign in.";
-            $("authStatus").className = "status-message success";
-          } else {
-            hideModal("authModal");
-            showToast(state.authMode === "signup" ? "Your Flickerz Nest account is ready." : "Welcome back to your Nest.", "success");
-            await applySession(result.data.user || result.data.session?.user || null);
-          }
-        } catch (error) {
-          $("authStatus").textContent = error.message || "Authentication failed. Check your details and try again.";
-          $("authStatus").className = "status-message error";
-        } finally {
-          button.disabled = false;
+          const res = await fetch(`https://api.themoviedb.org/3${endpoint}?api_key=${state.config.tmdbApiKey}`);
+          return await res.json();
+        } catch (e) {
+          console.error("TMDB Fetch Error:", e);
+          return null;
         }
       }
 
-      async function initSupabase() {
-        const url = String(state.config.supabaseUrl || "").trim();
-        const key = String(state.config.supabaseAnonKey || "").trim();
-        if (!url || !key || !window.supabase?.createClient) {
-          disconnectSupabase();
-          await applySession(null);
-          return;
-        }
-        try {
-          const parsedUrl = new URL(url);
-          if (!['https:', 'http:'].includes(parsedUrl.protocol)) throw new Error("Supabase URL must use http or https.");
-        } catch (error) {
-          disconnectSupabase();
-          await applySession(null);
-          showToast(error.message || "Enter a valid Supabase project URL.", "error");
-          return;
-        }
-        const signature = `${url}|${key}`;
-        if (state.supabase && state.supabaseSignature === signature) {
-          const { data } = await state.supabase.auth.getSession();
-          await applySession(data?.session?.user || null);
-          return;
-        }
-        if (state.authSubscription) state.authSubscription.unsubscribe();
-        if (state.watchlistChannel && state.supabase) state.supabase.removeChannel(state.watchlistChannel);
-        try {
-          state.supabase = window.supabase.createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
-        } catch (error) {
-          state.supabase = null;
-          state.supabaseSignature = "";
-          await applySession(null);
-          showToast(error.message || "Could not initialize Supabase. Check the project URL and public key.", "error");
-          return;
-        }
-        state.supabaseSignature = signature;
-        const { data: authData } = state.supabase.auth.onAuthStateChange((_event, session) => {
-          window.setTimeout(() => applySession(session?.user || null), 0);
-        });
-        state.authSubscription = authData.subscription;
-        try {
-          const { data, error } = await state.supabase.auth.getSession();
-          if (error) throw error;
-          await applySession(data?.session?.user || null);
-        } catch (error) {
-          showToast(error.message || "Could not connect to Supabase.", "error");
-          await applySession(null);
+      async function fetchTrendingData() {
+        const movies = await tmdbFetch('/trending/movie/week');
+        const tv = await tmdbFetch('/trending/tv/week');
+
+        const movieData = movies && movies.results ? movies.results : fallbackMovies;
+        const tvData = tv && tv.results ? tv.results : fallbackMovies;
+
+        if (movieData.length > 0) renderHero(movieData[0]);
+        renderCarousel('trending-movies', movieData, 'movie');
+        renderCarousel('popular-tv', tvData, 'tv');
+      }
+
+      // 4. REALTIME SUPABASE SYNCING
+      async function syncWatchlist() {
+        if (!state.supabase) return;
+        const { data, error } = await state.supabase.from('watchlist').select('*');
+        if (!error && data) {
+          state.watchlist = data;
+          renderWatchlist();
         }
       }
 
-      async function applySession(user) {
-        state.user = user || null;
-        state.profile = null;
-        if (state.user && state.supabase) {
-          const { data, error } = await state.supabase.from("profiles").select("id,email,display_name,role,created_at").eq("id", state.user.id).maybeSingle();
-          if (!error && data) state.profile = data;
-          else state.profile = { id: state.user.id, email: state.user.email, display_name: state.user.user_metadata?.display_name || "", role: "user" };
-          await Promise.all([loadWatchlist(), loadCustomContent()]);
-          subscribeWatchlist();
-        } else {
-          if (state.watchlistChannel && state.supabase) state.supabase.removeChannel(state.watchlistChannel);
-          state.watchlistChannel = null;
-          state.watchlist = [];
-          await loadCustomContent();
-        }
-        renderProfile();
-        renderRows();
-      }
-
-      function renderProfile() {
-        const signedIn = Boolean(state.user);
-        const label = state.profile?.display_name || state.user?.user_metadata?.display_name || (state.user?.email ? state.user.email.split("@")[0] : "Your Nest");
-        $("profileName").textContent = label;
-        $("profileEmail").textContent = state.user?.email || "Connect an account to sync your list";
-        $("avatarInitials").textContent = signedIn ? label.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() : "FN";
-        $("profileAuthAction").hidden = signedIn;
-        $("signOutAction").hidden = !signedIn;
-        $("adminMenuAction").hidden = state.profile?.role !== "admin";
-      }
-
-      async function loadWatchlist() {
-        if (!state.user || !state.supabase) { state.watchlist = []; renderRows(); return; }
-        const { data, error } = await state.supabase.from("watchlists").select("id,user_id,tmdb_id,title,poster_path,media_type,added_at").eq("user_id", state.user.id).order("added_at", { ascending: false });
-        if (error) { showToast(error.message || "Could not load your watchlist.", "error"); return; }
-        state.watchlist = (data || []).map((row) => ({ id: row.tmdb_id, title: row.title, poster_path: row.poster_path, media_type: row.media_type, added_at: row.added_at }));
-        renderRows();
-      }
-
-      async function loadCustomContent() {
-        if (!state.supabase) { state.customContent = []; return; }
-        const { data, error } = await state.supabase.from("custom_content").select("id,title,description,banner_url,custom_stream_url,created_at").order("created_at", { ascending: false });
-        if (!error) state.customContent = (data || []).map((row) => ({ ...row, poster_path: row.banner_url, backdrop_path: row.banner_url }));
-      }
-
-      function subscribeWatchlist() {
-        if (!state.supabase || !state.user) return;
-        if (state.watchlistChannel) state.supabase.removeChannel(state.watchlistChannel);
-        state.watchlistChannel = state.supabase.channel(`watchlist-${state.user.id}`)
-          .on("postgres_changes", { event: "*", schema: "public", table: "watchlists", filter: `user_id=eq.${state.user.id}` }, () => loadWatchlist())
+      function subscribeToRealtime() {
+        if (!state.supabase) return;
+        state.supabase.channel('public:watchlist')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'watchlist' }, () => {
+            syncWatchlist();
+          })
           .subscribe();
       }
 
-      function openSettings() {
-        $("tmdbKeyInput").value = state.config.tmdbKey || "";
-        $("supabaseUrlInput").value = state.config.supabaseUrl || "";
-        $("supabaseAnonInput").value = state.config.supabaseAnonKey || "";
-        $("settingsStatus").textContent = "";
-        showModal("settingsModal");
-      }
-
-      async function saveSettings(event) {
-        event.preventDefault();
-        state.config = {
-          tmdbKey: $("tmdbKeyInput").value.trim(),
-          supabaseUrl: $("supabaseUrlInput").value.trim().replace(/\/$/, ""),
-          supabaseAnonKey: $("supabaseAnonInput").value.trim()
-        };
-        try {
-          localStorage.setItem(CONFIG_KEY, JSON.stringify(state.config));
-        } catch {
-          $("settingsStatus").textContent = "Browser storage is unavailable. Check privacy settings and try again.";
-          $("settingsStatus").className = "status-message error";
-          return;
-        }
-        $("settingsStatus").textContent = "Saved in this browser.";
-        $("settingsStatus").className = "status-message success";
-        await initSupabase();
-        await loadCatalog();
-        hideModal("settingsModal");
-        showToast("Configuration saved.", "success");
-      }
-
-      function isAdmin() { return Boolean(state.user && state.profile?.role === "admin"); }
-      async function openAdmin() {
-        closeProfileMenu();
-        if (!isAdmin()) { showToast("Admin access is not available for this account.", "error"); return; }
-        showModal("adminModal");
-        setAdminTab("streams");
-        await loadAdminPanel();
-      }
-
-      function setAdminTab(tab) {
-        ["streams", "content", "users"].forEach((name) => {
-          const selected = name === tab;
-          document.querySelector(`[data-admin-tab="${name}"]`).classList.toggle("active", selected);
-          document.querySelector(`[data-admin-tab="${name}"]`).setAttribute("aria-selected", String(selected));
-          $(`admin${name[0].toUpperCase()}${name.slice(1)}Panel`).hidden = !selected;
-        });
-        if (tab === "users") loadAdminUsers();
-      }
-
-      async function loadAdminPanel() {
-        if (!isAdmin() || !state.supabase) return;
-        await Promise.all([loadAdminStreams(), loadAdminContent()]);
-      }
-
-      async function loadAdminStreams() {
-        const { data, error } = await state.supabase.from("custom_streams").select("id,tmdb_id,stream_url,updated_by,created_at").order("created_at", { ascending: false });
-        if (error) { $("streamList").innerHTML = `<div class="admin-list-row"><small>${escapeHTML(error.message)}</small></div>`; return; }
-        $("streamList").innerHTML = (data || []).length ? data.map((row) => `<div class="admin-list-row"><div><strong>TMDB ${escapeHTML(row.tmdb_id)}</strong><small title="${escapeHTML(row.stream_url)}">${escapeHTML(row.stream_url)}</small></div><button class="small-action" type="button" data-delete-stream="${escapeHTML(row.tmdb_id)}">Remove</button></div>`).join("") : `<div class="admin-list-row"><small>No stream overrides yet.</small></div>`;
-      }
-
-      async function loadAdminContent() {
-        const { data, error } = await state.supabase.from("custom_content").select("id,title,created_at").order("created_at", { ascending: false });
-        if (error) { $("contentAdminList").innerHTML = `<div class="admin-list-row"><small>${escapeHTML(error.message)}</small></div>`; return; }
-        $("contentAdminList").innerHTML = (data || []).length ? data.map((row) => `<div class="admin-list-row"><div><strong>${escapeHTML(row.title)}</strong><small>${escapeHTML(new Date(row.created_at).toLocaleDateString())}</small></div><button class="small-action" type="button" data-delete-content="${escapeHTML(row.id)}">Remove</button></div>`).join("") : `<div class="admin-list-row"><small>No custom content yet.</small></div>`;
-      }
-
-      async function loadAdminUsers() {
-        if (!isAdmin() || !state.supabase) return;
-        $("userTableWrap").innerHTML = `<p class="fine-print">Loading users...</p>`;
-        const { data, error } = await state.supabase.from("profiles").select("id,email,display_name,role,created_at").order("created_at", { ascending: false }).limit(200);
-        if (error) { $("userTableWrap").innerHTML = `<p class="status-message error">${escapeHTML(error.message)}</p>`; return; }
-        const users = data || [];
-        if (!users.length) { $("userTableWrap").innerHTML = `<p class="fine-print">No profiles found.</p>`; return; }
-        $("userTableWrap").innerHTML = `<table class="user-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Access</th></tr></thead><tbody>${users.map((user) => {
-          const self = user.id === state.user.id;
-          const next = user.role === "admin" ? "user" : "admin";
-          return `<tr><td>${escapeHTML(user.display_name || "-")}${self ? " (you)" : ""}</td><td>${escapeHTML(user.email || "-")}</td><td><span class="role-label ${user.role === "admin" ? "admin" : ""}">${escapeHTML(user.role)}</span></td><td>${escapeHTML(user.created_at ? new Date(user.created_at).toLocaleDateString() : "-")}</td><td>${self ? `<span class="fine-print">Current account</span>` : `<button class="small-action ${next === "admin" ? "promote" : ""}" type="button" data-user-id="${escapeHTML(user.id)}" data-next-role="${next}">${next === "admin" ? "Make admin" : "Make user"}</button>`}</td></tr>`;
-        }).join("")}</tbody></table>`;
-      }
-
-      async function saveStreamOverride(event) {
-        event.preventDefault();
-        if (!isAdmin() || !state.supabase) return;
-        const id = Number($("streamTmdbId").value);
-        const url = safeStreamUrl($("streamUrl").value);
-        if (!Number.isSafeInteger(id) || id < 1 || !url) {
-          $("streamStatus").textContent = "Enter a positive TMDB ID and a valid https stream URL.";
-          $("streamStatus").className = "status-message error";
-          return;
-        }
-        const { error } = await state.supabase.from("custom_streams").upsert({ tmdb_id: id, stream_url: url, updated_by: state.user.id }, { onConflict: "tmdb_id" });
-        if (error) { $("streamStatus").textContent = error.message; $("streamStatus").className = "status-message error"; return; }
-        $("streamStatus").textContent = "Stream override saved.";
-        $("streamStatus").className = "status-message success";
-        $("streamForm").reset();
-        await loadAdminStreams();
-        showToast("Stream override saved.", "success");
-      }
-
-      async function saveCustomContent(event) {
-        event.preventDefault();
-        if (!isAdmin() || !state.supabase) return;
-        const title = $("contentTitle").value.trim();
-        const bannerUrl = $("contentBanner").value.trim();
-        const streamRaw = $("contentStream").value.trim();
-        const banner = bannerUrl ? safeStreamUrl(bannerUrl) : null;
-        const stream = streamRaw ? safeStreamUrl(streamRaw) : null;
-        if (!title || (bannerUrl && !banner) || (streamRaw && !stream)) {
-          $("contentStatus").textContent = "Use valid https URLs for the image and stream.";
-          $("contentStatus").className = "status-message error";
-          return;
-        }
-        const { error } = await state.supabase.from("custom_content").insert({ title, description: $("contentDescription").value.trim() || null, banner_url: banner, custom_stream_url: stream });
-        if (error) { $("contentStatus").textContent = error.message; $("contentStatus").className = "status-message error"; return; }
-        $("contentStatus").textContent = "Content published.";
-        $("contentStatus").className = "status-message success";
-        $("contentForm").reset();
-        await Promise.all([loadCustomContent(), loadAdminContent()]);
-        renderRows();
-        showToast("Content published to From the Nest.", "success");
-      }
-
-      async function updateUserRole(userId, nextRole) {
-        if (!isAdmin() || !state.supabase || !["user", "admin"].includes(nextRole)) return;
-        const confirmed = window.confirm(`Change this user's role to ${nextRole}?`);
-        if (!confirmed) return;
-        const { error } = await state.supabase.from("profiles").update({ role: nextRole }).eq("id", userId);
-        if (error) { $("userStatus").textContent = error.message; $("userStatus").className = "status-message error"; return; }
-        $("userStatus").textContent = "User role updated.";
-        $("userStatus").className = "status-message success";
-        await loadAdminUsers();
-        if (userId === state.user.id) await applySession(state.user);
-      }
-
-      async function deleteAdminItem(table, column, value, refresh) {
-        if (!isAdmin() || !state.supabase) return;
-        const { error } = await state.supabase.from(table).delete().eq(column, value);
-        if (error) { showToast(error.message || "Could not remove this item.", "error"); return; }
-        await refresh();
-        showToast("Item removed.", "success");
-      }
-
-      async function signOut() {
-        closeProfileMenu();
+      async function toggleWatchlist(item) {
         if (!state.supabase) return;
-        const { error } = await state.supabase.auth.signOut();
-        if (error) showToast(error.message || "Could not sign out.", "error");
-        else { await applySession(null); showToast("Signed out.", "success"); }
+        const exists = state.watchlist.some(w => w.media_id === item.id.toString());
+        if (exists) {
+          await state.supabase.from('watchlist').delete().eq('media_id', item.id.toString());
+        } else {
+          await state.supabase.from('watchlist').insert([{
+            media_id: item.id.toString(),
+            title: item.title || item.name,
+            poster_path: item.poster_path,
+            media_type: item.media_type || 'movie'
+          }]);
+        }
+        syncWatchlist();
       }
 
-      document.addEventListener("click", async (event) => {
-        const closeButton = event.target.closest("[data-close]");
-        if (closeButton) { hideModal(closeButton.dataset.close); return; }
-        if (event.target.classList.contains("modal-backdrop") && event.target.id !== "playerModal") { hideModal(event.target.id); return; }
-        const scrollControl = event.target.closest("[data-scroll]");
-        if (scrollControl) {
-          const scroller = $(`scroller-${scrollControl.dataset.scroll}`);
-          if (scroller) scroller.scrollBy({ left: Number(scrollControl.dataset.direction) * Math.max(280, scroller.clientWidth * .8), behavior: "smooth" });
+      // 5. RENDERING UI
+      function renderHero(item) {
+        const heroBg = document.getElementById('hero-bg');
+        const heroContent = document.getElementById('hero-content');
+        
+        heroBg.style.backgroundImage = `url('${item.backdrop_path ? TMDB_HERO_BASE + item.backdrop_path : ''}')`;
+        heroContent.innerHTML = `
+          <h1 class="text-3xl sm:text-5xl font-extrabold mb-3 tracking-tight">${item.title || item.name}</h1>
+          <p class="text-sm sm:text-base text-neutral-300 max-w-2xl line-clamp-3 mb-6">${item.overview}</p>
+          <div class="flex space-x-3">
+            <button onclick="window.openPlayer('${item.id}', '${item.media_type || 'movie'}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
+              <span>Play Now</span>
+            </button>
+          </div>
+        `;
+      }
+
+      function renderCarousel(elementId, items, defaultType) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = items.map(item => createMediaCard(item, defaultType)).join('');
+      }
+
+      function createMediaCard(item, defaultType) {
+        const type = item.media_type || defaultType;
+        const poster = item.poster_path ? TMDB_IMAGE_BASE + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
+        return `
+          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" data-id="${item.id}" data-type="${type}">
+            <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
+            <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-3">
+              <h3 class="text-xs sm:text-sm font-bold text-white truncate">${item.title || item.name}</h3>
+              <div class="flex space-x-2 mt-2">
+                <button onclick="window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700">Play</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderWatchlist() {
+        const container = document.getElementById('watchlist-grid');
+        if (state.watchlist.length === 0) {
+          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is empty.</p>`;
           return;
         }
-        const serverControl = event.target.closest("[data-server]");
-        if (serverControl) { updateServerState(Number(serverControl.dataset.server)); return; }
-        const tileOpen = event.target.closest("[data-open-key]");
-        if (tileOpen) {
-          const item = state.itemMap.get(tileOpen.dataset.openKey);
-          if (item?.is_custom && !safeStreamUrl(item.custom_stream_url)) openDetails(item);
-          else if (item) openPlayer(item);
-          return;
-        }
-        const watchControl = event.target.closest("[data-watch-key]");
-        if (watchControl) {
-          const item = state.itemMap.get(watchControl.dataset.watchKey);
-          await toggleWatchlist(item);
-          return;
-        }
-        const removeStream = event.target.closest("[data-delete-stream]");
-        if (removeStream) { await deleteAdminItem("custom_streams", "tmdb_id", Number(removeStream.dataset.deleteStream), loadAdminStreams); return; }
-        const removeContent = event.target.closest("[data-delete-content]");
-        if (removeContent) {
-          await deleteAdminItem("custom_content", "id", removeContent.dataset.deleteContent, async () => { await Promise.all([loadCustomContent(), loadAdminContent()]); renderRows(); });
-          return;
-        }
-        const changeRole = event.target.closest("[data-user-id]");
-        if (changeRole) { await updateUserRole(changeRole.dataset.userId, changeRole.dataset.nextRole); return; }
-        const adminTab = event.target.closest("[data-admin-tab]");
-        if (adminTab) { setAdminTab(adminTab.dataset.adminTab); return; }
-        const action = event.target.closest("[data-action]")?.dataset.action;
-        if (!action) return;
-        if (action === "open-search") openSearch();
-        if (action === "open-settings") openSettings();
-        if (action === "open-auth") openAuth();
-        if (action === "open-admin") await openAdmin();
-        if (action === "sign-out") await signOut();
-        if (action === "toggle-profile") {
-          const open = $("profileMenu").hidden;
-          $("profileMenu").hidden = !open;
-          $("profileTrigger").setAttribute("aria-expanded", String(open));
-        }
-      });
+        container.innerHTML = state.watchlist.map(item => createMediaCard({
+          id: item.media_id,
+          title: item.title,
+          poster_path: item.poster_path
+        }, item.media_type)).join('');
+      }
 
-      document.addEventListener("click", (event) => {
-        if (!event.target.closest("#profileMenu") && !event.target.closest("#profileTrigger")) closeProfileMenu();
-      });
+      // 6. STREAMING PLAYER & EVENTS
+      window.openPlayer = (id, type) => {
+        const playerModal = document.getElementById('player-modal');
+        const playerFrame = document.getElementById('player-frame');
+        
+        // Default stream fallback
+        const streamUrl = type === 'tv' 
+          ? `https://vidsrc.to/embed/tv/${id}/1/1`
+          : `https://vidsrc.to/embed/movie/${id}`;
 
-      $("heroPlay").addEventListener("click", () => openPlayer(state.heroItem));
-      $("heroDetails").addEventListener("click", () => openDetails(state.heroItem));
-      $("heroWatch").addEventListener("click", () => toggleWatchlist(state.heroItem));
-      $("detailsPlay").addEventListener("click", () => { const item = state.activeDetails; if (item) openPlayer(item); });
-      $("detailsWatch").addEventListener("click", () => { const item = state.activeDetails; if (item) toggleWatchlist(item); });
-      $("authForm").addEventListener("submit", handleAuthSubmit);
-      $("authSwitch").addEventListener("click", () => setAuthMode(state.authMode === "signin" ? "signup" : "signin"));
-      $("settingsForm").addEventListener("submit", saveSettings);
-      $("streamForm").addEventListener("submit", saveStreamOverride);
-      $("contentForm").addEventListener("submit", saveCustomContent);
-      $("searchInput").addEventListener("input", (event) => updateSearch(event.target.value));
-      $("seasonInput").addEventListener("change", () => updateServerState(state.playerServer));
-      $("episodeInput").addEventListener("change", () => updateServerState(state.playerServer));
-      
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-          ["searchModal", "settingsModal", "authModal", "detailsModal", "playerModal", "adminModal"].forEach(hideModal);
-          closeProfileMenu();
-        }
-      });
+        playerFrame.src = streamUrl;
+        playerModal.classList.remove('hidden');
+      };
 
-      window.addEventListener("scroll", () => {
-        $("topbar").classList.toggle("scrolled", window.scrollY > 20);
-      }, { passive: true });
+      function setupEventListeners() {
+        document.getElementById('close-player').addEventListener('click', () => {
+          const playerModal = document.getElementById('player-modal');
+          const playerFrame = document.getElementById('player-frame');
+          playerFrame.src = '';
+          playerModal.classList.add('hidden');
+        });
 
-      initSupabase();
-      loadCatalog();
+        // Live Search Handling
+        const searchInput = document.getElementById('search-input');
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          const query = e.target.value.trim();
+          
+          if (!query) {
+            document.getElementById('search-results-section').classList.add('hidden');
+            return;
+          }
+
+          searchTimeout = setTimeout(async () => {
+            const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
+            if (results && results.results) {
+              const grid = document.getElementById('search-grid');
+              grid.innerHTML = results.results
+                .filter(r => r.poster_path)
+                .map(r => createMediaCard(r, r.media_type))
+                .join('');
+              document.getElementById('search-results-section').classList.remove('hidden');
+            }
+          }, 300);
+        });
+      }
+
+      // Run App
+      document.addEventListener('DOMContentLoaded', init);
     })();
   </script>
 </body>
