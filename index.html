@@ -79,7 +79,7 @@
       <button id="close-player" class="absolute top-3 right-3 z-10 bg-neutral-800/80 hover:bg-neutral-700 text-white rounded-full p-2 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
-      <iframe id="player-frame" class="w-full h-full border-0" allowfullscreen></iframe>
+      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
     </div>
   </div>
 
@@ -87,18 +87,17 @@
   <script>
     (() => {
       // 1. HARDCODED CONFIGURATION & CENTRALIZED STATE
- 
       const state = {
-  config: {
-    tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04',
-    supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
-    supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
-  },
-  supabase: null,
-  watchlist: [],
-  customStreams: {},
-  searchSequence: 0
-};
+        config: {
+          tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04',
+          supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
+          supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
+        },
+        supabase: null,
+        watchlist: [],
+        customStreams: {},
+        searchSequence: 0
+      };
 
       const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
       const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
@@ -167,22 +166,6 @@
           .subscribe();
       }
 
-      async function toggleWatchlist(item) {
-        if (!state.supabase) return;
-        const exists = state.watchlist.some(w => w.media_id === item.id.toString());
-        if (exists) {
-          await state.supabase.from('watchlist').delete().eq('media_id', item.id.toString());
-        } else {
-          await state.supabase.from('watchlist').insert([{
-            media_id: item.id.toString(),
-            title: item.title || item.name,
-            poster_path: item.poster_path,
-            media_type: item.media_type || 'movie'
-          }]);
-        }
-        syncWatchlist();
-      }
-
       // 5. RENDERING UI
       function renderHero(item) {
         const heroBg = document.getElementById('hero-bg');
@@ -210,12 +193,12 @@
         const type = item.media_type || defaultType;
         const poster = item.poster_path ? TMDB_IMAGE_BASE + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
         return `
-          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" data-id="${item.id}" data-type="${type}">
+          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openPlayer('${item.id}', '${type}')">
             <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
             <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-3">
               <h3 class="text-xs sm:text-sm font-bold text-white truncate">${item.title || item.name}</h3>
               <div class="flex space-x-2 mt-2">
-                <button onclick="window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700">Play</button>
+                <button class="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700">Play</button>
               </div>
             </div>
           </div>
@@ -240,10 +223,10 @@
         const playerModal = document.getElementById('player-modal');
         const playerFrame = document.getElementById('player-frame');
         
-        // Default stream fallback
+        // Reliability embed mirror
         const streamUrl = type === 'tv' 
-          ? `https://vidsrc.to/embed/tv/${id}/1/1`
-          : `https://vidsrc.to/embed/movie/${id}`;
+          ? `https://vidsrc.net/embed/tv/${id}`
+          : `https://vidsrc.net/embed/movie/${id}`;
 
         playerFrame.src = streamUrl;
         playerModal.classList.remove('hidden');
