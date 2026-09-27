@@ -10,12 +10,13 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .movie-card:hover .card-overlay { opacity: 1; }
+    html { scroll-behavior: smooth; }
   </style>
 </head>
-<body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white">
+<body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col justify-between">
 
   <!-- Header Navigation -->
-  <header class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-gradient-to-b from-black/80 to-transparent" id="navbar">
+  <header class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/50" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-8">
         <a href="#" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
@@ -24,15 +25,15 @@
         </a>
         <nav class="hidden md:flex space-x-6 text-sm font-medium text-neutral-300">
           <a href="#" class="hover:text-white transition">Home</a>
-          <a href="#movies" class="hover:text-white transition">Films</a>
-          <a href="#series" class="hover:text-white transition">Series</a>
-          <a href="#watchlist" class="hover:text-white transition">My List</a>
+          <a href="#movies-section" class="hover:text-white transition">Films</a>
+          <a href="#series-section" class="hover:text-white transition">Series</a>
+          <a href="#watchlist-section" class="hover:text-white transition">My List</a>
         </nav>
       </div>
       <div class="flex items-center space-x-4">
         <div class="relative">
-          <input type="text" id="search-input" placeholder="Titles, people, genres..." 
-                 class="bg-neutral-900/80 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-36 sm:w-64 focus:outline-none focus:border-neutral-600 transition-all placeholder-neutral-500">
+          <input type="text" id="search-input" placeholder="Search titles..." 
+                 class="bg-neutral-900 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-36 sm:w-64 focus:outline-none focus:border-red-600 transition-all placeholder-neutral-500">
           <svg class="w-4 h-4 text-neutral-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
@@ -42,43 +43,76 @@
   </header>
 
   <!-- Hero Banner -->
-  <section id="hero" class="relative h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden">
+  <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
     <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content">
-      <!-- Dynamic Hero Content Rendered Here -->
-    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
   </section>
 
   <!-- Main Content Areas -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-10 pb-16">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
+    
+    <!-- Dynamic Search Section -->
     <section id="search-results-section" class="hidden">
-      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Search Results</h2>
+      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
+        <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
+        <span>Search Results</span>
+      </h2>
       <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
     </section>
 
-    <section>
-      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Trending Movies</h2>
+    <!-- Films / Movies Section -->
+    <section id="movies-section" class="scroll-mt-20">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold tracking-wide text-neutral-200">Films & Movies</h2>
+      </div>
       <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
     </section>
 
-    <section>
-      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Popular TV Shows</h2>
+    <!-- TV Series Section -->
+    <section id="series-section" class="scroll-mt-20">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold tracking-wide text-neutral-200">TV Series & Shows</h2>
+      </div>
       <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
     </section>
 
-    <section id="watchlist-section">
-      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My Watchlist</h2>
+    <!-- My Watchlist Section -->
+    <section id="watchlist-section" class="scroll-mt-20">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold tracking-wide text-neutral-200">My List</h2>
+      </div>
       <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
     </section>
+
   </main>
 
+  <!-- Footer -->
+  <footer class="border-t border-neutral-900 bg-neutral-950/80 py-8 text-center text-xs text-neutral-500 space-y-3">
+    <p>
+      Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong>
+    </p>
+    <p>
+      Connect on Instagram: 
+      <a href="https://instagram.com/starterkartt" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-400 font-semibold underline transition">
+        @starterkartt
+      </a>
+    </p>
+    <p class="text-[10px] text-neutral-600">© 2026 Flickerz Nest. All rights reserved.</p>
+  </footer>
+
   <!-- Video Stream Player Modal -->
-  <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-2 sm:p-6">
-    <div class="relative w-full max-w-5xl aspect-video bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
-      <button id="close-player" class="absolute top-3 right-3 z-10 bg-neutral-800/80 hover:bg-neutral-700 text-white rounded-full p-2 transition">
+  <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex flex-col items-center justify-center p-2 sm:p-6">
+    <div class="w-full max-w-5xl flex justify-between items-center mb-2 px-2">
+      <div id="provider-selector" class="flex space-x-2 text-xs">
+        <button id="server1-btn" onclick="window.switchProvider('vidsrc')" class="bg-red-600 px-3 py-1 rounded text-white font-medium">Server 1 (VidSrc)</button>
+        <button id="server2-btn" onclick="window.switchProvider('2embed')" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium">Server 2 (2Embed)</button>
+      </div>
+      <button id="close-player" class="bg-neutral-800 hover:bg-neutral-700 text-white rounded-full p-2 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
+    </div>
+    <div class="relative w-full max-w-5xl aspect-video bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
       <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
     </div>
   </div>
@@ -86,7 +120,6 @@
   <!-- Core Application Script -->
   <script>
     (() => {
-      // 1. HARDCODED CONFIGURATION & CENTRALIZED STATE
       const state = {
         config: {
           tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04',
@@ -95,20 +128,17 @@
         },
         supabase: null,
         watchlist: [],
-        customStreams: {},
-        searchSequence: 0
+        currentMedia: { id: null, type: 'movie' }
       };
 
       const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
       const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
 
-      // Fallback Data
       const fallbackMovies = [
-        { id: 823464, title: 'Godzilla x Kong', media_type: 'movie', poster_path: '/z19A13mR2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'An epic battle continues...' },
+        { id: 823464, title: 'Godzilla x Kong: The New Empire', media_type: 'movie', poster_path: '/z19A13mR2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'An epic battle continues...' },
         { id: 693134, title: 'Dune: Part Two', media_type: 'movie', poster_path: '/1pdfL2iA83S2y3fR2y3.jpg', backdrop_path: '/xOMo8BRK7PfcJv9.jpg', overview: 'Paul Atreides unites with Chani...' }
       ];
 
-      // 2. INITIALIZATION
       function init() {
         initSupabase();
         setupEventListeners();
@@ -119,18 +149,17 @@
         if (state.config.supabaseUrl && state.config.supabaseKey && window.supabase) {
           state.supabase = window.supabase.createClient(state.config.supabaseUrl, state.config.supabaseKey);
           syncWatchlist();
-          subscribeToRealtime();
         }
       }
 
-      // 3. DATA FETCHING & API INTERACTION
       async function tmdbFetch(endpoint) {
         if (!state.config.tmdbApiKey) return null;
         try {
           const res = await fetch(`https://api.themoviedb.org/3${endpoint}?api_key=${state.config.tmdbApiKey}`);
+          if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
           return await res.json();
         } catch (e) {
-          console.error("TMDB Fetch Error:", e);
+          console.warn("TMDB fetch notice:", e.message);
           return null;
         }
       }
@@ -139,34 +168,45 @@
         const movies = await tmdbFetch('/trending/movie/week');
         const tv = await tmdbFetch('/trending/tv/week');
 
-        const movieData = movies && movies.results ? movies.results : fallbackMovies;
-        const tvData = tv && tv.results ? tv.results : fallbackMovies;
+        const movieData = (movies && movies.results && movies.results.length) ? movies.results : fallbackMovies;
+        const tvData = (tv && tv.results && tv.results.length) ? tv.results : fallbackMovies;
 
         if (movieData.length > 0) renderHero(movieData[0]);
         renderCarousel('trending-movies', movieData, 'movie');
         renderCarousel('popular-tv', tvData, 'tv');
       }
 
-      // 4. REALTIME SUPABASE SYNCING
       async function syncWatchlist() {
         if (!state.supabase) return;
         const { data, error } = await state.supabase.from('watchlist').select('*');
         if (!error && data) {
           state.watchlist = data;
           renderWatchlist();
+          // Re-render carousels to update button states
+          fetchTrendingData();
         }
       }
 
-      function subscribeToRealtime() {
+      window.toggleWatchlist = async (e, id, title, poster_path, media_type) => {
+        e.stopPropagation();
         if (!state.supabase) return;
-        state.supabase.channel('public:watchlist')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'watchlist' }, () => {
-            syncWatchlist();
-          })
-          .subscribe();
-      }
 
-      // 5. RENDERING UI
+        const mediaIdStr = id.toString();
+        const exists = state.watchlist.some(w => w.media_id === mediaIdStr);
+
+        if (exists) {
+          await state.supabase.from('watchlist').delete().eq('media_id', mediaIdStr);
+        } else {
+          await state.supabase.from('watchlist').insert([{
+            media_id: mediaIdStr,
+            title: title || 'Untitled',
+            poster_path: poster_path || '',
+            media_type: media_type || 'movie'
+          }]);
+        }
+        syncWatchlist();
+      };
+
       function renderHero(item) {
         const heroBg = document.getElementById('hero-bg');
         const heroContent = document.getElementById('hero-content');
@@ -174,7 +214,7 @@
         heroBg.style.backgroundImage = `url('${item.backdrop_path ? TMDB_HERO_BASE + item.backdrop_path : ''}')`;
         heroContent.innerHTML = `
           <h1 class="text-3xl sm:text-5xl font-extrabold mb-3 tracking-tight">${item.title || item.name}</h1>
-          <p class="text-sm sm:text-base text-neutral-300 max-w-2xl line-clamp-3 mb-6">${item.overview}</p>
+          <p class="text-sm sm:text-base text-neutral-300 max-w-2xl line-clamp-3 mb-6">${item.overview || ''}</p>
           <div class="flex space-x-3">
             <button onclick="window.openPlayer('${item.id}', '${item.media_type || 'movie'}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
@@ -192,13 +232,20 @@
       function createMediaCard(item, defaultType) {
         const type = item.media_type || defaultType;
         const poster = item.poster_path ? TMDB_IMAGE_BASE + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
+        const title = (item.title || item.name || 'Untitled').replace(/'/g, "\\'");
+        const inWatchlist = state.watchlist.some(w => w.media_id === item.id.toString());
+
         return `
           <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openPlayer('${item.id}', '${type}')">
             <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
             <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-3">
-              <h3 class="text-xs sm:text-sm font-bold text-white truncate">${item.title || item.name}</h3>
-              <div class="flex space-x-2 mt-2">
-                <button class="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700">Play</button>
+              <h3 class="text-xs sm:text-sm font-bold text-white truncate mb-2">${item.title || item.name}</h3>
+              <div class="flex space-x-1">
+                <button class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded hover:bg-red-700 font-medium">Play</button>
+                <button onclick="window.toggleWatchlist(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" 
+                        class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] sm:text-xs px-2 py-1 rounded font-medium border border-neutral-700">
+                  ${inWatchlist ? '✓ Listed' : '+ List'}
+                </button>
               </div>
             </div>
           </div>
@@ -208,7 +255,7 @@
       function renderWatchlist() {
         const container = document.getElementById('watchlist-grid');
         if (state.watchlist.length === 0) {
-          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is empty.</p>`;
+          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is currently empty. Click '+ List' on any poster to save it here.</p>`;
           return;
         }
         container.innerHTML = state.watchlist.map(item => createMediaCard({
@@ -218,18 +265,30 @@
         }, item.media_type)).join('');
       }
 
-      // 6. STREAMING PLAYER & EVENTS
+      // Player handling
       window.openPlayer = (id, type) => {
-        const playerModal = document.getElementById('player-modal');
-        const playerFrame = document.getElementById('player-frame');
-        
-        // Reliability embed mirror
-        const streamUrl = type === 'tv' 
-          ? `https://vidsrc.net/embed/tv/${id}`
-          : `https://vidsrc.net/embed/movie/${id}`;
+        state.currentMedia = { id, type };
+        window.switchProvider('vidsrc');
+        document.getElementById('player-modal').classList.remove('hidden');
+      };
 
-        playerFrame.src = streamUrl;
-        playerModal.classList.remove('hidden');
+      window.switchProvider = (provider) => {
+        const { id, type } = state.currentMedia;
+        if (!id) return;
+        
+        const playerFrame = document.getElementById('player-frame');
+        const btn1 = document.getElementById('server1-btn');
+        const btn2 = document.getElementById('server2-btn');
+
+        if (provider === 'vidsrc') {
+          playerFrame.src = type === 'tv' ? `https://vidsrc.cc/v2/embed/tv/${id}` : `https://vidsrc.cc/v2/embed/movie/${id}`;
+          btn1.className = "bg-red-600 px-3 py-1 rounded text-white font-medium";
+          btn2.className = "bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium";
+        } else {
+          playerFrame.src = type === 'tv' ? `https://www.2embed.cc/embedtv/${id}` : `https://www.2embed.cc/embed/${id}`;
+          btn2.className = "bg-red-600 px-3 py-1 rounded text-white font-medium";
+          btn1.className = "bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium";
+        }
       };
 
       function setupEventListeners() {
@@ -240,7 +299,6 @@
           playerModal.classList.add('hidden');
         });
 
-        // Live Search Handling
         const searchInput = document.getElementById('search-input');
         let searchTimeout;
         
@@ -255,19 +313,22 @@
 
           searchTimeout = setTimeout(async () => {
             const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
-            if (results && results.results) {
-              const grid = document.getElementById('search-grid');
+            const grid = document.getElementById('search-grid');
+            
+            if (results && results.results && results.results.length > 0) {
               grid.innerHTML = results.results
                 .filter(r => r.poster_path)
-                .map(r => createMediaCard(r, r.media_type))
+                .map(r => createMediaCard(r, r.media_type || 'movie'))
                 .join('');
               document.getElementById('search-results-section').classList.remove('hidden');
+            } else {
+              grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400">No media titles found.</p>`;
+              document.getElementById('search-results-section').classList.remove('hidden');
             }
-          }, 300);
+          }, 350);
         });
       }
 
-      // Run App
       document.addEventListener('DOMContentLoaded', init);
     })();
   </script>
