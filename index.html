@@ -16,18 +16,18 @@
 <body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col justify-between">
 
   <!-- Header Navigation -->
-  <header class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/50" id="navbar">
+  <header class="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800/60" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-8">
-        <a href="#" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
+        <a href="#" onclick="window.showHome()" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
           <span class="bg-red-600 text-white rounded p-1 text-xs">F</span>
           <span>Flickerz Nest</span>
         </a>
         <nav class="hidden md:flex space-x-6 text-sm font-medium text-neutral-300">
-          <a href="#" class="hover:text-white transition">Home</a>
-          <a href="#movies-section" class="hover:text-white transition">Films</a>
-          <a href="#series-section" class="hover:text-white transition">Series</a>
-          <a href="#watchlist-section" class="hover:text-white transition">My List</a>
+          <a href="#" onclick="window.showHome()" class="hover:text-white transition">Home</a>
+          <a href="#movies-section" onclick="window.showHome()" class="hover:text-white transition">Films</a>
+          <a href="#series-section" onclick="window.showHome()" class="hover:text-white transition">Series</a>
+          <a href="#watchlist-section" onclick="window.showHome()" class="hover:text-white transition">My List</a>
         </nav>
       </div>
       <div class="flex items-center space-x-4">
@@ -42,53 +42,74 @@
     </div>
   </header>
 
-  <!-- Hero Banner -->
-  <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
-    <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
-  </section>
-
-  <!-- Main Content Areas -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
-    
-    <!-- Dynamic Search Section -->
-    <section id="search-results-section" class="hidden">
-      <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
-        <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
-        <span>Search Results</span>
-      </h2>
-      <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+  <!-- HOME VIEW CONTAINER -->
+  <div id="home-view" class="w-full">
+    <!-- Hero Banner -->
+    <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
+      <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
     </section>
 
-    <!-- Films / Movies Section -->
-    <section id="movies-section" class="scroll-mt-20">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold tracking-wide text-neutral-200">Films & Movies</h2>
+    <!-- Main Content Sections -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
+      
+      <!-- Dynamic Search Section -->
+      <section id="search-results-section" class="hidden">
+        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
+          <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
+          <span>Search Results</span>
+        </h2>
+        <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+
+      <!-- Films Section -->
+      <section id="movies-section" class="scroll-mt-20">
+        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Films & Movies</h2>
+        <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+      </section>
+
+      <!-- TV Series Section -->
+      <section id="series-section" class="scroll-mt-20">
+        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">TV Series & Shows</h2>
+        <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+      </section>
+
+      <!-- My Watchlist Section -->
+      <section id="watchlist-section" class="scroll-mt-20">
+        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My List</h2>
+        <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- DEDICATED DETAILS PAGE VIEW -->
+  <div id="details-view" class="hidden pt-16 min-h-screen w-full flex-grow">
+    <div class="relative w-full h-[50vh] sm:h-[65vh] bg-neutral-900 overflow-hidden">
+      <div id="details-backdrop" class="absolute inset-0 bg-cover bg-center brightness-50"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
+      <button onclick="window.showHome()" class="absolute top-4 left-4 sm:left-8 z-30 bg-neutral-900/80 hover:bg-neutral-800 text-white rounded-full p-2.5 backdrop-blur border border-neutral-700 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      </button>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 sm:-mt-48 relative z-20 pb-16">
+      <div class="flex flex-col md:flex-row gap-8 items-start">
+        <img id="details-poster" src="" class="w-48 sm:w-64 rounded-lg shadow-2xl border border-neutral-800 flex-none object-cover" />
+        <div class="flex-grow space-y-4">
+          <h1 id="details-title" class="text-3xl sm:text-5xl font-black tracking-tight"></h1>
+          <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-neutral-400" id="details-meta"></div>
+          <div class="flex flex-wrap gap-2" id="details-genres"></div>
+          <p id="details-overview" class="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl"></p>
+          <div class="flex space-x-4 pt-4" id="details-actions"></div>
+        </div>
       </div>
-      <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-    </section>
+    </div>
+  </div>
 
-    <!-- TV Series Section -->
-    <section id="series-section" class="scroll-mt-20">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold tracking-wide text-neutral-200">TV Series & Shows</h2>
-      </div>
-      <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-    </section>
-
-    <!-- My Watchlist Section -->
-    <section id="watchlist-section" class="scroll-mt-20">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold tracking-wide text-neutral-200">My List</h2>
-      </div>
-      <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-    </section>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="border-t border-neutral-900 bg-neutral-950/80 py-8 text-center text-xs text-neutral-500 space-y-3">
+  <!-- FOOTER -->
+  <footer class="border-t border-neutral-900 bg-neutral-950/90 py-8 text-center text-xs text-neutral-500 space-y-3">
     <p>
       Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong>
     </p>
@@ -101,7 +122,7 @@
     <p class="text-[10px] text-neutral-600">© 2026 Flickerz Nest. All rights reserved.</p>
   </footer>
 
-  <!-- Video Stream Player Modal -->
+  <!-- VIDEO STREAM PLAYER MODAL -->
   <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex flex-col items-center justify-center p-2 sm:p-6">
     <div class="w-full max-w-5xl flex justify-between items-center mb-2 px-2">
       <div id="provider-selector" class="flex space-x-2 text-xs">
@@ -182,13 +203,12 @@
         if (!error && data) {
           state.watchlist = data;
           renderWatchlist();
-          // Re-render carousels to update button states
           fetchTrendingData();
         }
       }
 
       window.toggleWatchlist = async (e, id, title, poster_path, media_type) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         if (!state.supabase) return;
 
         const mediaIdStr = id.toString();
@@ -204,7 +224,10 @@
             media_type: media_type || 'movie'
           }]);
         }
-        syncWatchlist();
+        await syncWatchlist();
+        if (!document.getElementById('details-view').classList.contains('hidden')) {
+          window.openDetails(id, media_type);
+        }
       };
 
       function renderHero(item) {
@@ -219,6 +242,9 @@
             <button onclick="window.openPlayer('${item.id}', '${item.media_type || 'movie'}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
               <span>Play Now</span>
+            </button>
+            <button onclick="window.openDetails('${item.id}', '${item.media_type || 'movie'}')" class="bg-neutral-800/80 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition border border-neutral-700">
+              <span>Details</span>
             </button>
           </div>
         `;
@@ -236,12 +262,12 @@
         const inWatchlist = state.watchlist.some(w => w.media_id === item.id.toString());
 
         return `
-          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openPlayer('${item.id}', '${type}')">
+          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openDetails('${item.id}', '${type}')">
             <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
             <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-3">
               <h3 class="text-xs sm:text-sm font-bold text-white truncate mb-2">${item.title || item.name}</h3>
               <div class="flex space-x-1">
-                <button class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded hover:bg-red-700 font-medium">Play</button>
+                <button onclick="event.stopPropagation(); window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded hover:bg-red-700 font-medium">Play</button>
                 <button onclick="window.toggleWatchlist(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" 
                         class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] sm:text-xs px-2 py-1 rounded font-medium border border-neutral-700">
                   ${inWatchlist ? '✓ Listed' : '+ List'}
@@ -255,7 +281,7 @@
       function renderWatchlist() {
         const container = document.getElementById('watchlist-grid');
         if (state.watchlist.length === 0) {
-          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is currently empty. Click '+ List' on any poster to save it here.</p>`;
+          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is currently empty.</p>`;
           return;
         }
         container.innerHTML = state.watchlist.map(item => createMediaCard({
@@ -265,7 +291,63 @@
         }, item.media_type)).join('');
       }
 
-      // Player handling
+      // NAVIGATION & DETAILS PAGE LOGIC
+      window.showHome = () => {
+        document.getElementById('details-view').classList.add('hidden');
+        document.getElementById('home-view').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      window.openDetails = async (id, type) => {
+        const detailsData = await tmdbFetch(`/${type}/${id}`);
+        const inWatchlist = state.watchlist.some(w => w.media_id === id.toString());
+        
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('details-view').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const backdrop = detailsData && detailsData.backdrop_path ? TMDB_HERO_BASE + detailsData.backdrop_path : '';
+        const poster = detailsData && detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
+        const title = detailsData ? (detailsData.title || detailsData.name) : 'Untitled Title';
+        const overview = detailsData ? detailsData.overview : 'No description available for this title.';
+
+        document.getElementById('details-backdrop').style.backgroundImage = `url('${backdrop}')`;
+        document.getElementById('details-poster').src = poster;
+        document.getElementById('details-title').textContent = title;
+        document.getElementById('details-overview').textContent = overview;
+
+        // Meta Info
+        const releaseDate = detailsData ? (detailsData.release_date || detailsData.first_air_date || 'N/A') : 'N/A';
+        const vote = detailsData && detailsData.vote_average ? `${detailsData.vote_average.toFixed(1)} / 10 ★` : '';
+        document.getElementById('details-meta').innerHTML = `
+          <span>Release: ${releaseDate}</span>
+          ${vote ? `<span>•</span><span class="text-amber-400 font-semibold">${vote}</span>` : ''}
+          <span>•</span><span class="uppercase tracking-wider px-2 py-0.5 bg-neutral-800 rounded border border-neutral-700">${type}</span>
+        `;
+
+        // Genres
+        const genresContainer = document.getElementById('details-genres');
+        if (detailsData && detailsData.genres) {
+          genresContainer.innerHTML = detailsData.genres.map(g => `<span class="text-xs bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-full text-neutral-300">${g.name}</span>`).join('');
+        } else {
+          genresContainer.innerHTML = '';
+        }
+
+        // Action Buttons
+        const safeTitle = title.replace(/'/g, "\\'");
+        const posterPath = detailsData ? (detailsData.poster_path || '') : '';
+        document.getElementById('details-actions').innerHTML = `
+          <button onclick="window.openPlayer('${id}', '${type}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
+            <span>Play Now</span>
+          </button>
+          <button onclick="window.toggleWatchlist(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md transition border border-neutral-700">
+            ${inWatchlist ? '✓ Remove from List' : '+ Add to My List'}
+          </button>
+        `;
+      };
+
+      // STREAMING PLAYER LOGIC
       window.openPlayer = (id, type) => {
         state.currentMedia = { id, type };
         window.switchProvider('vidsrc');
@@ -299,34 +381,43 @@
           playerModal.classList.add('hidden');
         });
 
+        // Combined Input / Keyup listener for mobile search handling
         const searchInput = document.getElementById('search-input');
         let searchTimeout;
         
-        searchInput.addEventListener('input', (e) => {
+        const handleSearch = async () => {
           clearTimeout(searchTimeout);
-          const query = e.target.value.trim();
+          const query = searchInput.value.trim();
+          const searchSection = document.getElementById('search-results-section');
+          const grid = document.getElementById('search-grid');
           
           if (!query) {
-            document.getElementById('search-results-section').classList.add('hidden');
+            searchSection.classList.add('hidden');
+            grid.innerHTML = '';
             return;
           }
 
           searchTimeout = setTimeout(async () => {
             const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
-            const grid = document.getElementById('search-grid');
             
             if (results && results.results && results.results.length > 0) {
-              grid.innerHTML = results.results
-                .filter(r => r.poster_path)
-                .map(r => createMediaCard(r, r.media_type || 'movie'))
-                .join('');
-              document.getElementById('search-results-section').classList.remove('hidden');
+              const validItems = results.results.filter(r => r.poster_path);
+              if (validItems.length > 0) {
+                grid.innerHTML = validItems.map(r => createMediaCard(r, r.media_type || 'movie')).join('');
+                searchSection.classList.remove('hidden');
+              } else {
+                grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No artwork available for "${query}".</p>`;
+                searchSection.classList.remove('hidden');
+              }
             } else {
-              grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400">No media titles found.</p>`;
-              document.getElementById('search-results-section').classList.remove('hidden');
+              grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No results found for "${query}".</p>`;
+              searchSection.classList.remove('hidden');
             }
           }, 350);
-        });
+        };
+
+        searchInput.addEventListener('input', handleSearch);
+        searchInput.addEventListener('keyup', handleSearch);
       }
 
       document.addEventListener('DOMContentLoaded', init);
