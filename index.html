@@ -11,11 +11,33 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .movie-card:hover .card-overlay { opacity: 1; }
     html { scroll-behavior: smooth; }
+
+    /* Fire Animation Effects */
+    @keyframes flameGlow {
+      0%, 100% { text-shadow: 0 0 20px #ff2200, 0 0 40px #ff6600, 0 0 60px #ffae00; }
+      50% { text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4400, 0 0 90px #ffcc00; }
+    }
+    .fire-text {
+      animation: flameGlow 2s infinite alternate ease-in-out;
+    }
+    
+    @keyframes particleRise {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      100% { transform: translateY(-120px) scale(0.2); opacity: 0; }
+    }
+    .particle {
+      position: absolute;
+      bottom: -10px;
+      background: radial-gradient(circle, #ffcc00 0%, #ff3300 70%, transparent 100%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleRise 2.5s infinite linear;
+    }
   </style>
 </head>
 <body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col justify-between">
 
-  <!-- Header Navigation -->
+  <!-- HEADER NAVIGATION -->
   <header class="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-neutral-800/60" id="navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-8">
@@ -38,78 +60,106 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </div>
+        <button onclick="window.show404()" class="text-xs text-neutral-400 hover:text-red-500 transition border border-neutral-800 px-2.5 py-1 rounded-full">Test 404</button>
       </div>
     </div>
   </header>
 
-  <!-- HOME VIEW CONTAINER -->
-  <div id="home-view" class="w-full">
-    <!-- Hero Banner -->
-    <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
-      <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
-    </section>
-
-    <!-- Main Content Sections -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
-      
-      <!-- Dynamic Search Section -->
-      <section id="search-results-section" class="hidden">
-        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
-          <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
-          <span>Search Results</span>
-        </h2>
-        <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+  <!-- MAIN WRAPPER -->
+  <div id="app-container" class="flex-grow flex flex-col justify-between w-full">
+    
+    <!-- HOME VIEW CONTAINER -->
+    <div id="home-view" class="w-full">
+      <!-- Hero Banner -->
+      <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16">
+        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
       </section>
 
-      <!-- Films Section -->
-      <section id="movies-section" class="scroll-mt-20">
-        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Films & Movies</h2>
-        <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-      </section>
+      <!-- Main Content Sections -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
+        
+        <!-- Dynamic Search Section -->
+        <section id="search-results-section" class="hidden">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
+            <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
+            <span>Search Results</span>
+          </h2>
+          <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        </section>
 
-      <!-- TV Series Section -->
-      <section id="series-section" class="scroll-mt-20">
-        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">TV Series & Shows</h2>
-        <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-      </section>
+        <!-- Films Section -->
+        <section id="movies-section" class="scroll-mt-20">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Films & Movies</h2>
+          <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+        </section>
 
-      <!-- My Watchlist Section -->
-      <section id="watchlist-section" class="scroll-mt-20">
-        <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My List</h2>
-        <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-      </section>
+        <!-- TV Series Section -->
+        <section id="series-section" class="scroll-mt-20">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">TV Series & Shows</h2>
+          <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+        </section>
 
-    </main>
-  </div>
+        <!-- My Watchlist Section -->
+        <section id="watchlist-section" class="scroll-mt-20">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My List</h2>
+          <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
+        </section>
 
-  <!-- DEDICATED DETAILS PAGE VIEW -->
-  <div id="details-view" class="hidden pt-16 min-h-screen w-full flex-grow">
-    <div class="relative w-full h-[50vh] sm:h-[65vh] bg-neutral-900 overflow-hidden">
-      <div id="details-backdrop" class="absolute inset-0 bg-cover bg-center brightness-50"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
-      <button onclick="window.showHome()" class="absolute top-4 left-4 sm:left-8 z-30 bg-neutral-900/80 hover:bg-neutral-800 text-white rounded-full p-2.5 backdrop-blur border border-neutral-700 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-      </button>
+      </main>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 sm:-mt-48 relative z-20 pb-16">
-      <div class="flex flex-col md:flex-row gap-8 items-start">
-        <img id="details-poster" src="" class="w-48 sm:w-64 rounded-lg shadow-2xl border border-neutral-800 flex-none object-cover" />
-        <div class="flex-grow space-y-4">
-          <h1 id="details-title" class="text-3xl sm:text-5xl font-black tracking-tight"></h1>
-          <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-neutral-400" id="details-meta"></div>
-          <div class="flex flex-wrap gap-2" id="details-genres"></div>
-          <p id="details-overview" class="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl"></p>
-          <div class="flex space-x-4 pt-4" id="details-actions"></div>
+    <!-- DEDICATED DETAILS PAGE VIEW -->
+    <div id="details-view" class="hidden pt-16 min-h-screen w-full flex-grow">
+      <div class="relative w-full h-[50vh] sm:h-[65vh] bg-neutral-900 overflow-hidden">
+        <div id="details-backdrop" class="absolute inset-0 bg-cover bg-center brightness-50"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
+        <button onclick="window.showHome()" class="absolute top-4 left-4 sm:left-8 z-30 bg-neutral-900/80 hover:bg-neutral-800 text-white rounded-full p-2.5 backdrop-blur border border-neutral-700 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 sm:-mt-48 relative z-20 pb-16">
+        <div class="flex flex-col md:flex-row gap-8 items-start">
+          <img id="details-poster" src="" class="w-48 sm:w-64 rounded-lg shadow-2xl border border-neutral-800 flex-none object-cover" />
+          <div class="flex-grow space-y-4">
+            <h1 id="details-title" class="text-3xl sm:text-5xl font-black tracking-tight"></h1>
+            <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-neutral-400" id="details-meta"></div>
+            <div class="flex flex-wrap gap-2" id="details-genres"></div>
+            <p id="details-overview" class="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl"></p>
+            <div class="flex space-x-4 pt-4" id="details-actions"></div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- FIERY 404 NOT FOUND VIEW -->
+    <div id="not-found-view" class="hidden pt-16 min-h-[85vh] w-full flex flex-col items-center justify-center relative overflow-hidden text-center px-4">
+      <div class="absolute inset-0 bg-gradient-to-t from-red-950/40 via-neutral-950 to-neutral-950 pointer-events-none"></div>
+      
+      <!-- Animated Fire Particles Container -->
+      <div id="fire-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+      <div class="relative z-10 max-w-xl mx-auto space-y-6">
+        <h1 class="text-8xl sm:text-9xl font-black tracking-widest text-red-600 fire-text select-none">404</h1>
+        <div class="space-y-2">
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Lost in the Ashes</h2>
+          <p class="text-neutral-400 text-sm sm:text-base">The movie or page you are looking for was consumed by flames or never existed.</p>
+        </div>
+        <div class="pt-4">
+          <button onclick="window.showHome()" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-8 py-3.5 rounded-full shadow-lg shadow-red-600/30 transition-all hover:scale-105 flex items-center space-x-2 mx-auto">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span>Back to Home</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- FOOTER -->
-  <footer class="border-t border-neutral-900 bg-neutral-950/90 py-8 text-center text-xs text-neutral-500 space-y-3">
+  <footer class="border-t border-neutral-900 bg-neutral-950/90 py-8 text-center text-xs text-neutral-500 space-y-3 relative z-30">
     <p>
       Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong>
     </p>
@@ -122,7 +172,7 @@
     <p class="text-[10px] text-neutral-600">© 2026 Flickerz Nest. All rights reserved.</p>
   </footer>
 
-  <!-- VIDEO STREAM PLAYER MODAL -->
+  <!-- STREAM PLAYER MODAL -->
   <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex flex-col items-center justify-center p-2 sm:p-6">
     <div class="w-full max-w-5xl flex justify-between items-center mb-2 px-2">
       <div id="provider-selector" class="flex space-x-2 text-xs">
@@ -138,7 +188,7 @@
     </div>
   </div>
 
-  <!-- Core Application Script -->
+  <!-- APPLICATION SCRIPT -->
   <script>
     (() => {
       const state = {
@@ -164,6 +214,7 @@
         initSupabase();
         setupEventListeners();
         fetchTrendingData();
+        generateFireParticles();
       }
 
       function initSupabase() {
@@ -176,11 +227,11 @@
       async function tmdbFetch(endpoint) {
         if (!state.config.tmdbApiKey) return null;
         try {
-          const res = await fetch(`https://api.themoviedb.org/3${endpoint}?api_key=${state.config.tmdbApiKey}`);
-          if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+          const url = `https://api.themoviedb.org/3${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${state.config.tmdbApiKey}`;
+          const res = await fetch(url);
+          if (!res.ok) return null;
           return await res.json();
         } catch (e) {
-          console.warn("TMDB fetch notice:", e.message);
           return null;
         }
       }
@@ -291,51 +342,61 @@
         }, item.media_type)).join('');
       }
 
-      // NAVIGATION & DETAILS PAGE LOGIC
+      // VIEW SWITCHING FUNCTIONS
       window.showHome = () => {
         document.getElementById('details-view').classList.add('hidden');
+        document.getElementById('not-found-view').classList.add('hidden');
         document.getElementById('home-view').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      window.show404 = () => {
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('details-view').classList.add('hidden');
+        document.getElementById('not-found-view').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       };
 
       window.openDetails = async (id, type) => {
         const detailsData = await tmdbFetch(`/${type}/${id}`);
+        if (!detailsData) {
+          window.show404();
+          return;
+        }
+
         const inWatchlist = state.watchlist.some(w => w.media_id === id.toString());
-        
         document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('not-found-view').classList.add('hidden');
         document.getElementById('details-view').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        const backdrop = detailsData && detailsData.backdrop_path ? TMDB_HERO_BASE + detailsData.backdrop_path : '';
-        const poster = detailsData && detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
-        const title = detailsData ? (detailsData.title || detailsData.name) : 'Untitled Title';
-        const overview = detailsData ? detailsData.overview : 'No description available for this title.';
+        const backdrop = detailsData.backdrop_path ? TMDB_HERO_BASE + detailsData.backdrop_path : '';
+        const poster = detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
+        const title = detailsData.title || detailsData.name || 'Untitled Title';
+        const overview = detailsData.overview || 'No description available for this title.';
 
         document.getElementById('details-backdrop').style.backgroundImage = `url('${backdrop}')`;
         document.getElementById('details-poster').src = poster;
         document.getElementById('details-title').textContent = title;
         document.getElementById('details-overview').textContent = overview;
 
-        // Meta Info
-        const releaseDate = detailsData ? (detailsData.release_date || detailsData.first_air_date || 'N/A') : 'N/A';
-        const vote = detailsData && detailsData.vote_average ? `${detailsData.vote_average.toFixed(1)} / 10 ★` : '';
+        const releaseDate = detailsData.release_date || detailsData.first_air_date || 'N/A';
+        const vote = detailsData.vote_average ? `${detailsData.vote_average.toFixed(1)} / 10 ★` : '';
         document.getElementById('details-meta').innerHTML = `
           <span>Release: ${releaseDate}</span>
           ${vote ? `<span>•</span><span class="text-amber-400 font-semibold">${vote}</span>` : ''}
           <span>•</span><span class="uppercase tracking-wider px-2 py-0.5 bg-neutral-800 rounded border border-neutral-700">${type}</span>
         `;
 
-        // Genres
         const genresContainer = document.getElementById('details-genres');
-        if (detailsData && detailsData.genres) {
+        if (detailsData.genres) {
           genresContainer.innerHTML = detailsData.genres.map(g => `<span class="text-xs bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-full text-neutral-300">${g.name}</span>`).join('');
         } else {
           genresContainer.innerHTML = '';
         }
 
-        // Action Buttons
         const safeTitle = title.replace(/'/g, "\\'");
-        const posterPath = detailsData ? (detailsData.poster_path || '') : '';
+        const posterPath = detailsData.poster_path || '';
         document.getElementById('details-actions').innerHTML = `
           <button onclick="window.openPlayer('${id}', '${type}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
@@ -347,7 +408,7 @@
         `;
       };
 
-      // STREAMING PLAYER LOGIC
+      // STREAM PLAYER
       window.openPlayer = (id, type) => {
         state.currentMedia = { id, type };
         window.switchProvider('vidsrc');
@@ -373,6 +434,21 @@
         }
       };
 
+      function generateFireParticles() {
+        const container = document.getElementById('fire-container');
+        for (let i = 0; i < 35; i++) {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          const size = Math.random() * 8 + 4;
+          p.style.width = `${size}px`;
+          p.style.height = `${size}px`;
+          p.style.left = `${Math.random() * 100}%`;
+          p.style.animationDelay = `${Math.random() * 2.5}s`;
+          p.style.animationDuration = `${1.5 + Math.random() * 2}s`;
+          container.appendChild(p);
+        }
+      }
+
       function setupEventListeners() {
         document.getElementById('close-player').addEventListener('click', () => {
           const playerModal = document.getElementById('player-modal');
@@ -381,11 +457,10 @@
           playerModal.classList.add('hidden');
         });
 
-        // Combined Input / Keyup listener for mobile search handling
         const searchInput = document.getElementById('search-input');
         let searchTimeout;
         
-        const handleSearch = async () => {
+        const executeSearch = async () => {
           clearTimeout(searchTimeout);
           const query = searchInput.value.trim();
           const searchSection = document.getElementById('search-results-section');
@@ -397,27 +472,32 @@
             return;
           }
 
+          window.showHome();
+          searchSection.classList.remove('hidden');
+          grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4 animate-pulse">Searching for "${query}"...</p>`;
+
           searchTimeout = setTimeout(async () => {
-            const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
+            let results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
+            if (!results || !results.results || results.results.length === 0) {
+              results = await tmdbFetch(`/search/movie?query=${encodeURIComponent(query)}`);
+            }
             
             if (results && results.results && results.results.length > 0) {
               const validItems = results.results.filter(r => r.poster_path);
               if (validItems.length > 0) {
                 grid.innerHTML = validItems.map(r => createMediaCard(r, r.media_type || 'movie')).join('');
-                searchSection.classList.remove('hidden');
               } else {
-                grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No artwork available for "${query}".</p>`;
-                searchSection.classList.remove('hidden');
+                grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No posters found for "${query}".</p>`;
               }
             } else {
               grid.innerHTML = `<p class="col-span-full text-sm text-neutral-400 py-4">No results found for "${query}".</p>`;
-              searchSection.classList.remove('hidden');
             }
-          }, 350);
+          }, 300);
         };
 
-        searchInput.addEventListener('input', handleSearch);
-        searchInput.addEventListener('keyup', handleSearch);
+        searchInput.addEventListener('input', executeSearch);
+        searchInput.addEventListener('keyup', executeSearch);
+        searchInput.addEventListener('change', executeSearch);
       }
 
       document.addEventListener('DOMContentLoaded', init);
