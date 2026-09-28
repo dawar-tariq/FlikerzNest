@@ -36,12 +36,12 @@
       <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
         <div>
           <label class="block text-xs font-medium text-neutral-300 mb-1">Email</label>
-          <input type="email" id="email-input" autocomplete="off" placeholder="Enter admin email" required
+          <input type="email" id="email-input" autocomplete="off" placeholder="wanidawar03@gmail.com" required
                  class="w-full bg-neutral-950 border border-neutral-800 text-xs rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-red-600 transition">
         </div>
         <div>
           <label class="block text-xs font-medium text-neutral-300 mb-1">Password</label>
-          <input type="password" id="password-input" autocomplete="new-password" placeholder="Enter password" required
+          <input type="password" id="password-input" autocomplete="new-password" placeholder="admin123" required
                  class="w-full bg-neutral-950 border border-neutral-800 text-xs rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-red-600 transition">
         </div>
         <button type="submit" id="login-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs py-2.5 rounded-lg transition">
@@ -95,7 +95,7 @@
       supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
     };
 
-    // Disable session persistence to prevent 401 Unauthorized errors on mobile
+    // Disable session persistence to prevent mobile 401 token sync issues
     const supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
       auth: { persistSession: false, autoRefreshToken: false }
     });
@@ -120,17 +120,19 @@
         .eq('email', email)
         .maybeSingle();
 
-      if (error || !data) {
-        errorEl.textContent = 'Account not found or database error.';
+      if (error) {
+        errorEl.textContent = 'DB Error: ' + error.message;
         errorEl.classList.remove('hidden');
         return;
       }
 
-      // Check password matching either plain text column or hash column
-      const matched = (data.password && data.password === password) || 
-                      (data.password_hash && data.password_hash === password);
+      if (!data) {
+        errorEl.textContent = 'No account found with email: ' + email;
+        errorEl.classList.remove('hidden');
+        return;
+      }
 
-      if (matched) {
+      if (data.password === password) {
         sessionStorage.setItem('flickerz_admin_logged_in', 'true');
         showDashboard();
       } else {
