@@ -92,7 +92,7 @@
   <script>
     const config = {
       supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
-      supabaseKey: 'sb_publishable_4BX5xVy7t6lxpDltwkq2WA_JXb0tVC-'
+      supabaseKey: 'your_actual_anon_key_starting_with_eyJ...' // Replace with your real public anon key
     };
 
     // Disable session persistence to prevent mobile 401 token sync issues
@@ -108,17 +108,16 @@
 
     async function handleLogin(event) {
       event.preventDefault();
-      const email = document.getElementById('email-input').value.trim();
+      const email = document.getElementById('email-input').value.trim().toLowerCase();
       const password = document.getElementById('password-input').value;
       const errorEl = document.getElementById('auth-error');
 
       errorEl.classList.add('hidden');
 
+      // Fetch all user records safely to bypass server-side query discrepancies
       const { data, error } = await supabaseClient
         .from('admin_users')
-        .select('*')
-        .eq('email', email)
-        .maybeSingle();
+        .select('*');
 
       if (error) {
         errorEl.textContent = 'DB Error: ' + error.message;
@@ -126,13 +125,24 @@
         return;
       }
 
-      if (!data) {
-        errorEl.textContent = 'No account found with email: ' + email;
+      if (!data || data.length === 0) {
+        errorEl.textContent = 'The admin_users table is empty.';
         errorEl.classList.remove('hidden');
         return;
       }
 
-      if (data.password === password) {
+      // Perform a clean, case-insensitive match on the client side
+      const user = data.find(u => u.email && u.email.trim().toLowerCase() === email);
+
+      if (!user) {
+        errorEl.textContent = 'Email not found in database.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const dbPassword = user.password || user.password_hash;
+
+      if (dbPassword === password) {
         sessionStorage.setItem('flickerz_admin_logged_in', 'true');
         showDashboard();
       } else {
