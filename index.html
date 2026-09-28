@@ -301,13 +301,23 @@
   /* player */
   .player-backdrop{padding:0;background:rgba(2,3,5,.97)}
   .player-card{width:min(1420px,100%);max-height:100vh;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;background:#05060a}
-  .player-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px clamp(16px,3vw,38px)}
+  /* Header: [titles ...... X] on one line, tools below-or-beside. The close
+     button is pinned so it can never be pushed off-screen. */
+  .player-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:14px clamp(16px,3vw,38px)}
+  .player-titlebar{display:flex;align-items:center;gap:14px;flex:1 1 240px;min-width:0;order:1}
+  .player-titles{flex:1;min-width:0}
   .player-head h2{overflow:hidden;margin:2px 0 0;font-size:17px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
   .player-head .label{padding:0}
-  .player-tools{display:flex;align-items:center;gap:10px}
-  .seg{display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#12141a}
-  .seg button{min-height:32px;padding:0 14px;border:0;border-radius:8px;background:none;color:#a6aab5;cursor:pointer;font-size:11.5px;font-weight:600;transition:background .18s,color .18s}
+  .player-close{flex:0 0 auto}
+  .player-tools{display:flex;align-items:center;gap:10px;order:2;min-width:0;max-width:100%}
+  .seg{display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#12141a;min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:0 13px;border:0;border-radius:8px;background:none;color:#a6aab5;cursor:pointer;font-size:11.5px;font-weight:600;white-space:nowrap;transition:background .18s,color .18s}
+  .seg button:hover{color:#fff;background:rgba(255,255,255,.06)}
   .seg button.active{background:#2b303c;color:#fff}
+  .srv-num{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.1);font-size:10px;font-weight:800}
+  .seg button.active .srv-num{background:var(--red);color:#fff}
+  .pop-btn{display:inline-flex;align-items:center;gap:7px;min-height:36px;white-space:nowrap}
   .seg button:disabled{opacity:.4;cursor:wait}
   .stage{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 134px);background:#000}
   .stage iframe{display:block;width:100%;height:100%;border:0}
@@ -447,11 +457,18 @@
 
   /* ---------- player states (prevents the black-screen bug) ---------- */
   .stage{position:relative}
-  .stage-note{position:absolute;inset:0;z-index:2;display:grid;place-content:center;justify-items:center;gap:13px;
+  .stage-note{position:absolute;inset:0;z-index:3;display:grid;place-content:center;justify-items:center;gap:13px;
     padding:26px;text-align:center;background:radial-gradient(circle at 50% 40%,#12141b,#07080c 75%);color:#a7acb8;font-size:13px;line-height:1.7}
   .stage-note b{color:#fff;font-size:15.5px;letter-spacing:-.02em}
   .stage-note .mini{margin-top:4px}
   .stage-note.hide{display:none}
+  .stage-note .big{min-height:44px;padding:0 22px;font-size:13.5px}
+  .envbar{display:flex;flex-wrap:wrap;align-items:center;gap:13px;margin:0 auto;max-width:1740px;
+    padding:13px clamp(16px,4.5vw,68px);border-bottom:1px solid rgba(255,207,112,.26);background:rgba(255,207,112,.09)}
+  .envbar i{color:var(--gold);font-size:16px}
+  .envbar div{flex:1;min-width:200px}
+  .envbar b{display:block;font-size:12.5px;color:#ffd98c}
+  .envbar span{display:block;margin-top:3px;color:#c9b98a;font-size:11px;line-height:1.55}
   .spin{width:40px;height:40px;border:3px solid rgba(255,255,255,.13);border-top-color:var(--red-2);border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -491,6 +508,25 @@
     .detail-body{padding:0 17px 20px}
     .player-foot{align-items:flex-start;flex-direction:column}
     .stage{max-height:none}
+
+    /* ---- mobile player: true full-screen, every control reachable ---- */
+    .backdrop.player-backdrop{padding:0;align-items:stretch}
+    .card.player-card{width:100%;height:100dvh;max-height:100dvh;border-radius:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .player-head{padding:12px 14px 10px;gap:10px}
+    .player-titlebar{flex:1 1 100%}
+    .player-head h2{font-size:15.5px}
+    .player-close{width:40px;height:40px}
+    .player-tools{flex:1 1 100%;flex-direction:column;align-items:stretch;gap:8px}
+    .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%}
+    .seg button{flex-direction:column;gap:3px;min-height:52px;padding:6px 2px;font-size:10px}
+    .srv-num{width:20px;height:20px;font-size:10.5px}
+    .srv-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:9.5px;font-weight:600}
+    .pop-btn{justify-content:center;width:100%;min-height:42px;font-size:12px}
+    .stage-note{padding:18px;font-size:12px}
+    .stage-note b{font-size:14px}
+    .stage-note .mini{min-height:38px}
+    .ep{width:100%;justify-content:flex-start;flex-wrap:wrap}
+    .ep input{height:38px;width:64px;font-size:14px}
     .lockbox{padding:38px 18px}
     .toasts{right:11px;bottom:11px}
     .foot{padding:30px 14px 26px}
@@ -533,6 +569,11 @@
 </header>
 
 <main id="top">
+  <div class="envbar" id="envBar" hidden>
+    <i class="fa-solid fa-cube"></i>
+    <div><b>Preview sandbox detected</b><span>Embedded players refuse to run inside a sandboxed frame - that is the "please disable sandbox" message. Nothing is broken. Open this app in its own tab and playback will work normally.</span></div>
+    <button class="btn btn-gold btn-sm" type="button" id="envOpen"><i class="fa-solid fa-up-right-from-square"></i> Open app in a tab</button>
+  </div>
   <section class="hero" id="homeHero" aria-label="Featured title">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-veil"></div>
@@ -615,16 +656,18 @@
 <div class="backdrop player-backdrop" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle" hidden>
   <div class="card player-card">
     <div class="player-head">
-      <div><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
-        <div class="player-tools">
-          <button class="mini" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i> New tab</button>
-          <div class="seg" role="group" aria-label="Stream server">
-          <button type="button" class="active" data-server="1" aria-pressed="true">S1</button>
-          <button type="button" data-server="2" aria-pressed="false">S2</button>
-          <button type="button" data-server="3" aria-pressed="false">S3</button>
-          <button type="button" data-server="4" aria-pressed="false">S4</button>
+      <div class="player-titlebar">
+        <div class="player-titles"><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
+        <button class="x player-close" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="player-tools">
+        <div class="seg" role="group" aria-label="Stream server">
+          <button type="button" class="active" data-server="1" aria-pressed="true"><span class="srv-num">1</span><span class="srv-name">VidSrc</span></button>
+          <button type="button" data-server="2" aria-pressed="false"><span class="srv-num">2</span><span class="srv-name">VidSrc.to</span></button>
+          <button type="button" data-server="3" aria-pressed="false"><span class="srv-num">3</span><span class="srv-name">VidLink</span></button>
+          <button type="button" data-server="4" aria-pressed="false"><span class="srv-num">4</span><span class="srv-name">2Embed</span></button>
         </div>
-        <button class="x" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
+        <button class="mini pop-btn" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i><span>New tab</span></button>
       </div>
     </div>
     <div class="stage">
@@ -868,8 +911,8 @@
     user: null, profile: null,
     members: [], allLists: [],
     searchSeq: 0, searchTimer: null, catSeq: 0, io: null, loading: true,
-    titleSeq: 0, titlePlaying: null, playTimer: null, loadToken: 0,
-    tmdbState: null, probing: false
+    titleSeq: 0, titlePlaying: null, playTimer: null, loadToken: 0, loadedOk: false,
+    tmdbState: null, probing: false, env: { framed: false, opaque: false, storageOk: true, parentSandbox: false, sandboxed: false }
   };
   state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
 
@@ -908,8 +951,8 @@
   }
   function stopPlayback() {
     if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
-    const f = $("frame"); if (f) f.src = "about:blank";
-    state.playing = null; state.override = "";
+    const f = $("frame"); if (f) { f.src = "about:blank"; f.style.visibility = "visible"; }
+    state.playing = null; state.override = ""; state.loadedOk = false;
   }
   function closeMenu() { $("profileMenu").hidden = true; $("profileBtn").setAttribute("aria-expanded", "false"); }
   const keyOf = (i) => (i.media_type || "movie") + ":" + i.id;
@@ -917,6 +960,30 @@
   const yearOf = (i) => { const d = i.release_date || i.first_air_date || ""; return d ? String(d).slice(0, 4) : ""; };
   const titleOf = (i) => i.title || i.name || "Untitled";
   const img = (p, size = "w500") => { if (!p) return ""; return String(p).startsWith("/") ? IMG + size + p : httpsUrl(p); };
+  /* A sandboxed preview frame is the one thing that genuinely cannot host an
+     embedded player: our document gets a null origin, the provider detects it
+     and shows "please disable sandbox". No code can override that, so we detect
+     it and hand the user a working route instead of a dead frame. */
+  function detectEnv() {
+    let framed = false;
+    try { framed = window.self !== window.top; } catch { framed = true; }
+    let opaque = false;
+    try { opaque = !window.origin || window.origin === "null"; } catch { opaque = true; }
+    let storageOk = true;
+    try { localStorage.setItem("__fz_probe", "1"); localStorage.removeItem("__fz_probe"); }
+    catch { storageOk = false; }
+    let parentSandbox = false;
+    try { parentSandbox = framed && !storageOk; } catch { parentSandbox = false; }
+    return {
+      framed, opaque, storageOk, parentSandbox,
+      sandboxed: Boolean(framed && (opaque || parentSandbox))
+    };
+  }
+  function openSelfInTab() {
+    const url = location.href.split("#")[0] + "#top";
+    try { location.href = url; return; } catch {}
+    try { if (window.top) window.top.location.href = url; } catch {}
+  }
   const isOwnerEmail = (e) => String(e || "").trim().toLowerCase() === OWNER.email.toLowerCase();
   const isOwnerSession = () => state.ownerSession === true;
   const isAdmin = () => isOwnerSession() || Boolean(state.user && (isOwnerEmail(state.user.email) || state.profile?.role === "admin"));
@@ -1384,17 +1451,20 @@
       : noteHTML(mode === "fail" ? "fa-circle-exclamation" : "fa-circle-info", title, body, actions || "");
   }
   function hideNote() { const n = $("stageNote"); if (n) n.classList.add("hide"); }
-  function failState(item, n) {
-    $("frame").src = "about:blank";
+  /* Shown only as an overlay. It deliberately NEVER resets the iframe, because
+     many providers load slowly or skip the load event entirely - killing the
+     stream here is what made working videos appear broken. */
+  function slowState(item, n) {
     const next = n >= 4 ? 1 : n + 1;
     const insideFrame = window.self !== window.top;
-    setNote("fail", "Source " + n + " (" + SERVER_NAMES[n] + ") did not respond",
+    setNote("fail", "Still loading source " + n + " (" + SERVER_NAMES[n] + ")",
       insideFrame
-        ? "Embeds are often blocked inside preview frames. Use \"New tab\" for reliable playback, or try another source."
-        : "This host may be offline or the title may simply be unavailable there. Try another source.",
+        ? "If the video is playing behind this message, choose \"Show video\". Otherwise use \"New tab\", which always works."
+        : "If the video is playing behind this message, choose \"Show video\". Otherwise try a different source.",
+      '<button class="mini" type="button" id="forceShow">Show video</button>' +
       '<button class="mini" type="button" data-server="' + next + '">Try source ' + next + " (" + SERVER_NAMES[next] + ")</button>" +
-      '<button class="mini" type="button" id="failPop">Open in new tab</button>');
-    $("playerNote").textContent = "Source " + n + " (" + SERVER_NAMES[n] + ") did not load.";
+      '<button class="mini" type="button" id="failPop">New tab</button>');
+    $("playerNote").textContent = "Source " + n + " (" + SERVER_NAMES[n] + ") is taking longer than usual.";
   }
   function setServer(n) {
     state.server = n;
@@ -1425,24 +1495,42 @@
       ? "Playing your custom stream override."
       : "Source " + n + " (" + SERVER_NAMES[n] + ") | " + titleOf(item);
 
+    // The iframe is always visible and opaque. The note is a separate overlay
+    // on top, so playback is never hidden or destroyed by our own UI.
     const frame = $("frame");
-    frame.style.visibility = "hidden";
+    frame.style.visibility = "visible";
     frame.src = url;
 
     const token = ++state.loadToken;
-    frame.onload = () => { if (token === state.loadToken) hideNote(); };
-    // If nothing has signalled a load after 9s, assume the source is dead and
-    // tell the user instead of leaving a black rectangle on screen.
+    frame.onload = () => {
+      if (token === state.loadToken) { hideNote(); state.loadedOk = true; }
+    };
+    // Not a failure - just a nudge. The stream keeps running underneath.
+    if (state.playTimer) clearTimeout(state.playTimer);
     state.playTimer = setTimeout(() => {
-      if (token === state.loadToken && !$("playerModal").hidden) failState(item, n);
+      if (token === state.loadToken && !$("playerModal").hidden && !state.loadedOk) slowState(item, n);
     }, 9000);
   }
   async function play(item) {
     if (!item) return;
     closeModal("searchModal");
+    // Inside a sandboxed preview the provider always refuses to render, so skip
+    // the doomed iframe and give the user the route that actually works.
+    if (state.env.sandboxed) {
+      state.playing = item;
+      $("playerTitle").textContent = titleOf(item);
+      $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
+      setNote("fail", "Embedded playback is blocked in this preview",
+        "The stream host refuses to run inside a sandboxed frame - that is the \"please disable sandbox\" message. Open this app in its own browser tab and it will play normally.",
+        '<button class="btn btn-gold big" type="button" id="failPop"><i class="fa-solid fa-up-right-from-square"></i> Open this app in a tab</button>');
+      $("playerNote").textContent = "Preview sandbox detected.";
+      openModal("playerModal");
+      return;
+    }
     state.playing = item;
     state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
     state.server = 1;
+    state.loadedOk = false;
     state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
@@ -1989,6 +2077,9 @@
   function popOut() {
     const item = state.playing;
     if (!item) return;
+    // In a sandbox the new-tab window itself is restricted, so break the whole
+    // app out into a real top-level tab instead - that always works.
+    if (state.env.sandboxed) { openSelfInTab(); return; }
     const custom = state.override && !item.is_custom;
     const n = state.server || 1;
     const url = (custom && n === 1) ? state.override : buildUrl(item, n);
@@ -2062,6 +2153,15 @@
   $("contentForm").addEventListener("submit", saveContent);
   $("listRefresh").addEventListener("click", async () => { state.members = []; await loadMembers(); await loadAllLists(); });
   document.addEventListener("click", (e) => {
+    if (e.target.closest("#envOpen")) { e.preventDefault(); openSelfInTab(); return; }
+    if (e.target.closest("#forceShow")) {
+      e.preventDefault();
+      const f = $("frame");
+      f.style.visibility = "visible";
+      hideNote();
+      $("playerNote").textContent = "Playing now. Use \"New tab\" if the picture stays black.";
+      return;
+    }
     if (e.target.closest("#popOut") || e.target.closest("#failPop")) { e.preventDefault(); popOut(); }
     if (!e.target.closest("#reloadCatalog")) return;
     loadCatalog();
@@ -2101,6 +2201,8 @@
 
   (async function boot() {
     $("footYear").textContent = "Flickerz Nest " + new Date().getFullYear();
+    state.env = detectEnv();
+    $("envBar").hidden = !state.env.sandboxed;
     safe(() => renderHero(state.hero), "the hero banner");
     safe(() => renderRows(), "the catalog");
     safe(() => paintAccount(), "your profile");
