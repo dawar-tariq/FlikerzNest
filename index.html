@@ -206,6 +206,12 @@
     backdrop-filter:blur(6px);transition:opacity .2s,transform .2s,background .2s,border-color .2s}
   .tile:hover .save,.tile:focus-within .save,.save.on{opacity:1;transform:none}
   .save:hover,.save.on{background:var(--red);border-color:var(--red)}
+  .info-btn{position:absolute;top:9px;left:52px;width:33px;height:33px;display:grid;place-items:center;
+    border:1px solid var(--line-2);border-radius:50%;background:rgba(8,9,12,.68);color:#fff;cursor:pointer;
+    opacity:0;transform:translateY(-5px);backdrop-filter:blur(6px);
+    transition:opacity .2s,transform .2s,background .2s,border-color .2s;z-index:2}
+  .tile:hover .info-btn,.tile:focus-within .info-btn{opacity:1;transform:none}
+  .info-btn:hover{background:rgba(255,255,255,.9);color:#0c0d11;border-color:#fff}
   .tile-name{overflow:hidden;margin:11px 2px 2px;font-size:13px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
   .tile-sub{display:block;margin-left:2px;color:#858994;font-size:11px}
   .skeleton{flex:0 0 clamp(134px,14.8vw,204px);aspect-ratio:2/3;border-radius:14px;
@@ -354,6 +360,22 @@
   .wl-item div{max-width:150px}
   .wl-item b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .wl-item span{color:#8a8e99;font-size:9.5px}
+
+  /* catalog diagnostic banner */
+  .diag{display:flex;flex-wrap:wrap;align-items:center;gap:13px;margin:0 0 26px;padding:14px 16px;
+    border:1px solid rgba(255,99,109,.32);border-radius:14px;background:rgba(255,99,109,.08)}
+  .diag i{color:#ff8087;font-size:17px}
+  .diag div{flex:1;min-width:200px}
+  .diag b{display:block;font-size:12.5px;color:#ff949b}
+  .diag span{display:block;margin-top:4px;color:#d3b9bb;font-size:11.5px;line-height:1.6}
+
+  /* session warning banner */
+  .sbbanner{display:flex;flex-wrap:wrap;align-items:center;gap:13px;margin:0 16px;padding:13px 15px;
+    border:1px solid rgba(255,207,112,.32);border-radius:12px;background:rgba(255,207,112,.08)}
+  .sbbanner i{color:var(--gold);font-size:17px}
+  .sbbanner div{flex:1;min-width:180px}
+  .sbbanner b{display:block;font-size:12.5px;color:#ffd98c}
+  .sbbanner span{display:block;margin-top:3px;color:#c9b98a;font-size:11px;line-height:1.55}
 
   /* toasts */
   .toasts{position:fixed;z-index:260;right:20px;bottom:20px;display:grid;gap:9px;width:min(340px,calc(100vw - 30px));pointer-events:none}
@@ -594,10 +616,13 @@
   <div class="card player-card">
     <div class="player-head">
       <div><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
-      <div class="player-tools">
-        <div class="seg" role="group" aria-label="Stream server">
-          <button type="button" class="active" data-server="1" aria-pressed="true">Server 1</button>
-          <button type="button" data-server="2" aria-pressed="false">Server 2</button>
+        <div class="player-tools">
+          <button class="mini" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i> New tab</button>
+          <div class="seg" role="group" aria-label="Stream server">
+          <button type="button" class="active" data-server="1" aria-pressed="true">S1</button>
+          <button type="button" data-server="2" aria-pressed="false">S2</button>
+          <button type="button" data-server="3" aria-pressed="false">S3</button>
+          <button type="button" data-server="4" aria-pressed="false">S4</button>
         </div>
         <button class="x" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -659,7 +684,12 @@
   <div class="card card-wide">
     <div class="card-head"><div><h2 id="adminTitle"><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Nest control room</h2><p id="adminSub">Streams, content, members and watchlists.</p></div><div style="display:flex;align-items:center;gap:8px"><button class="mini" type="button" id="adminLock" title="End the owner session"><i class="fa-solid fa-lock"></i> Lock</button><button class="x" type="button" data-close="adminModal" aria-label="Close admin"><i class="fa-solid fa-xmark"></i></button></div></div>
 
-    <div id="adminBody">
+      <div id="adminBody">
+      <div class="sbbanner" id="sbBanner" hidden>
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div><b>Not signed into Supabase</b><span>Row Level Security is hiding members and watchlists. Sign in as the owner to load real data.</span></div>
+        <button class="btn btn-gold btn-sm" type="button" id="sbSignIn"><i class="fa-solid fa-right-to-bracket"></i> Sign in as owner</button>
+      </div>
       <div class="tabs" role="tablist">
         <button class="tab active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="keys">API keys</button>
@@ -838,7 +868,8 @@
     user: null, profile: null,
     members: [], allLists: [],
     searchSeq: 0, searchTimer: null, catSeq: 0, io: null, loading: true,
-    titleSeq: 0, titlePlaying: null, playTimer: null, loadToken: 0
+    titleSeq: 0, titlePlaying: null, playTimer: null, loadToken: 0,
+    tmdbState: null, probing: false
   };
   state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
 
@@ -933,13 +964,14 @@
     const p = img(item.poster_path, "w500"), t = titleOf(item);
     const saved = inList(item);
     return '<article class="tile">' +
-      '<button class="poster" type="button" data-open="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
+      '<button class="poster" type="button" data-play="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
         (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" data-err>' : '<span class="tp-poster-ph">' + esc(t) + "</span>") +
         '<span class="poster-veil"></span>' +
         (item.vote_average ? '<span class="score"><i class="fa-solid fa-star"></i>' + Number(item.vote_average).toFixed(1) + "</span>" : "") +
         '<span class="poster-play"><i class="fa-solid fa-play"></i></span>' +
         '<span class="poster-info"><strong>' + esc(t) + "</strong><span>" + esc((item.overview || item.description || "").slice(0, 120)) + "</span></span>" +
       "</button>" +
+      '<button class="info-btn" type="button" data-info="' + esc(k) + '" aria-label="Details for ' + esc(t) + '"><i class="fa-solid fa-circle-info"></i></button>' +
       (savable ? '<button class="save' + (saved ? " on" : "") + '" type="button" data-save="' + esc(k) + '" aria-label="' + (saved ? "Remove from" : "Add to") + ' watchlist"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i></button>' : "") +
       '<p class="tile-name" title="' + esc(t) + '">' + esc(t) + "</p>" +
       '<span class="tile-sub">' + (item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Film")) + (yearOf(item) ? " | " + esc(yearOf(item)) : "") + "</span>" +
@@ -963,7 +995,16 @@
     if (!state.user) watchEmpty = '<span>Sign in to keep your favourite films and series in sync.</span><button class="btn btn-glass btn-sm" type="button" data-act="auth">Sign in</button>';
     else if (!state.watch.length) watchEmpty = '<span>Your list is ready for its first favourite.</span><a class="btn btn-glass btn-sm" href="#row-trending">Browse trending</a>';
     const load = state.loading;
+    // Persistent diagnostic banner: a broken catalog must explain itself on
+    // screen, not vanish after a 4-second toast.
+    const alert = (state.tmdbState && !state.tmdbState.ok && !load) ? state.tmdbState : null;
+    const alertHTML = alert
+      ? '<div class="diag"><i class="fa-solid fa-triangle-exclamation"></i><div><b>Catalog is showing the demo collection</b>' +
+        "<span>" + esc(alert.reason) + "</span></div>" +
+        '<button class="mini" type="button" data-act="test-tmdb">Test connection</button></div>'
+      : "";
     $("rows").innerHTML = [
+      alertHTML,
       load ? '<section class="row visible"><div class="row-head"><div><h2>Loading your Nest</h2><p>Fetching the latest from TMDB</p></div></div>' + skeletons() + "</section>"
            : section("trending", "Trending Movies", "What everyone is watching this week", state.trending),
       load ? "" : section("tv", "Popular TV Shows", "Series worth the binge", state.tv),
@@ -1015,11 +1056,48 @@
     return out.length ? out : fallback;
   }
 
+  /* Turns a low-level TMDB failure into a specific, actionable message.
+     401/403 = key invalid, 404 = key fine but key type mismatch,
+     network error = offline / DNS / blocked by a browser extension. */
+  function explainTmdbFailure(status, networkError) {
+    if (networkError) {
+      return "Network request blocked. This is caused by being offline, a DNS/ad-blocker, or a browser privacy extension - it is never a TMDB domain setting.";
+    }
+    if (status === 401) {
+      return "TMDB rejected the API key (401). The key is invalid, expired, or was revoked. Generate a new v3 key in TMDB > Settings > API.";
+    }
+    if (status === 403) {
+      return "TMDB refused the request (403). Your key is usually suspended for missing attribution. TMDB does NOT restrict by domain, so your domain change is not the cause.";
+    }
+    if (status === 404) {
+      return "TMDB endpoint not found (404). This happens when a v4 bearer token is sent to a v3 endpoint. Check the key type.";
+    }
+    if (status === 429) {
+      return "TMDB rate limit reached (429). Wait about a minute and reload.";
+    }
+    if (status) {
+      return "TMDB responded with HTTP " + status + ".";
+    }
+    return "TMDB returned no usable titles.";
+  }
+  async function probeTmdb() {
+    if (!state.cfg.tmdbKey) return { ok: false, reason: "No TMDB key is configured.", status: 0, network: false };
+    try {
+      await tmdb("/configuration", {});
+      return { ok: true, reason: "Key accepted by TMDB.", status: 200, network: false };
+    } catch (e) {
+      const m = String(e?.message || "");
+      const s = Number((/HTTP (\d+)/.exec(m) || [])[1] || 0);
+      return { ok: false, reason: explainTmdbFailure(s, !s), status: s, network: !s };
+    }
+  }
+
   async function loadCatalog() {
     const seq = ++state.catSeq;
     if (!state.cfg.tmdbKey) {
       state.trending = DEMO_MOVIES; state.tv = DEMO_TV;
       state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
+      state.tmdbState = { ok: false, reason: "No TMDB key configured.", status: 0, network: false };
       state.loading = false; renderHero(state.trending[0]); renderRows(); return;
     }
     try {
@@ -1033,9 +1111,24 @@
       state.trending = pick(res[0], DEMO_MOVIES, "movie");
       state.tv = pick(res[1], DEMO_TV, "tv");
       state.rated = pick(res[2], [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average), "movie");
-      if (res.every((r) => r.status === "rejected")) toast("TMDB is unreachable right now - showing the demo collection.", "error");
+
+      const bad = res.filter((r) => r.status === "rejected");
+      const liveCount = state.trending.length + state.tv.length + state.rated.length;
+      const usingDemo = state.trending === DEMO_MOVIES && state.tv === DEMO_TV;
+      const demoStatus = liveCount > 0 && usingDemo;
+
+      if (bad.length === res.length || demoStatus || liveCount === 0) {
+        const first = bad[0];
+        const m = String(first?.reason?.message || "");
+        const s = Number((/HTTP (\d+)/.exec(m) || [])[1] || 0);
+        state.tmdbState = { ok: false, reason: explainTmdbFailure(s, !s), status: s, network: !s };
+      } else {
+        state.tmdbState = { ok: true, reason: "Catalog loaded from TMDB.", status: 200, network: false };
+      }
     } catch (e) {
-      if (seq === state.catSeq) toast(e.message || "Could not load the catalog.", "error");
+      if (seq === state.catSeq) {
+        state.tmdbState = { ok: false, reason: explainTmdbFailure(0, true), status: 0, network: true };
+      }
     } finally {
       if (seq === state.catSeq) {
         state.loading = false;
@@ -1058,7 +1151,7 @@
   function hit(i) {
     const k = keyOf(i); state.index.set(k, i);
     const p = img(i.poster_path, "w185");
-    return '<button class="hit" type="button" data-open="' + esc(k) + '">' +
+    return '<button class="hit" type="button" data-play="' + esc(k) + '">' +
       (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<img alt="" style="display:none">') +
       '<span class="hit-body"><strong>' + esc(titleOf(i)) + "</strong><span>" +
       (i.is_custom ? "Nest original" : (i.media_type === "tv" ? "Series" : "Film")) + (yearOf(i) ? " | " + esc(yearOf(i)) : "") + "</span></span>" +
@@ -1160,16 +1253,21 @@
         item = norm(full, type);
       }
     } catch (e) {
+      // The list payload already has enough to render a useful page, so never
+      // block the user behind an error screen.
       if (seq !== state.titleSeq) return;
-      $("titlePage").innerHTML =
-        '<div class="tp-hero" style="min-height:60vh"></div>' +
-        '<div class="tp-sec" style="margin-top:-260px;position:relative;z-index:2"><div class="lockbox">' +
-        '<i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load this title</h3>' +
-        "<p>" + esc(e.message || "The details service did not respond.") + "</p>" +
-        '<div class="actions" style="justify-content:center"><button class="btn btn-glass" type="button" data-act="back-home"><i class="fa-solid fa-house"></i> Back to home</button>' +
-        '<button class="btn btn-primary" type="button" data-act="retry"><i class="fa-solid fa-rotate"></i> Try again</button></div>' +
-        "</div></div>";
-      return;
+      if (!item) {
+        $("titlePage").innerHTML =
+          '<div class="tp-hero" style="min-height:60vh"></div>' +
+          '<div class="tp-sec" style="margin-top:-260px;position:relative;z-index:2"><div class="lockbox">' +
+          '<i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load this title</h3>' +
+          "<p>" + esc(e.message || "The details service did not respond.") + "</p>" +
+          '<div class="actions" style="justify-content:center"><button class="btn btn-glass" type="button" data-act="back-home"><i class="fa-solid fa-house"></i> Back to home</button>' +
+          '<button class="btn btn-primary" type="button" data-act="retry"><i class="fa-solid fa-rotate"></i> Try again</button></div>' +
+          "</div></div>";
+        return;
+      }
+      console.warn("[Flickerz Nest] details unavailable, using list data", e);
     }
     if (seq !== state.titleSeq) return;
     if (!item) { closeTitlePage(); toast("That title is not available.", "error"); return; }
@@ -1255,14 +1353,22 @@
     if (item.is_custom) return httpsUrl(item.custom_stream_url);
     const id = Number(item.id);
     if (!Number.isSafeInteger(id) || id < 1) return "";
-    const base = server === 2 ? "https://vidsrc.to/embed" : "https://vidsrc.net/embed";
-    if (item.media_type === "tv") {
-      const s = Math.max(1, parseInt($("seasonIn").value, 10) || 1);
-      const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
-      return base + "/tv/" + id + "/" + s + "/" + e;
-    }
-    return base + "/movie/" + id;
+    const s = Math.max(1, parseInt($("seasonIn").value, 10) || 1);
+    const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
+    return streamSource(server, item.media_type, id, s, e);
   }
+  /* Multiple independent providers, because public embeds go down often.
+     Trying a different host fixes most "movie will not load" reports. */
+  function streamSource(server, media, id, s, e) {
+    const tv = media === "tv";
+    switch (server) {
+      case 2:  return tv ? "https://vidsrc.to/embed/tv/" + id + "/" + s + "/" + e   : "https://vidsrc.to/embed/movie/" + id;
+      case 3:  return tv ? "https://vidlink.pro/tv/" + id + "/" + s + "/" + e       : "https://vidlink.pro/movie/" + id;
+      case 4:  return tv ? "https://2embed.cc/embed/tv/" + id + "/" + s + "/" + e   : "https://2embed.cc/embed/movie/" + id;
+      default: return tv ? "https://vidsrc.net/embed/tv/" + id + "/" + s + "/" + e  : "https://vidsrc.net/embed/movie/" + id;
+    }
+  }
+  const SERVER_NAMES = { 1: "VidSrc", 2: "VidSrc.to", 3: "VidLink", 4: "2Embed" };
   /* Player states. The iframe is kept visually out of the way until a source is
      actually assigned, so the user never stares at an empty black rectangle. */
   function noteHTML(icon, title, body, actions) {
@@ -1280,10 +1386,15 @@
   function hideNote() { const n = $("stageNote"); if (n) n.classList.add("hide"); }
   function failState(item, n) {
     $("frame").src = "about:blank";
-    setNote("fail", "This source did not respond",
-      "Try the other server, or come back later. Some titles are simply not available on public embed providers.",
-      '<button class="mini" type="button" data-server="' + (n === 1 ? 2 : 1) + '">Switch to Server ' + (n === 1 ? 2 : 1) + "</button>");
-    $("playerNote").textContent = "Source " + n + " did not load.";
+    const next = n >= 4 ? 1 : n + 1;
+    const insideFrame = window.self !== window.top;
+    setNote("fail", "Source " + n + " (" + SERVER_NAMES[n] + ") did not respond",
+      insideFrame
+        ? "Embeds are often blocked inside preview frames. Use \"New tab\" for reliable playback, or try another source."
+        : "This host may be offline or the title may simply be unavailable there. Try another source.",
+      '<button class="mini" type="button" data-server="' + next + '">Try source ' + next + " (" + SERVER_NAMES[next] + ")</button>" +
+      '<button class="mini" type="button" id="failPop">Open in new tab</button>');
+    $("playerNote").textContent = "Source " + n + " (" + SERVER_NAMES[n] + ") did not load.";
   }
   function setServer(n) {
     state.server = n;
@@ -1310,8 +1421,9 @@
     }
 
     setNote("load", "Connecting to source " + n, "Streaming should begin in a moment.");
-    $("playerNote").textContent = custom && n === 1 ? "Playing your custom stream override."
-      : (n === 1 ? "Server 1 (VidSrc). Switch to Server 2 if it will not load." : "Server 2 (VidSrc mirror).");
+    $("playerNote").textContent = custom && n === 1
+      ? "Playing your custom stream override."
+      : "Source " + n + " (" + SERVER_NAMES[n] + ") | " + titleOf(item);
 
     const frame = $("frame");
     frame.style.visibility = "hidden";
@@ -1463,6 +1575,7 @@
     $("adminShortcut").hidden = !admin;
     $("footAdmin").hidden = !admin;
     $("menuLock").hidden = !isOwnerSession();
+    paintSessionBanner();
   }
   async function submitAuth(ev) {
     ev.preventDefault();
@@ -1575,7 +1688,12 @@
   }
 
   /* ---------- admin panel ---------- */
+  function paintSessionBanner() {
+    const need = isAdmin() && Boolean(state.sb) && !state.user;
+    $("sbBanner").hidden = !need;
+  }
   function paintAdmin() {
+    paintSessionBanner();
     $("adminSub").textContent = isAdmin()
       ? (state.sb ? "Signed in" + (state.user ? " as " + state.user.email : "") + " - streams, content, members and watchlists."
                   : "Local owner session. Connect Supabase to manage live data.")
@@ -1620,14 +1738,20 @@
     $("ovStats").innerHTML = card(members, "Members") + card(admins, "Admins") + card(saved, "Saved titles") + card(overrides, "Overrides") + card(published, "Published");
     const connected = Boolean(sb);
     const key = state.cfg.tmdbKey ? "configured" : "missing";
+    const tm = state.tmdbState;
+    const tmdbLabel = !key ? "no key" : (tm ? (tm.ok ? "connected" : "failing") : "untested");
+    const origin = location.protocol + "//" + location.host + location.pathname;
     $("ovConnect").innerHTML =
       '<h3>Platform status</h3><p>Live view of what is wired up right now.</p><div class="list">' +
       row("<strong>Supabase</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + "</small>",
           '<span class="role ' + (connected ? "admin" : "") + '">' + (connected ? "connected" : "offline") + "</span>") +
-      row("<strong>TMDB</strong><small>" + (key === "configured" ? "catalog and search live" : "demo titles only") + "</small>",
-          '<span class="role ' + (key === "configured" ? "admin" : "") + '">' + key + "</span>") +
+      row("<strong>TMDB</strong><small>" + esc(tm ? tm.reason : (key === "configured" ? "Key is set but has not been tested." : "No key configured.")) + "</small>",
+          '<span class="role ' + (tm && tm.ok ? "admin" : "") + '">' + esc(tmdbLabel) + "</span>") +
       row("<strong>Owner session</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">unlocked</span>') +
-      "</div>";
+      row("<strong>Current domain</strong><small>" + esc(origin) + "</small>", '<span class="role">info</span>') +
+      '</div><div class="actions" style="margin-top:16px"><button class="btn btn-gold btn-sm" type="button" data-act="test-tmdb"><i class="fa-solid fa-stethoscope"></i> Run TMDB test</button>' +
+      '<button class="btn btn-glass btn-sm" type="button" id="reloadCatalog"><i class="fa-solid fa-rotate"></i> Reload catalog</button></div>' +
+      '<p class="note" style="margin-top:14px"><b>Changed your domain?</b> TMDB does not restrict API keys by domain, so that alone cannot break the catalog. What you must update after a domain change is Supabase: Authentication > URL Configuration > Site URL and Redirect URLs must include the new domain, or sign-in fails. Catalog failures are almost always a key, network, or ad-blocker issue - the TMDB status line above tells you which.</p>';
     const done = (ok, t, s) => row("<strong>" + (ok ? '<i class="fa-solid fa-circle-check" style="color:var(--green)"></i> ' : '<i class="fa-regular fa-circle" style="color:#7c8190"></i> ') + t + "</strong><small>" + s + "</small>",
       '<span class="role ' + (ok ? "admin" : "") + '">' + (ok ? "done" : "todo") + "</span>");
     $("ovChecklist").innerHTML =
@@ -1651,10 +1775,9 @@
       row("<strong>Owner session</strong><small>expires " + OWNER_SESSION_HOURS + "h after unlock</small>", '<span class="role owner">active</span>');
   }
   async function loadMembers() {
-    if (!isAdmin() || !state.sb) {
-      $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Connect Supabase in the API keys tab to list members.</p>';
-      $("userStats").innerHTML = ""; return;
-    }
+    if (!isAdmin()) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Owner access required.</p>'; $("userStats").innerHTML = ""; return; }
+    if (!state.sb) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Connect Supabase in the API keys tab to list members.</p>'; $("userStats").innerHTML = ""; return; }
+    if (!state.user) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Sign in with the button above - RLS hides all rows from anonymous requests.</p>'; $("userStats").innerHTML = ""; return; }
     $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Loading members...</p>';
     const { data, error } = await state.sb.from("profiles").select("id,email,display_name,role,created_at").order("created_at", { ascending: false }).limit(300);
     if (error) { $("userWrap").innerHTML = '<p class="status error" style="padding:14px">' + esc(error.message) + "</p>"; $("userStats").innerHTML = ""; return; }
@@ -1675,10 +1798,9 @@
       }).join("") + "</tbody></table>";
   }
   async function loadAllLists() {
-    if (!isAdmin() || !state.sb) {
-      $("listBody").innerHTML = '<div class="wl-user"><p class="hint">Connect Supabase in the API keys tab to read member watchlists.</p></div>';
-      $("listStats").innerHTML = ""; return;
-    }
+    if (!isAdmin()) { $("listBody").innerHTML = '<div class="wl-user"><p class="hint">Owner access required.</p></div>'; $("listStats").innerHTML = ""; return; }
+    if (!state.sb) { $("listBody").innerHTML = '<div class="wl-user"><p class="hint">Connect Supabase in the API keys tab to read member watchlists.</p></div>'; $("listStats").innerHTML = ""; return; }
+    if (!state.user) { $("listBody").innerHTML = '<div class="wl-user"><p class="hint">Sign in with the button above - RLS hides all rows from anonymous requests.</p></div>'; $("listStats").innerHTML = ""; return; }
     $("listStatus").textContent = "Loading watchlists...";
     const [lists, members] = await Promise.all([
       state.sb.from("watchlists").select("id,user_id,tmdb_id,title,poster_path,media_type,added_at").order("added_at", { ascending: false }).limit(1000),
@@ -1829,8 +1951,14 @@
     if (sv && !sv.disabled) { setServer(Number(sv.dataset.server)); return; }
     const sc = ev.target.closest("[data-scroll]");
     if (sc) { const s = $("strip-" + sc.dataset.scroll); if (s) s.scrollBy({ left: Number(sc.dataset.dir) * Math.max(300, s.clientWidth * .82), behavior: "smooth" }); return; }
-    const open = ev.target.closest("[data-open]");
-    if (open) { const it = state.index.get(open.dataset.open); if (it) { if (it.is_custom && !httpsUrl(it.custom_stream_url)) openDetail(it); else play(it); } return; }
+    const playBtn = ev.target.closest("[data-play]");
+    if (playBtn) {
+      const it = state.index.get(playBtn.dataset.play);
+      if (it) { if (it.is_custom && !httpsUrl(it.custom_stream_url)) openDetail(it); else play(it); }
+      return;
+    }
+    const infoBtn = ev.target.closest("[data-info]");
+    if (infoBtn) { openDetail(state.index.get(infoBtn.dataset.info)); return; }
     const sv2 = ev.target.closest("[data-save]");
     if (sv2) { await toggleSave(state.index.get(sv2.dataset.save)); return; }
     const ds = ev.target.closest("[data-del-stream]");
@@ -1856,7 +1984,31 @@
       return;
     }
     if (act === "retry") { const d = state.detail; closeTitlePage(); if (d) openDetail(d); else route(); return; }
+    if (act === "test-tmdb") { await runTmdbTest(); return; }
   });
+  function popOut() {
+    const item = state.playing;
+    if (!item) return;
+    const custom = state.override && !item.is_custom;
+    const n = state.server || 1;
+    const url = (custom && n === 1) ? state.override : buildUrl(item, n);
+    if (!url) { toast("Nothing to open for this title.", "error"); return; }
+    window.open(url, "_blank", "noopener,noreferrer");
+    toast("Player opened in a new tab.", "ok");
+  }
+  async function runTmdbTest() {
+    if (state.probing) return;
+    state.probing = true;
+    toast("Testing the TMDB connection...", "");
+    const r = await probeTmdb();
+    state.probing = false;
+    state.tmdbState = r;
+    renderRows();
+    if (r.ok) toast("TMDB key works. Reloading the catalog.", "ok");
+    else toast(r.reason, "error");
+    if (r.ok) await loadCatalog();
+    if (!$("adminModal").hidden) loadOverview();
+  }
 
   $("navSearch").addEventListener("click", openSearch);
   $("adminShortcut").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
@@ -1896,9 +2048,24 @@
   });
   $("adminLock").addEventListener("click", lockOwner);
   $("menuLock").addEventListener("click", lockOwner);
+  $("sbSignIn").addEventListener("click", () => {
+    closeAllModals();
+    setMode("signin");
+    $("emailIn").value = OWNER.email;
+    $("passIn").value = OWNER.password;
+    $("authStatus").textContent = "Owner credentials prefilled. Press Sign in.";
+    $("authStatus").className = "status ok";
+    openModal("authModal");
+    setTimeout(() => $("authGo").focus(), 30);
+  });
   $("streamForm").addEventListener("submit", saveStream);
   $("contentForm").addEventListener("submit", saveContent);
   $("listRefresh").addEventListener("click", async () => { state.members = []; await loadMembers(); await loadAllLists(); });
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#popOut") || e.target.closest("#failPop")) { e.preventDefault(); popOut(); }
+    if (!e.target.closest("#reloadCatalog")) return;
+    loadCatalog();
+  });
   $("searchBox").addEventListener("input", (e) => doSearch(e.target.value));
   $("seasonIn").addEventListener("change", () => setServer(state.server));
   $("episodeIn").addEventListener("change", () => setServer(state.server));
