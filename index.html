@@ -713,6 +713,10 @@
     .foot-bottom{flex-direction:column;align-items:flex-start}
     .prose p,.prose li{font-size:13.5px}
   }
+  /* v4: member history */
+  .dot-history{background:#b39bff}
+  .hist-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px}
+  .act-row .mgr{flex:0 0 auto}
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
@@ -953,7 +957,7 @@
       <div id="adminBody">
       <div class="sbbanner" id="sbBanner" hidden>
         <i class="fa-solid fa-triangle-exclamation"></i>
-        <div><b>Not signed into Supabase</b><span>Row Level Security is hiding members and watchlists. Sign in as the owner to load real data.</span></div>
+        <div><b>Not signed into Supabase</b><span id="sbBannerMsg">Row Level Security is hiding members and watchlists. Sign in as the owner to load real data.</span></div>
         <button class="btn btn-gold btn-sm" type="button" id="sbSignIn"><i class="fa-solid fa-right-to-bracket"></i> Sign in as owner</button>
       </div>
       <div class="tabs" role="tablist">
@@ -1310,7 +1314,8 @@
       '<button class="info-btn" type="button" data-info="' + esc(k) + '" aria-label="Details for ' + esc(t) + '"><i class="fa-solid fa-circle-info"></i></button>' +
       (savable ? '<button class="save' + (saved ? " on" : "") + '" type="button" data-save="' + esc(k) + '" aria-label="' + (saved ? "Remove from" : "Add to") + ' watchlist"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i></button>' : "") +
       '<p class="tile-name" title="' + esc(t) + '">' + esc(t) + "</p>" +
-      '<span class="tile-sub">' + (item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Film")) + (yearOf(item) ? " | " + esc(yearOf(item)) : "") + "</span>" +
+      '<span class="tile-sub">' + (item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Film")) +
+        (item.resume_label && item.media_type === "tv" ? " | " + esc(item.resume_label) : (yearOf(item) ? " | " + esc(yearOf(item)) : "")) + "</span>" +
     "</article>";
   }
   function section(id, title, caption, items, emptyHTML) {
@@ -1343,8 +1348,8 @@
       : "";
     $("rows").innerHTML = [
       alertHTML,
-      (load || !state.watch.some((w) => w.status === "watching")) ? ""
-        : section("continue", "Continue Watching", "Pick up where you left off", state.watch.filter((w) => w.status === "watching")),
+      (load || !continueItems().length) ? ""
+        : section("continue", "Continue Watching", "Pick up where you left off", continueItems()),
       load ? '<section class="row visible"><div class="row-head"><div><h2>Loading your Nest</h2><p>Fetching the latest from TMDB</p></div></div>' + skeletons() + "</section>"
            : section("trending", "Trending Movies", "What everyone is watching this week", state.trending),
       load ? "" : section("tv", "Popular TV Shows", "Series worth the binge", state.tv),
@@ -1814,6 +1819,14 @@
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
     $("epControls").hidden = item.is_custom || item.media_type !== "tv";
+    // Resume series at the last episode this member played.
+    if (item.media_type === "tv" && !opts.season) {
+      const last = lastPlayed(item);
+      if (last && last.season) {
+        opts = { season: last.season, episode: last.episode || 1 };
+        toast("Resuming S" + last.season + " E" + (last.episode || 1) + ".", "");
+      }
+    }
     $("seasonIn").value = String(Math.max(1, parseInt(opts.season, 10) || 1));
     $("episodeIn").value = String(Math.max(1, parseInt(opts.episode, 10) || 1));
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
@@ -1933,11 +1946,11 @@
       // Suspended accounts are signed out before anything else loads.
       if (state.profile.is_blocked && !isOwnerEmail(state.user.email)) { await kickOut(state.profile.blocked_reason); return; }
       try { localStorage.removeItem(SUSP_KEY); } catch {}
-      await Promise.all([loadWatch(), loadCustom()]);
+      await Promise.all([loadWatch(), loadCustom(), loadMyHistory()]);
       subscribe();
     } else {
       if (state.channel && state.sb) state.sb.removeChannel(state.channel);
-      state.channel = null; state.watch = [];
+      state.channel = null; state.watch = []; state.myHistory = [];
       await loadCustom();
     }
     paintAccount(); renderRows(); paintAdmin(); renderMyListGrid();
@@ -1985,15 +1998,14 @@
       let res = state.mode === "signup"
         ? await state.sb.auth.signUp({ email, password: pass, options: opts })
         : await state.sb.auth.signInWithPassword({ email, password: pass });
-      if (res.error && state.mode === "signin" && /invalid login|email not confirmed/i.test(res.error.message || "")) {
-        const up = await state.sb.auth.signUp({ email, password: pass, options: opts });
-        if (!up.error) {
-          $("authStatus").textContent = "Account created for " + email + ". Confirm the email link if required, then sign in.";
-          $("authStatus").className = "status ok";
-          return;
-        }
-      }
       if (res.error) throw res.error;
+      // Supabase hides whether an email is taken: signing up with an existing
+      // email "succeeds" with no identities. Say so instead of claiming success.
+      if (state.mode === "signup" && res.data?.user && Array.isArray(res.data.user.identities) && res.data.user.identities.length === 0) {
+        $("authStatus").textContent = "An account with this email already exists. Sign in instead.";
+        $("authStatus").className = "status error";
+        return;
+      }
       if (state.mode === "signup" && !res.data.session) {
         $("authStatus").textContent = "Account created. Confirm your email, then sign in.";
         $("authStatus").className = "status ok";
@@ -2006,7 +2018,7 @@
       const msg = e.message || "Authentication failed.";
       const banned = /banned/i.test(msg);
       if (banned) { closeModal("authModal"); showBlocked(""); }
-      $("authStatus").textContent = banned ? "This account is suspended." : msg;
+      $("authStatus").textContent = banned ? "This account is suspended." : friendlyAuthError(msg, email);
       $("authStatus").className = "status error";
     } finally { $("authGo").disabled = false; }
   }
@@ -2047,12 +2059,14 @@
       try {
         const { data, error } = await state.sb.auth.signInWithPassword({ email, password: pass });
         if (!error && data?.user) {
+          state.sbAuthError = "";
           await applyUser(data.user);
           grantOwner();
           return;
         }
-        // Wrong password in Supabase - fall through to the offline key check so
-        // the panel still works while email confirmation is pending.
+        // Remember the real reason so the panel can show it instead of silently
+        // opening with empty tables.
+        if (error) state.sbAuthError = friendlyAuthError(error.message, email);
       } catch { /* fall through */ }
     }
 
@@ -2066,6 +2080,7 @@
       return;
     }
     grantOwner();
+    if (state.sbAuthError) toast("Opened without database access: " + state.sbAuthError, "error");
   }
   function grantOwner() {
     state.ownerSession = true;
@@ -2090,6 +2105,8 @@
   function paintSessionBanner() {
     const need = isAdmin() && Boolean(state.sb) && !state.user;
     $("sbBanner").hidden = !need;
+    const m = $("sbBannerMsg");
+    if (m) m.textContent = state.sbAuthError || "Row Level Security is hiding members and watchlists. Sign in as the owner to load real data.";
   }
   function paintAdmin() {
     paintSessionBanner();
@@ -2145,7 +2162,7 @@
     const tmdbLabel = !key ? "no key" : (tm ? (tm.ok ? "connected" : "failing") : "untested");
     const origin = location.protocol + "//" + location.host + location.pathname;
     $("ovConnect").innerHTML =
-      '<h3>Platform status</h3><p>Live view of what is wired up right now.</p><div class="list">' +
+      '<div id="ovDb"></div><h3>Platform status</h3><p>Live view of what is wired up right now.</p><div class="list">' +
       row("<strong>Supabase</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + "</small>",
           '<span class="role ' + (connected ? "admin" : "") + '">' + (connected ? "connected" : "offline") + "</span>") +
       row("<strong>TMDB</strong><small>" + esc(tm ? tm.reason : (key === "configured" ? "Key is set but has not been tested." : "No key configured.")) + "</small>",
@@ -2162,6 +2179,7 @@
       done(Boolean(state.cfg.supabaseUrl && state.cfg.supabaseAnonKey), "Connect Supabase", "Built into index.html (OWNER block).") +
       done(Boolean(state.cfg.tmdbKey), "Add your TMDB key", "Built into index.html (OWNER block).") +
       done(connected, "Verify members and watchlists", "Admin > Members and Watchlists tabs.");
+    fillDbProbe();
   }
   function fillCfgForm() {
     computeConfig();
@@ -2620,16 +2638,17 @@
     if (!state.user) { buildMyList(); return; }
     if (!$("mlGrid")) buildMyList();
     const all = state.watch;
-    const c = { all: all.length, plan: 0, watching: 0, completed: 0 };
+    const c = { all: all.length, plan: 0, watching: 0, completed: 0, history: (state.myHistory || []).length };
     all.forEach((w) => { c[STATUS[w.status] ? w.status : "plan"]++; });
     const movies = all.filter((w) => w.media_type === "movie").length;
     $("mlStats").innerHTML = statCard(c.all, "Saved") + statCard(movies, "Movies") + statCard(c.all - movies, "Series") + statCard(c.watching, "Watching") + statCard(c.completed, "Completed");
     const tabBtn = (k, l) => '<button type="button" class="ml-tab' + (ML.status === k ? " on" : "") + '" data-ml-status="' + k + '">' +
       (k === "all" ? "" : '<i class="dot dot-' + k + '"></i>') + esc(l) + "<b>" + c[k] + "</b></button>";
-    $("mlTabs").innerHTML = tabBtn("all", "All") + tabBtn("plan", STATUS.plan) + tabBtn("watching", STATUS.watching) + tabBtn("completed", STATUS.completed);
+    $("mlTabs").innerHTML = tabBtn("all", "All") + tabBtn("plan", STATUS.plan) + tabBtn("watching", STATUS.watching) + tabBtn("completed", STATUS.completed) + tabBtn("history", "History");
     document.querySelectorAll("[data-ml-type]").forEach((b) => b.classList.toggle("active", b.dataset.mlType === ML.type));
-    $("mlClear").hidden = !c.completed || !state.hasStatus;
+    $("mlClear").hidden = !c.completed || !state.hasStatus || ML.status === "history";
     const q = ML.q.trim().toLowerCase();
+    if (ML.status === "history") { renderHistoryView($("mlGrid"), q); return; }
     const by = {
       "added-desc": (a, b) => new Date(b.added_at) - new Date(a.added_at),
       "added-asc": (a, b) => new Date(a.added_at) - new Date(b.added_at),
@@ -2691,7 +2710,7 @@
       user_id: state.user.id, tmdb_id: id, media_type: tv ? "tv" : "movie",
       title: titleOf(item), poster_path: item.poster_path || null, season: s, episode: e
     });
-    if (!error) return;
+    if (!error) { noteLocalPlay(item, s, e); return; }
     const m = String(error.message || "");
     if (/watch_history|relation|schema cache|does not exist/i.test(m)) state.hasHistory = false;
     else if (/row-level security|violates/i.test(m)) checkBlocked();
@@ -2949,6 +2968,183 @@
     if (!INFO_PAGES[raw]) document.title = BASE_TITLE;
   });
 
+  /* =====================================================================
+     v4 - Reliable owner sign-in, database diagnostics, member watch history
+     ===================================================================== */
+  Object.assign(state, { myHistory: [], sbAuthError: "" });
+
+  function friendlyAuthError(msg, email) {
+    const m = String(msg || "");
+    const owner = isOwnerEmail(email || "");
+    if (/invalid login/i.test(m)) return owner
+      ? "Supabase rejected the owner password - the password saved in Supabase does not match index.html. Run the SQL repair (STEP 13) to reset it."
+      : "Incorrect email or password.";
+    if (/email not confirmed/i.test(m)) return owner
+      ? "The owner email is not confirmed in Supabase. Run the SQL repair (STEP 13) or confirm it in Authentication > Users."
+      : "Please confirm your email first - open the link Supabase sent to your inbox.";
+    if (/banned/i.test(m)) return "This account is suspended.";
+    if (/fetch|network/i.test(m)) return "Could not reach Supabase. Check your connection or ad-blocker.";
+    return m || "Sign-in failed.";
+  }
+
+  async function ownerSupabaseSignIn() {
+    if (!state.sb) { toast("Supabase is not configured.", "error"); return false; }
+    const btn = $("sbSignIn"), msg = $("sbBannerMsg");
+    if (btn) btn.disabled = true;
+    if (msg) msg.textContent = "Signing in to Supabase...";
+    let res;
+    try { res = await state.sb.auth.signInWithPassword({ email: OWNER.email, password: OWNER.password }); }
+    catch (e) { res = { error: e }; }
+    if (btn) btn.disabled = false;
+    if (res.error || !res.data?.user) {
+      state.sbAuthError = friendlyAuthError(res.error?.message, OWNER.email);
+      paintSessionBanner();
+      toast(state.sbAuthError, "error");
+      fillDbProbe();
+      return false;
+    }
+    state.sbAuthError = "";
+    await applyUser(res.data.user);
+    toast("Signed in to Supabase - loading live data.", "ok");
+    await refreshAdminData();
+    return true;
+  }
+
+  async function refreshAdminData() {
+    if (!isAdmin()) return;
+    state.members = [];
+    await fetchHistory();
+    await Promise.all([loadOverview(), loadMembers(), loadAllLists(), loadStreams(), loadContentAdmin()]);
+    paintActivityUsers();
+    renderActivity();
+  }
+
+  /* Shows exactly what the current Supabase session can read, table by table,
+     so "empty admin panel" problems explain themselves. */
+  async function fillDbProbe() {
+    const box = $("ovDb");
+    if (!box || !isAdmin()) return;
+    if (!state.sb) { box.innerHTML = ""; return; }
+    const signed = Boolean(state.user);
+    const who = signed ? state.user.email + " | role: " + (state.profile?.role || "unknown") : "Not signed in to Supabase";
+    box.innerHTML = "<h3>Database access</h3><p>What your current Supabase session can actually read. If a table shows an error or 0 rows while data exists in Supabase, the reason is shown here.</p>" +
+      '<div class="list">' +
+      row("<strong>Supabase session</strong><small>" + esc(who) + "</small>",
+        signed ? '<span class="role admin">signed in</span>' : '<button class="mini up" type="button" id="probeSignIn">Sign in as owner</button>') +
+      (!signed && state.sbAuthError ? row('<strong style="color:#ff8a92">Last sign-in error</strong><small style="white-space:normal;max-width:none">' + esc(state.sbAuthError) + "</small>", "") : "") +
+      '<div id="ovDbRows">' + (signed ? '<p class="hint" style="padding:10px 2px">Checking tables...</p>' : "") + "</div></div>";
+    if (!signed) return;
+    const tables = [["profiles", "Members (profiles)"], ["watchlists", "Watchlists"], ["watch_history", "Watch history"], ["custom_streams", "Stream overrides"], ["custom_content", "Custom content"]];
+    const out = await Promise.all(tables.map(async (t) => {
+      try {
+        const r = await state.sb.from(t[0]).select("*", { count: "exact", head: true });
+        return { t: t[0], label: t[1], error: r.error ? r.error.message : "", count: r.count };
+      } catch (e) { return { t: t[0], label: t[1], error: e.message || "failed", count: null }; }
+    }));
+    const box2 = $("ovDbRows");
+    if (!box2) return;
+    const prof = out.find((o) => o.t === "profiles");
+    const hint = prof && !prof.error && prof.count !== null && prof.count <= 1
+      ? '<p class="note" style="margin-top:12px">Only one profile is visible. Either you are the only member, or the database does not recognise you as admin - run the SQL repair (STEP 13).</p>' : "";
+    box2.innerHTML = out.map((o) => row(
+      "<strong>" + esc(o.label) + '</strong><small style="white-space:normal;max-width:none">' + esc(o.error ? o.error : (o.count == null ? 0 : o.count) + " rows visible to you") + "</small>",
+      '<span class="role ' + (o.error ? "blocked" : "admin") + '">' + (o.error ? "error" : "ok") + "</span>")).join("") + hint;
+  }
+
+  /* ---------- member watch history ---------- */
+  async function loadMyHistory() {
+    if (!state.sb || !state.user) { state.myHistory = []; return; }
+    const { data, error } = await state.sb.from("watch_history")
+      .select("id,tmdb_id,media_type,title,poster_path,season,episode,watched_at")
+      .eq("user_id", state.user.id).order("watched_at", { ascending: false }).limit(300);
+    if (error) {
+      if (/watch_history|relation|schema cache|does not exist/i.test(error.message || "")) state.hasHistory = false;
+      state.myHistory = [];
+      return;
+    }
+    state.hasHistory = true;
+    state.myHistory = data || [];
+  }
+  function lastPlayed(item) {
+    if (!item) return null;
+    const id = Number(item.id);
+    return (state.myHistory || []).find((h) => Number(h.tmdb_id) === id && h.media_type === item.media_type) || null;
+  }
+  // Latest play per title, newest first, skipping titles marked Completed.
+  function continueItems() {
+    const done = new Set(state.watch.filter((w) => w.status === "completed").map(keyOf));
+    const seen = new Set(), out = [];
+    (state.myHistory || []).forEach((h) => {
+      const it = { id: Number(h.tmdb_id), title: h.title, poster_path: h.poster_path, media_type: h.media_type };
+      const k = keyOf(it);
+      if (seen.has(k) || done.has(k)) return;
+      seen.add(k);
+      if (h.media_type === "tv" && h.season) it.resume_label = "S" + h.season + " E" + (h.episode || 1);
+      out.push(it);
+    });
+    if (!out.length) return state.watch.filter((w) => w.status === "watching");
+    return out.slice(0, 20);
+  }
+  function noteLocalPlay(item, s, e) {
+    state.myHistory.unshift({
+      id: "local-" + Date.now(), tmdb_id: Number(item.id), media_type: item.media_type === "tv" ? "tv" : "movie",
+      title: titleOf(item), poster_path: item.poster_path || null, season: s, episode: e, watched_at: new Date().toISOString()
+    });
+    if (!$("rows").hidden) renderRows();
+    if (!$("listPage").hidden) renderMyListGrid();
+  }
+  function renderHistoryView(g, q) {
+    if (!g) return;
+    if (!state.hasHistory) { g.innerHTML = '<div class="empty-row" style="grid-column:1/-1"><span>Watch history is not set up on this site yet.</span></div>'; return; }
+    const all = state.myHistory || [];
+    const rows = all.filter((h) => (ML.type === "all" || h.media_type === ML.type) && (!q || String(h.title || "").toLowerCase().indexOf(q) !== -1));
+    if (!rows.length) {
+      g.innerHTML = '<div class="empty-row" style="grid-column:1/-1"><span>' + (all.length ? "Nothing matches these filters." : "Nothing watched yet. Titles you play while signed in appear here.") + "</span></div>";
+      return;
+    }
+    g.innerHTML = '<div style="grid-column:1/-1"><div class="hist-head"><span>' + rows.length + " play" + (rows.length === 1 ? "" : "s") +
+      ' - series resume at your last episode</span><button class="mini danger" type="button" id="histClear"><i class="fa-solid fa-trash"></i> Clear history</button></div><div class="list">' +
+      rows.slice(0, 200).map((h) => {
+        const p = img(h.poster_path, "w92");
+        const ep = h.media_type === "tv" && h.season ? " - S" + h.season + " E" + (h.episode || 1) : "";
+        return '<div class="act-row">' + (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<span class="act-ph"></span>') +
+          "<div><b>" + esc(h.title) + esc(ep) + "</b><small>" + (h.media_type === "tv" ? "Series" : "Film") + " | " + esc(timeAgo(h.watched_at)) + "</small></div>" +
+          '<div class="mgr"><button class="mini" type="button" data-resume="' + esc(h.id) + '"><i class="fa-solid fa-play"></i> ' + (ep ? "Resume" : "Play") + "</button>" +
+          '<button class="mini danger" type="button" data-hist-del="' + esc(h.id) + '" aria-label="Remove from history"><i class="fa-solid fa-xmark"></i></button></div></div>';
+      }).join("") + "</div></div>";
+    wireImages(g);
+  }
+  async function deleteHistory(id) {
+    if (!state.sb || !state.user) return;
+    if (String(id).indexOf("local-") === 0) { await loadMyHistory(); renderMyListGrid(); renderRows(); return; }
+    const { error } = await state.sb.from("watch_history").delete().eq("id", id).eq("user_id", state.user.id);
+    if (error) { toast(error.message || "Could not remove this entry.", "error"); return; }
+    state.myHistory = state.myHistory.filter((h) => String(h.id) !== String(id));
+    renderMyListGrid(); renderRows();
+  }
+  async function clearHistory() {
+    if (!state.sb || !state.user || !state.myHistory.length) return;
+    if (!confirm("Clear your entire watch history? This also empties Continue Watching.")) return;
+    const { error } = await state.sb.from("watch_history").delete().eq("user_id", state.user.id);
+    if (error) { toast(error.message || "Could not clear history.", "error"); return; }
+    state.myHistory = [];
+    toast("Watch history cleared.", "ok");
+    renderMyListGrid(); renderRows();
+  }
+  document.addEventListener("click", async (ev) => {
+    if (ev.target.closest("#probeSignIn")) { ev.preventDefault(); await ownerSupabaseSignIn(); return; }
+    const rs = ev.target.closest("[data-resume]");
+    if (rs) {
+      const h = (state.myHistory || []).find((x) => String(x.id) === rs.dataset.resume);
+      if (h) play({ id: Number(h.tmdb_id), title: h.title, poster_path: h.poster_path, media_type: h.media_type },
+        h.media_type === "tv" ? { season: h.season || 1, episode: h.episode || 1 } : {});
+      return;
+    }
+    const del = ev.target.closest("[data-hist-del]");
+    if (del) { await deleteHistory(del.dataset.histDel); return; }
+    if (ev.target.closest("#histClear")) await clearHistory();
+  });
+
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:
        1. hash   :  #admin  #/admin  #owner
@@ -3130,16 +3326,8 @@
   state.store = {};
   $("adminLock").addEventListener("click", lockOwner);
   $("menuLock").addEventListener("click", lockOwner);
-  $("sbSignIn").addEventListener("click", () => {
-    closeAllModals();
-    setMode("signin");
-    $("emailIn").value = OWNER.email;
-    $("passIn").value = OWNER.password;
-    $("authStatus").textContent = "Owner credentials prefilled. Press Sign in.";
-    $("authStatus").className = "status ok";
-    openModal("authModal");
-    setTimeout(() => $("authGo").focus(), 30);
-  });
+  // Signs straight into Supabase and shows the exact error if it fails.
+  $("sbSignIn").addEventListener("click", () => { ownerSupabaseSignIn(); });
   $("streamForm").addEventListener("submit", saveStream);
   $("contentForm").addEventListener("submit", saveContent);
   $("listRefresh").addEventListener("click", async () => { state.members = []; await loadMembers(); await loadAllLists(); });
