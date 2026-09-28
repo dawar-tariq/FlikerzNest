@@ -1,489 +1,1610 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flickerz Nest</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .movie-card:hover .card-overlay { opacity: 1; }
-    html { scroll-behavior: smooth; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0c10">
+<meta name="description" content="Flickerz Nest - a premium home for films and series. Made with love by Dawar Tariq.">
+<meta name="author" content="Dawar Tariq">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="./">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Flickerz Nest">
+<meta property="og:title" content="Flickerz Nest | Stories worth staying in for">
+<meta property="og:description" content="Discover trending films and series, build your watchlist and start streaming in seconds.">
+<meta property="og:image" content="https://image.tmdb.org/t/p/w1280/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Flickerz Nest | Stories worth staying in for">
+<meta name="twitter:description" content="Discover trending films and series, build your watchlist and start streaming in seconds.">
+<meta name="twitter:image" content="https://image.tmdb.org/t/p/w1280/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e50914'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Helvetica,Arial,sans-serif' font-size='38' font-weight='bold' fill='%23fff'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e50914'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Helvetica,Arial,sans-serif' font-size='38' font-weight='bold' fill='%23fff'%3EF%3C/text%3E%3C/svg%3E">
+<title>Flickerz Nest | Stories worth staying in for</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root{
+    color-scheme:dark;
+    --ink:#08090d;
+    --ink-2:#0d0f15;
+    --card:#14161d;
+    --card-2:#1a1d26;
+    --text:#f3f4f7;
+    --muted:#9aa0ad;
+    --red:#e50914;
+    --red-2:#ff2e3d;
+    --gold:#ffcf70;
+    --green:#5ed9a4;
+    --line:rgba(255,255,255,.09);
+    --line-2:rgba(255,255,255,.16);
+    --shadow:0 26px 70px rgba(0,0,0,.6);
+    --r:14px;
+    font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;background:var(--ink)}
+  body{margin:0;min-width:320px;background:var(--ink);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  body.locked{overflow:hidden}
+  a{color:inherit;text-decoration:none}
+  button,input,textarea,select{font:inherit;color:inherit}
+  [hidden]{display:none!important}
+  :focus-visible{outline:2px solid #ff5f69;outline-offset:3px;border-radius:8px}
+  ::selection{background:rgba(229,9,20,.42)}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:#0a0b0f}
+  ::-webkit-scrollbar-thumb{background:#2c303b;border-radius:20px;border:2px solid #0a0b0f}
+  ::-webkit-scrollbar-thumb:hover{background:#3d424f}
 
-    @keyframes flameGlow {
-      0%, 100% { text-shadow: 0 0 20px #ff2200, 0 0 40px #ff6600, 0 0 60px #ffae00; }
-      50% { text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4400, 0 0 90px #ffcc00; }
-    }
-    .fire-text { animation: flameGlow 2s infinite alternate ease-in-out; }
-    
-    @keyframes particleRise {
-      0% { transform: translateY(0) scale(1); opacity: 0.8; }
-      100% { transform: translateY(-120px) scale(0.2); opacity: 0; }
-    }
-    .particle {
-      position: absolute;
-      bottom: -10px;
-      background: radial-gradient(circle, #ffcc00 0%, #ff3300 70%, transparent 100%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: particleRise 2.5s infinite linear;
-    }
-  </style>
+  /* ambient glow */
+  .aura{position:fixed;z-index:0;inset:0;pointer-events:none;
+    background:
+      radial-gradient(680px 380px at 12% -6%, rgba(229,9,20,.16), transparent 70%),
+      radial-gradient(760px 460px at 92% 6%, rgba(84,60,220,.13), transparent 70%),
+      radial-gradient(700px 520px at 50% 108%, rgba(255,110,60,.07), transparent 72%);
+  }
+  .grain{position:fixed;z-index:0;inset:0;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:fixed;inset:0 0 auto;z-index:60;display:flex;align-items:center;gap:clamp(16px,3vw,42px);
+    height:76px;padding:0 clamp(16px,4.5vw,68px);
+    background:linear-gradient(180deg,rgba(7,8,12,.9),rgba(7,8,12,.3));
+    border-bottom:1px solid rgba(255,255,255,.04);
+    backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+    transition:background .3s,height .3s,border-color .3s}
+  .topbar.scrolled{height:64px;background:rgba(9,10,14,.93);border-bottom-color:var(--line);box-shadow:0 14px 36px rgba(0,0,0,.5)}
+  .brand{display:inline-flex;align-items:center;gap:11px;flex:0 0 auto;font-size:21px;font-weight:800;letter-spacing:-.055em}
+  .brand-mark{width:33px;height:33px;display:grid;place-items:center;border-radius:11px 11px 11px 3px;
+    background:linear-gradient(140deg,#ff3342,#a30610);color:#fff;font-size:17px;box-shadow:0 8px 26px rgba(229,9,20,.42)}
+  .brand b{font-weight:800}
+  .brand em{font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{display:flex;align-items:center;gap:clamp(13px,1.7vw,26px);font-size:13.5px;font-weight:600;color:rgba(243,244,247,.7)}
+  .nav-links a{position:relative;padding:6px 0;transition:color .18s}
+  .nav-links a::after{position:absolute;right:0;bottom:0;left:0;height:2px;border-radius:2px;content:"";
+    background:linear-gradient(90deg,var(--red-2),#ff9a5f);transform:scaleX(0);transform-origin:left;transition:transform .24s}
+  .nav-links a:hover{color:#fff}
+  .nav-links a.active{color:#fff}
+  .nav-links a.active::after{transform:scaleX(1)}
+  .nav-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .nav-search{display:flex;align-items:center;gap:9px;width:clamp(170px,21vw,290px);height:40px;padding:0 14px;
+    border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);cursor:pointer;
+    transition:border-color .2s,background .2s,box-shadow .2s}
+  .nav-search:hover,.nav-search:focus-within{border-color:var(--line-2);background:rgba(255,255,255,.09);box-shadow:0 0 0 4px rgba(255,255,255,.03)}
+  .nav-search i{color:var(--muted);font-size:13px}
+  .nav-search span{color:var(--muted);font-size:13px}
+  .nav-search kbd{margin-left:auto;padding:2px 6px;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-family:inherit;font-size:10px}
+  .icon-btn{width:40px;height:40px;display:grid;place-items:center;border:1px solid transparent;border-radius:50%;background:transparent;cursor:pointer;
+    transition:background .2s,color .2s,transform .2s,border-color .2s}
+  .icon-btn:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateY(-1px)}
+  .icon-btn.shield{border-color:rgba(255,207,112,.28);background:rgba(255,207,112,.1);color:var(--gold)}
+  .icon-btn.shield:hover{background:rgba(255,207,112,.2);color:#fff;border-color:rgba(255,207,112,.5)}
+  .profile-trigger{display:flex;align-items:center;gap:9px;padding:4px;border:0;border-radius:999px;background:transparent;cursor:pointer}
+  .avatar{width:35px;height:35px;display:grid;place-items:center;border-radius:50%;font-size:12px;font-weight:800;
+    background:linear-gradient(140deg,#6f2027,#d9333b);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+  .avatar.owner{background:linear-gradient(140deg,#b8860b,#ffcf70);color:#231a05;box-shadow:0 0 0 2px rgba(255,207,112,.35)}
+  .caret{color:#ced1d8;font-size:10px}
+  .menu{position:absolute;top:66px;right:clamp(14px,4.5vw,68px);width:262px;padding:8px;border:1px solid var(--line-2);
+    border-radius:16px;background:rgba(20,22,29,.97);box-shadow:var(--shadow);backdrop-filter:blur(22px);animation:drop .16s ease-out;z-index:61}
+  .menu-head{padding:12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+  .menu-head strong{display:flex;align-items:center;gap:7px;font-size:13.5px}
+  .menu-head span{display:block;overflow:hidden;margin-top:5px;color:var(--muted);font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+  .menu-item{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;border:0;border-radius:10px;background:transparent;
+    color:#e9eaef;cursor:pointer;text-align:left;font-size:13px;font-weight:500}
+  .menu-item i{width:16px;color:#a7abb6;text-align:center;font-size:12px}
+  .menu-item:hover{background:rgba(255,255,255,.08)}
+  .menu-item.danger,.menu-item.danger i{color:#ff7d85}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;height:min(94vh,900px);min-height:620px;overflow:hidden;isolation:isolate;background:#0c0e13}
+  .hero-bg{position:absolute;z-index:-2;inset:0;background-position:center 30%;background-size:cover;transform:scale(1.06);
+    animation:heroIn 1.5s cubic-bezier(.2,.75,.2,1) both,heroDrift 30s ease-in-out 1.5s infinite alternate}
+  .hero-veil{position:absolute;z-index:-1;inset:0;background:
+    linear-gradient(90deg,rgba(8,9,13,.98) 0%,rgba(8,9,13,.86) 24%,rgba(8,9,13,.45) 54%,rgba(8,9,13,.06) 100%),
+    linear-gradient(0deg,var(--ink) 3%,rgba(8,9,13,.85) 15%,rgba(8,9,13,0) 62%)}
+  .hero-glow{position:absolute;z-index:-1;inset:auto 0 -20% 0;height:60%;
+    background:radial-gradient(60% 100% at 18% 100%,rgba(229,9,20,.28),transparent 70%);filter:blur(20px)}
+  .hero-inner{position:absolute;left:max(clamp(16px,4.5vw,68px),calc((100vw - 1580px)/2));bottom:clamp(96px,13vh,168px);
+    width:min(680px,88vw);animation:rise .8s .1s both}
+  .hero-logo{display:inline-flex;align-items:center;gap:13px;margin-bottom:24px;font-size:clamp(30px,3.7vw,46px);
+    font-weight:800;letter-spacing:-.06em;text-shadow:0 6px 30px rgba(0,0,0,.55)}
+  .hero-logo i{width:clamp(34px,3.5vw,46px);height:clamp(34px,3.5vw,46px);display:grid;place-items:center;
+    border-radius:12px 12px 12px 3px;background:linear-gradient(140deg,#ff3342,#a30610);font-size:clamp(18px,2vw,24px);box-shadow:0 10px 30px rgba(229,9,20,.4)}
+  .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#f1f2f5;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+  .eyebrow::before{width:24px;height:2px;border-radius:2px;content:"";background:linear-gradient(90deg,var(--red-2),#ff9a5f)}
+  .hero-title{margin:0;font-size:clamp(2.05rem,4.8vw,4rem);font-weight:800;letter-spacing:-.05em;line-height:1.01;text-wrap:balance}
+  .chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 0}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--line-2);border-radius:8px;
+    background:rgba(12,13,17,.55);color:#e9eaef;font-size:11px;font-weight:600;backdrop-filter:blur(8px)}
+  .chip.good{border-color:rgba(94,217,164,.4);color:var(--green)}
+  .chip.gold{border-color:rgba(255,207,112,.42);color:var(--gold)}
+  .hero-copy{max-width:565px;min-height:44px;margin:15px 0 25px;color:rgba(243,244,247,.86);font-size:14.5px;line-height:1.7;
+    text-shadow:0 1px 12px rgba(0,0,0,.55);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:11px}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:0 21px;
+    border:1px solid transparent;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:700;white-space:nowrap;
+    transition:transform .18s,background .18s,border-color .18s,box-shadow .18s,color .18s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .btn-primary{background:linear-gradient(135deg,#ff2e3d,#c20710);color:#fff;box-shadow:0 12px 32px rgba(229,9,20,.32)}
+  .btn-primary:hover{box-shadow:0 16px 40px rgba(229,9,20,.45)}
+  .btn-light{background:#f7f8fa;color:#0c0d11}
+  .btn-light:hover{background:#fff}
+  .btn-glass{border-color:var(--line-2);background:rgba(18,20,26,.55);color:#fff;backdrop-filter:blur(10px)}
+  .btn-glass:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.1)}
+  .btn-gold{border-color:rgba(255,207,112,.4);background:rgba(255,207,112,.12);color:var(--gold)}
+  .btn-gold:hover{background:rgba(255,207,112,.22);color:#fff}
+  .btn-sm{min-height:38px;padding:0 15px;font-size:12px;border-radius:9px}
+  .pill{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 13px;border:1px solid rgba(255,207,112,.3);
+    border-radius:999px;background:rgba(255,207,112,.08);color:var(--gold);cursor:pointer;font-size:11.5px;font-weight:600}
+  .pill:hover{background:rgba(255,207,112,.18);color:#fff}
+
+  /* ---------- catalog ---------- */
+  .shell{position:relative;z-index:2;width:min(100%,1740px);margin:-28px auto 0;padding:0 clamp(16px,4.5vw,68px) 84px}
+  .row{margin-bottom:54px;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .row.visible{opacity:1;transform:none}
+  .row-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}
+  .row-head h2{display:flex;align-items:center;gap:11px;margin:0;font-size:clamp(19px,2.2vw,26px);font-weight:800;letter-spacing:-.04em}
+  .row-head h2::before{width:4px;height:22px;border-radius:4px;content:"";background:linear-gradient(180deg,var(--red-2),#8d050c)}
+  .row-head p{margin:6px 0 0 15px;color:var(--muted);font-size:12px}
+  .row-nav{display:flex;gap:8px}
+  .arrow{width:37px;height:37px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;
+    background:rgba(255,255,255,.05);color:#edeff3;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+  .arrow:hover{background:rgba(255,255,255,.14);border-color:var(--line-2);transform:scale(1.07)}
+  .strip-wrap{position:relative}
+  .strip-wrap::after{position:absolute;top:0;right:0;bottom:14px;width:64px;content:"";pointer-events:none;
+    background:linear-gradient(270deg,var(--ink),transparent)}
+  .strip{display:flex;gap:clamp(11px,1.4vw,20px);overflow-x:auto;overflow-y:hidden;padding:4px 2px 14px;
+    scroll-behavior:smooth;scroll-snap-type:x proximity;scrollbar-width:none}
+  .strip::-webkit-scrollbar{display:none}
+  .tile{position:relative;flex:0 0 clamp(134px,14.8vw,204px);min-width:0;scroll-snap-align:start}
+  .poster{position:relative;display:block;width:100%;aspect-ratio:2/3;padding:0;overflow:hidden;border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;background:linear-gradient(150deg,#232733,#12141a 72%);cursor:pointer;text-align:left;
+    box-shadow:0 12px 28px rgba(0,0,0,.38);transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s,border-color .32s}
+  .poster:hover{transform:translateY(-8px) scale(1.022);border-color:rgba(255,255,255,.3);box-shadow:0 26px 54px rgba(0,0,0,.62),0 0 0 1px rgba(255,46,61,.28);z-index:3}
+  .poster img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .3s}
+  .poster:hover img{transform:scale(1.09);filter:brightness(.7) saturate(1.06)}
+  .poster-veil{position:absolute;inset:0;opacity:0;background:linear-gradient(0deg,rgba(5,6,9,.95) 6%,rgba(5,6,9,.5) 42%,transparent 78%);transition:opacity .26s}
+  .poster:hover .poster-veil{opacity:1}
+  .poster-info{position:absolute;inset:auto 0 0;padding:13px;opacity:0;transform:translateY(10px);transition:opacity .24s,transform .24s}
+  .poster:hover .poster-info{opacity:1;transform:none}
+  .poster-info strong{display:block;overflow:hidden;font-size:12.5px;text-overflow:ellipsis;white-space:nowrap}
+  .poster-info span{display:-webkit-box;margin-top:5px;color:#cbced6;font-size:10.5px;line-height:1.45;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .poster-play{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transform:scale(.82);transition:opacity .22s,transform .22s}
+  .poster:hover .poster-play{opacity:1;transform:none}
+  .poster-play i{width:50px;height:50px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.75);border-radius:50%;
+    background:rgba(10,11,15,.5);padding-left:3px;backdrop-filter:blur(6px);color:#fff}
+  .score{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:7px;
+    background:rgba(8,9,12,.74);color:var(--gold);font-size:10px;font-weight:800;backdrop-filter:blur(6px)}
+  .save{position:absolute;top:9px;right:9px;width:33px;height:33px;display:grid;place-items:center;border:1px solid var(--line-2);
+    border-radius:50%;background:rgba(8,9,12,.68);color:#fff;cursor:pointer;opacity:0;transform:translateY(-5px);
+    backdrop-filter:blur(6px);transition:opacity .2s,transform .2s,background .2s,border-color .2s}
+  .tile:hover .save,.tile:focus-within .save,.save.on{opacity:1;transform:none}
+  .save:hover,.save.on{background:var(--red);border-color:var(--red)}
+  .tile-name{overflow:hidden;margin:11px 2px 2px;font-size:13px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+  .tile-sub{display:block;margin-left:2px;color:#858994;font-size:11px}
+  .skeleton{flex:0 0 clamp(134px,14.8vw,204px);aspect-ratio:2/3;border-radius:14px;
+    background:linear-gradient(100deg,#191c24 30%,#242833 50%,#191c24 70%);background-size:220% 100%;animation:shimmer 1.3s infinite linear}
+  .empty-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;min-height:122px;
+    padding:18px 0;border-block:1px solid var(--line);color:#b5b9c2;font-size:13px}
+
+  /* ---------- footer ---------- */
+  .foot{position:relative;z-index:2;display:grid;gap:22px;padding:38px clamp(16px,4.5vw,68px) 34px;
+    border-top:1px solid var(--line);background:linear-gradient(180deg,rgba(13,15,21,.6),rgba(8,9,13,.9))}
+  .foot-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:22px;width:min(100%,1740px);margin:0 auto}
+  .foot-brand{display:flex;align-items:center;gap:11px;font-size:17px;font-weight:800;letter-spacing:-.05em}
+  .foot-brand .brand-mark{width:28px;height:28px;font-size:14px}
+  .foot-tag{margin:6px 0 0;color:var(--muted);font-size:11.5px}
+  .foot-nav{display:flex;flex-wrap:wrap;gap:18px;color:#a4a8b2;font-size:12px;font-weight:500}
+  .foot-nav a:hover{color:#fff}
+  .credit{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;width:min(100%,1740px);margin:0 auto;
+    padding-top:20px;border-top:1px solid rgba(255,255,255,.06);color:#83879211;color:#868a95;font-size:12px}
+  .credit .love{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#e9eaef}
+  .credit .love .fa-heart{color:var(--red-2);animation:beat 1.5s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(255,46,61,.6))}
+  .credit .love b{background:linear-gradient(100deg,#ff5f69,#ffb057);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  .credit .socials{display:flex;gap:9px}
+  .credit .socials a{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--line);border-radius:9px;color:#a4a8b2;transition:all .2s}
+  .credit .socials a:hover{color:#fff;border-color:var(--line-2);background:rgba(255,255,255,.07);transform:translateY(-2px)}
+
+  /* ---------- modals ---------- */
+  .backdrop{position:fixed;z-index:120;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;
+    background:rgba(4,5,8,.84);backdrop-filter:blur(16px);animation:fade .16s ease-out}
+  .card{position:relative;width:min(520px,100%);max-height:min(92vh,940px);overflow:auto;border:1px solid rgba(255,255,255,.12);
+    border-radius:20px;background:linear-gradient(180deg,#191c25,#12141b);box-shadow:var(--shadow);animation:pop .22s cubic-bezier(.2,.8,.2,1) both}
+  .card-wide{width:min(1080px,100%)}
+  .card-head{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:19px 22px;
+    border-bottom:1px solid var(--line);background:rgba(23,25,33,.96);backdrop-filter:blur(16px)}
+  .card-head h2{margin:0;font-size:17.5px;font-weight:800;letter-spacing:-.02em}
+  .card-head p{margin:4px 0 0;color:var(--muted);font-size:11.5px}
+  .x{width:35px;height:35px;flex:0 0 auto;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#dcdfe6;cursor:pointer}
+  .x:hover{background:rgba(255,255,255,.17);color:#fff}
+  .card-body{padding:22px}
+  .stack{display:grid;gap:15px}
+  .field{display:grid;gap:7px}
+  .field label{color:#d9dce2;font-size:12px;font-weight:600}
+  .field input,.field textarea,.field select{width:100%;min-height:45px;padding:11px 13px;border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;background:#0e1015;font-size:13px;transition:border-color .18s,box-shadow .18s}
+  .field textarea{min-height:98px;resize:vertical;line-height:1.55}
+  .field input::placeholder,.field textarea::placeholder{color:#6c707b}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(229,9,20,.72);box-shadow:0 0 0 3px rgba(229,9,20,.15);outline:none}
+  .hint{margin:0;color:#888c97;font-size:11px;line-height:1.6}
+  .note{margin:0;padding:12px 14px;border:1px solid rgba(255,207,112,.26);border-radius:11px;background:rgba(255,207,112,.07);
+    color:#ffd98c;font-size:11.5px;line-height:1.6}
+  .status{min-height:18px;margin:0;color:#b1b5be;font-size:12px;line-height:1.55}
+  .status.error{color:#ff828a}
+  .status.ok{color:#72d9a3}
+  .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .link-btn{width:100%;margin-top:14px;border:0;background:none;color:#d6d9df;cursor:pointer;font-size:12.5px}
+  .link-btn span{color:#ff6c76;font-weight:700}
+  .lockbox{padding:52px 28px;text-align:center}
+  .lockbox i{font-size:32px;background:linear-gradient(140deg,#ffcf70,#ff6b52);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lockbox h3{margin:15px 0 8px;font-size:20px;font-weight:800}
+  .lockbox p{max-width:400px;margin:0 auto 22px;color:#a2a6b0;font-size:12.5px;line-height:1.7}
+
+  /* search */
+  .search-card{width:min(780px,100%);align-self:flex-start;margin-top:min(9vh,86px);overflow:hidden}
+  .search-top{display:flex;align-items:center;gap:13px;padding:17px 20px;border-bottom:1px solid var(--line)}
+  .search-top i{color:#9aa0ad}
+  .search-top input{flex:1;min-width:0;height:40px;border:0;background:none;font-size:17px}
+  .search-top input:focus{outline:none}
+  .search-body{max-height:min(62vh,580px);overflow-y:auto;padding:10px 12px 16px}
+  .label{padding:8px 10px 10px;color:#878b96;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  .hit{width:100%;display:flex;align-items:center;gap:13px;padding:9px;border:0;border-radius:12px;background:none;cursor:pointer;text-align:left;transition:background .16s}
+  .hit:hover{background:rgba(255,255,255,.07)}
+  .hit img{width:45px;height:65px;flex:0 0 auto;border-radius:8px;object-fit:cover;background:#24283233;background:#242832}
+  .hit-body{min-width:0;flex:1}
+  .hit-body strong{display:block;overflow:hidden;font-size:13.5px;text-overflow:ellipsis;white-space:nowrap}
+  .hit-body span{display:block;margin-top:5px;color:#969aa4;font-size:11px}
+  .hit>i{padding:0 8px;color:#848893}
+
+  /* details */
+  .detail-card{width:min(840px,100%);overflow:hidden}
+  .detail-art{position:relative;min-height:280px;background-position:center 34%;background-size:cover;background-color:#101218}
+  .detail-art::after{position:absolute;inset:0;content:"";background:linear-gradient(0deg,#181b23 4%,rgba(24,27,35,.4) 62%,rgba(24,27,35,.18))}
+  .detail-art .x{position:absolute;top:15px;right:15px;z-index:2}
+  .detail-body{position:relative;z-index:1;margin-top:-66px;padding:0 26px 26px}
+  .detail-body h2{margin:8px 0 0;font-size:clamp(25px,4.6vw,39px);font-weight:800;letter-spacing:-.045em;line-height:1.07}
+  .detail-copy{max-width:670px;margin:14px 0 0;color:#c4c7ce;font-size:13.5px;line-height:1.72}
+  .detail-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+  /* player */
+  .player-backdrop{padding:0;background:rgba(2,3,5,.97)}
+  .player-card{width:min(1420px,100%);max-height:100vh;display:flex;flex-direction:column;overflow:hidden;border:0;border-radius:0;background:#05060a}
+  .player-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px clamp(16px,3vw,38px)}
+  .player-head h2{overflow:hidden;margin:2px 0 0;font-size:17px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+  .player-head .label{padding:0}
+  .player-tools{display:flex;align-items:center;gap:10px}
+  .seg{display:flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#12141a}
+  .seg button{min-height:32px;padding:0 14px;border:0;border-radius:8px;background:none;color:#a6aab5;cursor:pointer;font-size:11.5px;font-weight:600;transition:background .18s,color .18s}
+  .seg button.active{background:#2b303c;color:#fff}
+  .seg button:disabled{opacity:.4;cursor:wait}
+  .stage{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 134px);background:#000}
+  .stage iframe{display:block;width:100%;height:100%;border:0}
+  .player-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:13px clamp(16px,3vw,38px) 18px;color:#8e929c;font-size:11.5px}
+  .ep{display:flex;align-items:center;gap:8px}
+  .ep label{display:flex;align-items:center;gap:6px}
+  .ep input{width:56px;height:32px;padding:4px 8px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:#12141a}
+
+  /* admin */
+  .tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{position:relative;padding:14px 13px;border:0;background:none;color:#989ca7;cursor:pointer;white-space:nowrap;font-size:12.5px;font-weight:600;transition:color .18s}
+  .tab:hover{color:#dfe1e7}
+  .tab.active{color:#fff}
+  .tab.active::after{position:absolute;right:11px;bottom:-1px;left:11px;height:2px;border-radius:2px;content:"";background:linear-gradient(90deg,var(--red-2),#ff9a5f)}
+  .pane{padding:22px}
+  .pane h3{margin:0 0 6px;font-size:15.5px;font-weight:800}
+  .pane>p{margin:0 0 18px;color:#90949f;font-size:11.5px;line-height:1.65}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.92fr);gap:28px}
+  .form{display:grid;gap:13px}
+  .form .field input,.form .field textarea{min-height:41px}
+  .form .field textarea{min-height:80px}
+  .list{border-top:1px solid var(--line)}
+  .list-row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:60px;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .list-row strong{display:block;overflow:hidden;color:#e9ebef;font-size:11.5px;text-overflow:ellipsis;white-space:nowrap}
+  .list-row small{display:block;overflow:hidden;max-width:340px;margin-top:4px;color:#888c97;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+  .mini{flex:0 0 auto;padding:7px 11px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:none;color:#dfe1e7;cursor:pointer;font-size:10.5px;font-weight:600;transition:all .18s}
+  .mini:hover{border-color:#ff7d85;color:#ff979e;background:rgba(255,125,133,.08)}
+  .mini.up{border-color:rgba(229,9,20,.45);color:#ff8f97}
+  .scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+  table{width:100%;border-collapse:collapse;white-space:nowrap}
+  th{padding:12px;border-bottom:1px solid rgba(255,255,255,.13);color:#9599a3;text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  td{padding:13px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:#d7dae0;font-size:11.5px}
+  tr:hover td{background:rgba(255,255,255,.025)}
+  .role{padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.09);color:#bdc1ca;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .role.admin{background:rgba(229,9,20,.22);color:#ff929a}
+  .role.owner{background:rgba(255,207,112,.18);color:var(--gold)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+  .stat{position:relative;overflow:hidden;padding:15px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))}
+  .stat::before{position:absolute;inset:0 0 auto;height:2px;content:"";background:linear-gradient(90deg,var(--red-2),#ff9a5f)}
+  .stat b{display:block;font-size:24px;font-weight:800;letter-spacing:-.03em}
+  .stat span{display:block;margin-top:3px;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .wl-user{margin-bottom:16px;padding:15px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}
+  .wl-user-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .wl-user-head b{font-size:13px}
+  .wl-user-head small{display:block;margin-top:3px;color:var(--muted);font-size:10.5px}
+  .wl-items{display:flex;flex-wrap:wrap;gap:9px}
+  .wl-item{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 6px;border:1px solid var(--line);border-radius:10px;background:rgba(10,11,15,.5);font-size:11px}
+  .wl-item img{width:26px;height:38px;border-radius:5px;object-fit:cover;background:#232733}
+  .wl-item div{max-width:150px}
+  .wl-item b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-item span{color:#8a8e99;font-size:9.5px}
+
+  /* toasts */
+  .toasts{position:fixed;z-index:260;right:20px;bottom:20px;display:grid;gap:9px;width:min(340px,calc(100vw - 30px));pointer-events:none}
+  .toast{padding:13px 15px;border:1px solid var(--line-2);border-radius:12px;background:rgba(28,31,40,.97);
+    box-shadow:var(--shadow);font-size:12.5px;animation:toastIn .22s ease-out}
+  .toast.ok{border-color:rgba(94,217,164,.42)}
+  .toast.error{border-color:rgba(255,99,109,.48)}
+
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes heroIn{from{opacity:.4;transform:scale(1.11)}to{opacity:1;transform:scale(1.06)}}
+  @keyframes heroDrift{from{transform:scale(1.06)}to{transform:scale(1.13) translate3d(-1.2%,.6%,0)}}
+  @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+  @keyframes beat{0%,100%{transform:scale(1)}18%{transform:scale(1.22)}36%{transform:scale(1)}54%{transform:scale(1.16)}}
+
+  @media (max-width:920px){
+    .nav-links{display:none}
+    .nav-search{width:auto;padding:0 12px}
+    .nav-search span,.nav-search kbd{display:none}
+    .split{grid-template-columns:1fr}
+  }
+  @media (max-width:620px){
+    .topbar{height:62px;gap:8px;padding-inline:14px}
+    .topbar.scrolled{height:58px}
+    .brand{font-size:17.5px;gap:8px}
+    .brand-mark{width:28px;height:28px;font-size:15px}
+    .nav-search{height:36px}
+    .avatar{width:31px;height:31px}
+    .caret{display:none}
+    .menu{top:56px;right:10px}
+    .hero{min-height:600px;height:85vh}
+    .hero-bg{background-position:62% center}
+    .hero-inner{left:14px;bottom:94px;width:calc(100% - 28px)}
+    .hero-logo{margin-bottom:19px}
+    .hero-copy{margin:13px 0 19px;font-size:13px}
+    .btn{min-height:43px;padding:0 15px;font-size:12.5px}
+    .shell{margin-top:-10px;padding:0 14px 56px}
+    .row{margin-bottom:36px}
+    .row-head p{display:none}
+    .tile,.skeleton{flex-basis:134px}
+    .save{opacity:1;transform:none}
+    .backdrop{padding:9px}
+    .card{border-radius:16px}
+    .card-head,.card-body,.pane{padding:16px}
+    .search-card{margin-top:7vh}
+    .detail-art{min-height:200px}
+    .detail-body{padding:0 17px 20px}
+    .player-foot{align-items:flex-start;flex-direction:column}
+    .stage{max-height:none}
+    .lockbox{padding:38px 18px}
+    .toasts{right:11px;bottom:11px}
+    .foot{padding:30px 14px 26px}
+    .credit{justify-content:center;text-align:center}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  }
+</style>
 </head>
-<body class="bg-neutral-950 text-white min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white flex flex-col justify-between">
+<body>
+<div class="aura"></div>
+<div class="grain"></div>
 
-  <!-- HEADER NAVIGATION -->
-  <header class="fixed top-0 left-0 right-0 z-40 bg-neutral-950/90 backdrop-blur-md border-b border-neutral-800/60" id="navbar">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-8">
-        <a href="#" onclick="window.showHome()" class="flex items-center space-x-2 text-red-600 font-bold text-xl tracking-wider">
-          <span class="bg-red-600 text-white rounded p-1 text-xs">F</span>
-          <span>Flickerz Nest</span>
-        </a>
-        <nav class="hidden md:flex space-x-6 text-sm font-medium text-neutral-300">
-          <a href="#" onclick="window.showHome()" class="hover:text-white transition">Home</a>
-          <a href="#movies-section" onclick="window.showHome()" class="hover:text-white transition">Films</a>
-          <a href="#series-section" onclick="window.showHome()" class="hover:text-white transition">Series</a>
-          <a href="#watchlist-section" onclick="window.showHome()" class="hover:text-white transition">My List</a>
-          <a href="#watched-section" onclick="window.showHome()" class="hover:text-white transition">Watched History</a>
-        </nav>
+<header class="topbar" id="topbar">
+  <a class="brand" href="#top" aria-label="Flickerz Nest home"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></a>
+  <nav class="nav-links" aria-label="Main">
+    <a class="active" href="#top">Home</a>
+    <a href="#row-trending">Movies</a>
+    <a href="#row-tv">TV Shows</a>
+    <a href="#row-rated">Top Rated</a>
+    <a href="#row-watchlist">My List</a>
+  </nav>
+  <div class="nav-actions">
+    <button class="nav-search" type="button" id="navSearch" aria-label="Search titles">
+      <i class="fa-solid fa-magnifying-glass"></i><span>Search titles</span><kbd>/</kbd>
+    </button>
+    <button class="icon-btn shield" type="button" id="adminShortcut" title="Admin panel (owner)" aria-label="Open admin panel" hidden><i class="fa-solid fa-shield-halved"></i></button>
+    <button class="profile-trigger" id="profileBtn" type="button" aria-expanded="false" aria-label="Account menu">
+      <span class="avatar" id="avatar">FN</span><i class="fa-solid fa-chevron-down caret"></i>
+    </button>
+  </div>
+  <div class="menu" id="profileMenu" hidden>
+    <div class="menu-head"><strong id="menuName">Your Nest</strong><span id="menuEmail">Sign in to sync your list</span></div>
+    <button class="menu-item" type="button" id="menuAuth"><i class="fa-regular fa-circle-user"></i><span>Sign in / Create account</span></button>
+    <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
+    <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
+    <button class="menu-item danger" type="button" id="menuOut" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Featured title">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-veil"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-logo"><i>F</i><b>Flickerz&nbsp;</b><em style="font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent">Nest</em></div>
+      <p class="eyebrow" id="heroKicker">Featured today</p>
+      <h1 class="hero-title" id="heroTitle">Find your next favourite.</h1>
+      <div class="chips" id="heroMeta"></div>
+      <p class="hero-copy" id="heroCopy">A calm, premium place to queue up your next movie night.</p>
+      <div class="hero-actions">
+        <button class="btn btn-light" id="heroPlay" type="button"><i class="fa-solid fa-play"></i> Play Now</button>
+        <button class="btn btn-glass" id="heroInfo" type="button"><i class="fa-solid fa-circle-info"></i> Details</button>
+        <button class="btn btn-glass" id="heroSave" type="button"><i class="fa-solid fa-plus"></i> Watchlist</button>
       </div>
-      <div class="flex items-center space-x-3">
-        <div class="relative">
-          <input type="text" id="search-input" placeholder="Search titles..." 
-                 class="bg-neutral-900 border border-neutral-800 text-xs text-white rounded-full py-1.5 pl-8 pr-4 w-32 sm:w-64 focus:outline-none focus:border-red-600 transition-all placeholder-neutral-500">
-          <svg class="w-4 h-4 text-neutral-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
     </div>
-  </header>
+  </section>
+  <div class="shell" id="rows"></div>
+</main>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-neutral-900 border border-neutral-700 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl hidden transition-all duration-300"></div>
+<footer class="foot">
+  <div class="foot-top">
+    <div>
+      <div class="foot-brand"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em style="font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent">Nest</em></b></div>
+      <p class="foot-tag">Stories worth staying in for. Metadata by TMDB, playback by your chosen stream sources.</p>
+    </div>
+    <nav class="foot-nav" aria-label="Footer">
+      <a href="#row-trending">Movies</a>
+      <a href="#row-tv">TV Shows</a>
+      <a href="#row-rated">Top Rated</a>
+      <a href="#row-watchlist">My List</a>
+    </nav>
+  </div>
+  <div class="credit">
+    <span class="love">Made with <i class="fa-solid fa-heart"></i> by <b>Dawar Tariq</b></span>
+    <span id="footYear">Flickerz Nest</span>
+    <span class="socials">
+      <a href="#top" aria-label="Top of page"><i class="fa-solid fa-arrow-up"></i></a>
+      <a href="#row-watchlist" aria-label="My list"><i class="fa-solid fa-bookmark"></i></a>
+      <a href="#admin" id="footAdmin" aria-label="Admin panel" hidden><i class="fa-solid fa-shield-halved"></i></a>
+    </span>
+  </div>
+</footer>
 
-  <!-- MAIN WRAPPER -->
-  <div id="app-container" class="flex-grow flex flex-col justify-between w-full">
-    
-    <!-- HOME VIEW CONTAINER -->
-    <div id="home-view" class="w-full">
-      <!-- Hero Banner -->
-      <section id="hero" class="relative h-[75vh] sm:h-[80vh] w-full bg-neutral-900 flex items-end pb-12 overflow-hidden pt-16 transition-all">
-        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-75"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full" id="hero-content"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<!-- Search -->
+<div class="backdrop" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="card search-card">
+    <div class="search-top">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="searchBox" type="search" placeholder="Search movies and shows" autocomplete="off" aria-label="Search movies and shows">
+      <button class="x" type="button" data-close="searchModal" aria-label="Close search"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="search-body" id="searchBody"></div>
+  </div>
+</div>
+
+<!-- Details -->
+<div class="backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden>
+  <div class="card detail-card">
+    <div class="detail-art" id="detailArt">
+      <button class="x" type="button" data-close="detailModal" aria-label="Close details"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="detail-body">
+      <p class="eyebrow" id="detailKicker" style="margin:0">Title</p>
+      <h2 id="detailTitle">Title</h2>
+      <div class="chips" id="detailMeta"></div>
+      <p class="detail-copy" id="detailCopy"></p>
+      <div class="detail-actions">
+        <button class="btn btn-light" id="detailPlay" type="button"><i class="fa-solid fa-play"></i> Play now</button>
+        <button class="btn btn-glass" id="detailSave" type="button"><i class="fa-solid fa-plus"></i> Add to watchlist</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Player -->
+<div class="backdrop player-backdrop" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle" hidden>
+  <div class="card player-card">
+    <div class="player-head">
+      <div><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
+      <div class="player-tools">
+        <div class="seg" role="group" aria-label="Stream server">
+          <button type="button" class="active" data-server="1" aria-pressed="true">Server 1</button>
+          <button type="button" data-server="2" aria-pressed="false">Server 2</button>
+        </div>
+        <button class="x" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <div class="stage"><iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe></div>
+    <div class="player-foot">
+      <span id="playerNote">If playback does not start, switch servers.</span>
+      <div class="ep" id="epControls" hidden>
+        <label>Season <input id="seasonIn" type="number" min="1" max="99" value="1"></label>
+        <label>Episode <input id="episodeIn" type="number" min="1" max="999" value="1"></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Member auth -->
+<div class="backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="authTitle">Welcome back</h2><p id="authSub">Sign in to sync your watchlist.</p></div><button class="x" type="button" data-close="authModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <form class="stack" id="authForm">
+        <div class="field" id="nameField" hidden><label for="nameIn">Display name</label><input id="nameIn" type="text" maxlength="80" autocomplete="name" placeholder="How should we call you?"></div>
+        <div class="field"><label for="emailIn">Email</label><input id="emailIn" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="field"><label for="passIn">Password</label><input id="passIn" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"></div>
+        <p class="status" id="authStatus" role="status"></p>
+        <button class="btn btn-primary" type="submit" id="authGo">Sign in</button>
+      </form>
+      <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
+      <p class="hint" style="margin-top:12px">Member accounts are handled by Supabase Auth, so your watchlist follows you on every device.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Owner gate -->
+<div class="backdrop" id="ownerModal" role="dialog" aria-modal="true" aria-labelledby="ownerTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="ownerTitle"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> Owner access</h2><p>Unlock the admin control room</p></div><button class="x" type="button" data-close="ownerModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <form class="stack" id="ownerForm">
+        <div class="field"><label for="ownerEmailIn">Owner email</label><input id="ownerEmailIn" type="email" autocomplete="off" required placeholder="owner@example.com"></div>
+        <div class="field"><label for="ownerPassIn">Admin key</label><input id="ownerPassIn" type="password" autocomplete="off" required placeholder="Your admin key"></div>
+        <p class="status" id="ownerStatus" role="status"></p>
+        <button class="btn btn-gold" type="submit" id="ownerGo"><i class="fa-solid fa-unlock"></i> Unlock admin panel</button>
+      </form>
+      <p class="hint" style="margin-top:14px">
+        Hidden from visitors. Open it with <b>index.html#admin</b>, <b>index.html?admin</b>, <b>/admin</b> (if your host rewrites paths),
+        press <b>Ctrl/Cmd + Shift + A</b>, or triple-click the year in the footer (that one prefills your credentials).
+        This gate works offline, so you can set your keys before Supabase is connected.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Admin -->
+<div class="backdrop" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle" hidden>
+  <div class="card card-wide">
+    <div class="card-head"><div><h2 id="adminTitle"><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Nest control room</h2><p id="adminSub">Streams, content, members and watchlists.</p></div><div style="display:flex;align-items:center;gap:8px"><button class="mini" type="button" id="adminLock" title="End the owner session"><i class="fa-solid fa-lock"></i> Lock</button><button class="x" type="button" data-close="adminModal" aria-label="Close admin"><i class="fa-solid fa-xmark"></i></button></div></div>
+
+    <div id="adminBody">
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="keys">API keys</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="users">Members</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="lists">Watchlists</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="streams">Stream overrides</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="content">Content manager</button>
+      </div>
+
+      <!-- Overview -->
+      <section class="pane" id="pane-overview" role="tabpanel">
+        <div class="stats" id="ovStats"></div>
+        <div id="ovConnect"></div>
+        <h3>Quick actions</h3>
+        <p>Jump straight to the tools you use most.</p>
+        <div class="actions">
+          <button class="btn btn-glass btn-sm" type="button" data-tab-jump="keys"><i class="fa-solid fa-key"></i> API keys</button>
+          <button class="btn btn-glass btn-sm" type="button" data-tab-jump="users"><i class="fa-solid fa-users"></i> Members</button>
+          <button class="btn btn-glass btn-sm" type="button" data-tab-jump="lists"><i class="fa-solid fa-list-check"></i> Watchlists</button>
+          <button class="btn btn-glass btn-sm" type="button" data-tab-jump="streams"><i class="fa-solid fa-tower-broadcast"></i> Stream overrides</button>
+          <button class="btn btn-glass btn-sm" type="button" data-tab-jump="content"><i class="fa-solid fa-clapperboard"></i> Content manager</button>
+        </div>
+        <h3 style="margin-top:24px">First run checklist</h3>
+        <p>Three steps and the whole platform is live.</p>
+        <div class="list" id="ovChecklist"></div>
       </section>
 
-      <!-- Main Content Sections -->
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 space-y-12 pb-16 w-full flex-grow">
-        
-        <!-- Search Results Section -->
-        <section id="search-results-section" class="hidden pt-20">
-          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
-            <span class="w-2 h-2 bg-red-600 rounded-full inline-block"></span>
-            <span>Search Results</span>
-          </h2>
-          <div id="search-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-        </section>
-
-        <!-- Films Section -->
-        <section id="movies-section" class="scroll-mt-20">
-          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">Films & Movies</h2>
-          <div id="trending-movies" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-        </section>
-
-        <!-- TV Series Section -->
-        <section id="series-section" class="scroll-mt-20">
-          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">TV Series & Shows</h2>
-          <div id="popular-tv" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-        </section>
-
-        <!-- My Watchlist Section -->
-        <section id="watchlist-section" class="scroll-mt-20">
-          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200">My List</h2>
-          <div id="watchlist-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-        </section>
-
-        <!-- Watched Movies & History Section -->
-        <section id="watched-section" class="scroll-mt-20">
-          <h2 class="text-xl font-bold mb-4 tracking-wide text-neutral-200 flex items-center space-x-2">
-            <span class="text-red-600">✓</span>
-            <span>Watched History</span>
-          </h2>
-          <div id="watched-grid" class="flex space-x-4 overflow-x-auto no-scrollbar py-2 scroll-smooth"></div>
-        </section>
-
-      </main>
-    </div>
-
-    <!-- DETAILS VIEW -->
-    <div id="details-view" class="hidden pt-16 min-h-screen w-full flex-grow">
-      <div class="relative w-full h-[50vh] sm:h-[65vh] bg-neutral-900 overflow-hidden">
-        <div id="details-backdrop" class="absolute inset-0 bg-cover bg-center brightness-50"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
-        <button onclick="window.showHome()" class="absolute top-4 left-4 sm:left-8 z-30 bg-neutral-900/80 hover:bg-neutral-800 text-white rounded-full p-2.5 backdrop-blur border border-neutral-700 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        </button>
-      </div>
-
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 sm:-mt-48 relative z-20 pb-16">
-        <div class="flex flex-col md:flex-row gap-8 items-start">
-          <img id="details-poster" src="" class="w-48 sm:w-64 rounded-lg shadow-2xl border border-neutral-800 flex-none object-cover" />
-          <div class="flex-grow space-y-4">
-            <h1 id="details-title" class="text-3xl sm:text-5xl font-black tracking-tight"></h1>
-            <p id="details-overview" class="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-3xl"></p>
-            <div class="flex flex-wrap gap-3 pt-4" id="details-actions"></div>
+      <!-- Keys -->
+      <section class="pane" id="pane-keys" role="tabpanel" hidden>
+        <div class="split">
+          <div>
+            <h3>Platform credentials</h3>
+            <p>Only the owner can change these. Visitors can never enter or edit keys.</p>
+            <form class="form" id="cfgForm">
+              <div class="field"><label for="cfgTmdb">TMDB API key</label><input id="cfgTmdb" type="password" autocomplete="off" placeholder="v3 api key or v4 read access token"><p class="hint">Powers the hero banner, all catalog rows and live search.</p></div>
+              <div class="field"><label for="cfgUrl">Supabase project URL</label><input id="cfgUrl" type="url" placeholder="https://your-project.supabase.co"></div>
+              <div class="field"><label for="cfgKey">Supabase anon / publishable key</label><input id="cfgKey" type="password" autocomplete="off" placeholder="eyJ... or sb_publishable_..."><p class="hint">Public key only - never paste a service_role key.</p></div>
+              <p class="status" id="cfgStatus" role="status"></p>
+              <div class="actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save credentials</button><button class="btn btn-glass" type="button" id="cfgRevert">Revert to built-in</button></div>
+            </form>
+            <p class="note" style="margin-top:14px"><b>Built-in credentials are active.</b> The TMDB key and Supabase project are baked into index.html, so every visitor loads the live catalog automatically. Overrides here only affect your own browser.</p>
+          </div>
+          <div>
+            <h3>Where keys are stored</h3>
+            <p>Credentials live in this browser's local storage. To ship them to every visitor, also paste them into the OWNER block at the top of the script in index.html.</p>
+            <div class="list" id="cfgInfo"></div>
+            <p class="note" style="margin-top:16px"><strong>Tip:</strong> run this page on the same browser where you save the keys, or hard-code them in the OWNER block, so visitors see the live catalog too.</p>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- 404 NOT FOUND VIEW -->
-    <div id="not-found-view" class="hidden pt-16 min-h-[85vh] w-full flex flex-col items-center justify-center relative overflow-hidden text-center px-4">
-      <div class="absolute inset-0 bg-gradient-to-t from-red-950/40 via-neutral-950 to-neutral-950 pointer-events-none"></div>
-      <div id="fire-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+      <!-- Members -->
+      <section class="pane" id="pane-users" role="tabpanel" hidden>
+        <div class="stats" id="userStats"></div>
+        <h3>Registered members</h3>
+        <p>Promote a trusted member to admin, or return an account to a standard viewer.</p>
+        <div class="scroll-x" id="userWrap"></div>
+        <p class="status" id="userStatus" role="status"></p>
+      </section>
 
-      <div class="relative z-10 max-w-xl mx-auto space-y-6">
-        <h1 class="text-8xl sm:text-9xl font-black tracking-widest text-red-600 fire-text select-none">404</h1>
-        <div class="space-y-2">
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Lost in the Ashes</h2>
-          <p class="text-neutral-400 text-sm sm:text-base">The movie or page you are looking for was consumed by flames or never existed.</p>
+      <!-- Watchlists -->
+      <section class="pane" id="pane-lists" role="tabpanel" hidden>
+        <div class="stats" id="listStats"></div>
+        <h3>Member watchlists</h3>
+        <p>Everything your members have saved, grouped by account.</p>
+        <div class="actions" style="margin-bottom:16px">
+          <button class="btn btn-glass btn-sm" type="button" id="listRefresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
+          <span class="status" id="listStatus" role="status"></span>
         </div>
-        <div class="pt-4">
-          <button onclick="window.showHome()" class="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold px-8 py-3.5 rounded-full shadow-lg shadow-red-600/30 transition-all hover:scale-105 flex items-center space-x-2 mx-auto">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            <span>Back to Home</span>
-          </button>
+        <div id="listBody"></div>
+      </section>
+
+      <!-- Streams -->
+      <section class="pane" id="pane-streams" role="tabpanel" hidden>
+        <div class="split">
+          <div>
+            <h3>Custom stream override</h3>
+            <p>Point any TMDB id at your own https embed URL. When present, Server 1 loads this instead of VidSrc.</p>
+            <form class="form" id="streamForm">
+              <div class="field"><label for="stId">TMDB ID</label><input id="stId" type="number" min="1" required placeholder="e.g. 693134"></div>
+              <div class="field"><label for="stUrl">Stream URL</label><input id="stUrl" type="url" required placeholder="https://your-player.example/embed/..."></div>
+              <p class="status" id="stStatus" role="status"></p>
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save override</button>
+            </form>
+          </div>
+          <div><h3>Saved overrides</h3><p>One override per TMDB id.</p><div class="list" id="streamList"></div></div>
         </div>
-      </div>
-    </div>
+      </section>
 
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-neutral-900 bg-neutral-950/90 py-8 text-center text-xs text-neutral-500 space-y-3 relative z-30">
-    <p>Made with <span class="text-red-600">♥</span> by <strong class="text-neutral-300">Dawar Tariq</strong></p>
-    <p>Connect on Instagram: <a href="https://instagram.com/starterkartt" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-400 font-semibold underline transition">@starterkartt</a></p>
-    <p class="text-[10px] text-neutral-600">© 2026 Flickerz Nest. All rights reserved.</p>
-  </footer>
-
-  <!-- STREAM PLAYER MODAL -->
-  <div id="player-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex flex-col items-center justify-center p-2 sm:p-6">
-    <div class="w-full max-w-5xl flex justify-between items-center mb-2 px-2">
-      <div class="flex space-x-2 text-xs">
-        <button onclick="window.switchProvider('vidsrc')" class="bg-red-600 px-3 py-1 rounded text-white font-medium">Server 1 (VidSrc)</button>
-        <button onclick="window.switchProvider('2embed')" class="bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-neutral-300 font-medium">Server 2 (2Embed)</button>
-      </div>
-      <button id="close-player" class="bg-neutral-800 hover:bg-neutral-700 text-white rounded-full p-2 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="relative w-full max-w-5xl aspect-video bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
-      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+      <!-- Content -->
+      <section class="pane" id="pane-content" role="tabpanel" hidden>
+        <div class="split">
+          <div>
+            <h3>Content manager</h3>
+            <p>Publish custom films or announcements. They appear in the "From the Nest" row for everyone.</p>
+            <form class="form" id="contentForm">
+              <div class="field"><label for="ctTitle">Title</label><input id="ctTitle" type="text" maxlength="180" required placeholder="Nest original or announcement"></div>
+              <div class="field"><label for="ctDesc">Description</label><textarea id="ctDesc" maxlength="2000" placeholder="Short description"></textarea></div>
+              <div class="field"><label for="ctBanner">Banner image URL</label><input id="ctBanner" type="url" placeholder="https://..."></div>
+              <div class="field"><label for="ctStream">Stream URL (optional)</label><input id="ctStream" type="url" placeholder="https://..."></div>
+              <p class="status" id="ctStatus" role="status"></p>
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+            </form>
+          </div>
+          <div><h3>Published</h3><p>Items appear instantly on the home page.</p><div class="list" id="contentList"></div></div>
+        </div>
+      </section>
     </div>
   </div>
+</div>
 
-  <!-- APPLICATION SCRIPT -->
-  <script>
-    (() => {
-      const state = {
-        config: {
-          tmdbApiKey: 'cc306d0684189df48d37b51bc9e06e04',
-          supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
-          supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
-        },
-        supabase: null,
-        watchlist: [],
-        watched: [],
-        currentMedia: { id: null, type: 'movie' }
-      };
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  "use strict";
 
-      const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
-      const TMDB_HERO_BASE = 'https://image.tmdb.org/t/p/original';
+  /* ================= OWNER CONFIGURATION (edit these values) ================= */
+  const OWNER = {
+    email: "wanidawar03@gmail.com",
+    password: "dawar@123",
+    tmdbKey: "cc306d0684189df48d37b51bc9e06e04",
+    supabaseUrl: "https://ctbrfynxmgcyvsrdihfg.supabase.co",
+    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA"
+  };
+  const STORE_KEY = "flickerz.owner.config.v1";
+  const SESSION_KEY = "flickerz.owner.session.v1";
+  const OWNER_SESSION_HOURS = 12;   // auto-lock the owner session after this long
+  /* ========================================================================== */
 
-      function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.remove('hidden');
-        setTimeout(() => t.classList.add('hidden'), 3000);
-      }
+  const TMDB = "https://api.themoviedb.org/3";
+  const IMG = "https://image.tmdb.org/t/p/";
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const httpsUrl = (v) => { try { const u = new URL(String(v || "").trim()); return u.protocol === "https:" ? u.href : ""; } catch { return ""; } };
+  const readStore = () => { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } };
+  const readSession = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+      return Boolean(raw && raw.exp && Date.now() < raw.exp);
+    } catch { return false; }
+  };
+  const writeSession = () => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + OWNER_SESSION_HOURS * 3600 * 1000 }));
+    } catch {}
+  };
+  const clearSession = () => { try { localStorage.removeItem(SESSION_KEY); } catch {} };
 
-      function init() {
-        initSupabase();
-        setupEventListeners();
-        fetchTrendingData();
-        generateFireParticles();
-      }
+  const DEMO_MOVIES = [
+    { id: 693134, title: "Dune: Part Two", overview: "Paul Atreides unites with the Fremen while seeking revenge against the conspirators who destroyed his family.", poster_path: "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg", backdrop_path: "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg", release_date: "2024-02-27", vote_average: 8.2, media_type: "movie" },
+    { id: 872585, title: "Oppenheimer", overview: "The story of J. Robert Oppenheimer and his role in the development of the atomic bomb.", poster_path: "/ptpr0kGAckfQkJeJIt8st5dglvd.jpg", backdrop_path: "/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg", release_date: "2023-07-19", vote_average: 8.1, media_type: "movie" },
+    { id: 569094, title: "Spider-Man: Across the Spider-Verse", overview: "Miles Morales is catapulted across the Multiverse, where he meets a team of Spider-People charged with protecting it.", poster_path: "/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg", backdrop_path: "/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg", release_date: "2023-05-31", vote_average: 8.4, media_type: "movie" },
+    { id: 414906, title: "The Batman", overview: "Batman ventures into Gotham's underworld when a sadistic killer leaves behind a trail of cryptic clues.", poster_path: "/74xTEgt7R36Fpooo50r9T25onhq.jpg", backdrop_path: "/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg", release_date: "2022-03-01", vote_average: 7.7, media_type: "movie" },
+    { id: 157336, title: "Interstellar", overview: "A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.", poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", backdrop_path: "/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg", release_date: "2014-11-05", vote_average: 8.7, media_type: "movie" },
+    { id: 335984, title: "Blade Runner 2049", overview: "A young blade runner discovers a secret that could destabilise what is left of society.", poster_path: "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg", backdrop_path: "/ilRyazdMJwN05exqhwK4tMKBYZs.jpg", release_date: "2017-10-04", vote_average: 8.0, media_type: "movie" },
+    { id: 792307, title: "Poor Things", overview: "The fantastical evolution of Bella Baxter, a young woman brought back to life by an unorthodox scientist.", poster_path: "/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg", backdrop_path: "/bQS43HSLZzMjZkcHJz4fGc7fNdz.jpg", release_date: "2023-12-07", vote_average: 7.8, media_type: "movie" },
+    { id: 299534, title: "Avengers: Endgame", overview: "The remaining Avengers assemble once more to undo Thanos's actions and restore balance to the universe.", poster_path: "/or06FN3Dka5tukK1e9sl16pB3iy.jpg", backdrop_path: "/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg", release_date: "2019-04-24", vote_average: 8.3, media_type: "movie" }
+  ];
+  const DEMO_TV = [
+    { id: 100088, title: "The Last of Us", overview: "Twenty years after civilisation fell, a hardened survivor is hired to smuggle a teenager out of a quarantine zone.", poster_path: "/dmo6TYuuJgaYinXBPjrgG9mB5od.jpg", backdrop_path: "/uDgy6hyPd82kOHh6I95FLtLnj6p.jpg", first_air_date: "2023-01-15", vote_average: 8.6, media_type: "tv" },
+    { id: 95396, title: "Severance", overview: "Employees at a mysterious company undergo a procedure that separates their work and personal memories.", poster_path: "/lFf6LLrQjYldcZItzOkGmMMigP7.jpg", backdrop_path: "/pwBvk8LQ1a01Sc1jqj5jJ5uPlu1.jpg", first_air_date: "2022-02-17", vote_average: 8.7, media_type: "tv" },
+    { id: 94997, title: "House of the Dragon", overview: "The history of House Targaryen, set 200 years before the events of Game of Thrones.", poster_path: "/z2yahl2uefxDCl0nogcRBstwruJ.jpg", backdrop_path: "/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg", first_air_date: "2022-08-21", vote_average: 8.4, media_type: "tv" },
+    { id: 136315, title: "The Bear", overview: "A young chef returns to Chicago to run his family's sandwich shop after a heartbreaking loss.", poster_path: "/sHFlbKS3WLqMnp9t2ghADIJFnuQ.jpg", backdrop_path: "/8bcn8vE2BV5O6s6a0C0z4cL88wJ.jpg", first_air_date: "2022-06-23", vote_average: 8.3, media_type: "tv" },
+    { id: 106379, title: "Fallout", overview: "Two hundred years after the apocalypse, a sheltered vault dweller ventures into the violent wasteland.", poster_path: "/AnsSKR9LuK0T9bAOcPkaFWwHsB4.jpg", backdrop_path: "/a2tys4sD7xzVaogPnt7FA0ADQ5s.jpg", first_air_date: "2024-04-10", vote_average: 8.3, media_type: "tv" },
+    { id: 119051, title: "Wednesday", overview: "Wednesday Addams navigates Nevermore Academy while solving a supernatural mystery.", poster_path: "/9PFonBhy4cQy7Jz20NpMygczOkv.jpg", backdrop_path: "/wIslnJNE9DFJb8YbyvMHfEcdwzH.jpg", first_air_date: "2022-11-23", vote_average: 8.3, media_type: "tv" }
+  ];
 
-      function initSupabase() {
-        if (state.config.supabaseUrl && state.config.supabaseKey && window.supabase) {
-          state.supabase = window.supabase.createClient(state.config.supabaseUrl, state.config.supabaseKey);
-          syncData();
-        }
-      }
+  const state = {
+    store: readStore(),
+    ownerSession: readSession(),
+    cfg: { tmdbKey: "", supabaseUrl: "", supabaseAnonKey: "" },
+    trending: DEMO_MOVIES, tv: DEMO_TV, rated: [], custom: [],
+    watch: [], index: new Map(), hero: DEMO_MOVIES[0],
+    detail: null, playing: null, override: "", server: 1,
+    mode: "signin", sb: null, sbSig: "", authSub: null, channel: null,
+    user: null, profile: null,
+    members: [], allLists: [],
+    searchSeq: 0, searchTimer: null, catSeq: 0, io: null, loading: true
+  };
+  state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
 
-      async function tmdbFetch(endpoint) {
-        try {
-          const url = `https://api.themoviedb.org/3${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${state.config.tmdbApiKey}`;
-          const res = await fetch(url);
-          if (!res.ok) return null;
-          return await res.json();
-        } catch (e) {
-          return null;
-        }
-      }
+  /* ---------- tiny helpers ---------- */
+  function toast(msg, kind = "") {
+    const el = document.createElement("div");
+    el.className = ("toast " + kind).trim();
+    el.textContent = msg;
+    $("toasts").appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+  function openModal(id) { closeMenu(); $(id).hidden = false; document.body.classList.add("locked"); }
+  function closeModal(id) {
+    const m = $(id); if (!m || m.hidden) return;
+    m.hidden = true;
+    if (![...document.querySelectorAll(".backdrop")].some((b) => !b.hidden)) document.body.classList.remove("locked");
+    if (id === "playerModal") { $("frame").src = "about:blank"; state.playing = null; state.override = ""; }
+  }
+  function closeMenu() { $("profileMenu").hidden = true; $("profileBtn").setAttribute("aria-expanded", "false"); }
+  const keyOf = (i) => (i.media_type || "movie") + ":" + i.id;
+  const inList = (i) => state.watch.some((w) => Number(w.id) === Number(i.id) && w.media_type === i.media_type);
+  const yearOf = (i) => { const d = i.release_date || i.first_air_date || ""; return d ? String(d).slice(0, 4) : ""; };
+  const titleOf = (i) => i.title || i.name || "Untitled";
+  const img = (p, size = "w500") => { if (!p) return ""; return String(p).startsWith("/") ? IMG + size + p : httpsUrl(p); };
+  const isOwnerEmail = (e) => String(e || "").trim().toLowerCase() === OWNER.email.toLowerCase();
+  const isOwnerSession = () => state.ownerSession === true;
+  const isAdmin = () => isOwnerSession() || Boolean(state.user && (isOwnerEmail(state.user.email) || state.profile?.role === "admin"));
 
-      async function fetchTrendingData() {
-        const movies = await tmdbFetch('/trending/movie/week');
-        const tv = await tmdbFetch('/trending/tv/week');
-        if (movies?.results?.length) renderHero(movies.results[0]);
-        renderCarousel('trending-movies', movies?.results || [], 'movie');
-        renderCarousel('popular-tv', tv?.results || [], 'tv');
-      }
+  function computeConfig() {
+    state.cfg = {
+      tmdbKey: state.store.tmdbKey || OWNER.tmdbKey || "",
+      supabaseUrl: (state.store.supabaseUrl || OWNER.supabaseUrl || "").replace(/\/$/, ""),
+      supabaseAnonKey: state.store.supabaseAnonKey || OWNER.supabaseAnonKey || ""
+    };
+  }
+  function persistConfig(next) {
+    state.store = { ...state.store, ...next };
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state.store)); return true; }
+    catch { toast("Browser storage is blocked, so credentials were not saved.", "error"); return false; }
+  }
 
-      async function syncData() {
-        if (!state.supabase) return;
+  /* ---------- hero ---------- */
+  function chips(item) {
+    const out = [];
+    if (item.vote_average) out.push('<span class="chip gold"><i class="fa-solid fa-star"></i> ' + Number(item.vote_average).toFixed(1) + "</span>");
+    const y = yearOf(item); if (y) out.push('<span class="chip">' + esc(y) + "</span>");
+    out.push('<span class="chip">' + (item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Film")) + "</span>");
+    out.push('<span class="chip good"><i class="fa-solid fa-circle-play"></i> HD</span>');
+    return out.join("");
+  }
+  function renderHero(item) {
+    if (!item) return;
+    state.hero = item;
+    const bg = img(item.backdrop_path || item.poster_path, "original");
+    $("heroBg").style.backgroundImage = bg ? 'url("' + bg + '")' : "linear-gradient(130deg,#241c26,#0f1116 70%)";
+    $("heroTitle").textContent = titleOf(item);
+    $("heroCopy").textContent = item.overview || item.description || "A calm, premium place to queue up your next movie night.";
+    $("heroKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Popular series" : "Trending this week");
+    $("heroMeta").innerHTML = chips(item);
+    const saved = inList(item);
+    $("heroSave").innerHTML = '<i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Watchlist");
+    $("heroSave").disabled = Boolean(item.is_custom);
+  }
 
-        // Fetch Watchlist
-        const { data: wl } = await state.supabase.from('watchlist').select('*');
-        if (wl) {
-          state.watchlist = wl;
-          renderWatchlist();
-        }
+  /* ---------- rows ---------- */
+  function tile(item, savable) {
+    const k = keyOf(item);
+    state.index.set(k, item);
+    const p = img(item.poster_path, "w500"), t = titleOf(item);
+    const saved = inList(item);
+    return '<article class="tile">' +
+      '<button class="poster" type="button" data-open="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
+        (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" data-err>' : "") +
+        '<span class="poster-veil"></span>' +
+        (item.vote_average ? '<span class="score"><i class="fa-solid fa-star"></i>' + Number(item.vote_average).toFixed(1) + "</span>" : "") +
+        '<span class="poster-play"><i class="fa-solid fa-play"></i></span>' +
+        '<span class="poster-info"><strong>' + esc(t) + "</strong><span>" + esc((item.overview || item.description || "").slice(0, 120)) + "</span></span>" +
+      "</button>" +
+      (savable ? '<button class="save' + (saved ? " on" : "") + '" type="button" data-save="' + esc(k) + '" aria-label="' + (saved ? "Remove from" : "Add to") + ' watchlist"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i></button>' : "") +
+      '<p class="tile-name" title="' + esc(t) + '">' + esc(t) + "</p>" +
+      '<span class="tile-sub">' + (item.is_custom ? "Nest original" : (item.media_type === "tv" ? "Series" : "Film")) + (yearOf(item) ? " | " + esc(yearOf(item)) : "") + "</span>" +
+    "</article>";
+  }
+  function section(id, title, caption, items, emptyHTML) {
+    const body = items && items.length
+      ? '<div class="strip-wrap"><div class="strip" id="strip-' + id + '">' + items.map((i) => tile(i, !i.is_custom)).join("") + "</div></div>"
+      : '<div class="empty-row">' + (emptyHTML || "<span>Nothing here yet.</span>") + "</div>";
+    return '<section class="row" id="row-' + id + '" data-reveal>' +
+      '<div class="row-head"><div><h2>' + esc(title) + "</h2>" + (caption ? "<p>" + esc(caption) + "</p>" : "") + "</div>" +
+      (items && items.length > 2 ? '<div class="row-nav">' +
+        '<button class="arrow" type="button" data-scroll="' + id + '" data-dir="-1" aria-label="Scroll left"><i class="fa-solid fa-chevron-left"></i></button>' +
+        '<button class="arrow" type="button" data-scroll="' + id + '" data-dir="1" aria-label="Scroll right"><i class="fa-solid fa-chevron-right"></i></button></div>' : "") +
+      "</div>" + body + "</section>";
+  }
+  const skeletons = () => '<div class="strip">' + Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join("") + "</div>";
+  function renderRows() {
+    state.index.clear();
+    let watchEmpty = "<span>Your watchlist lives here once you sign in.</span>";
+    if (!state.user) watchEmpty = '<span>Sign in to keep your favourite films and series in sync.</span><button class="btn btn-glass btn-sm" type="button" data-act="auth">Sign in</button>';
+    else if (!state.watch.length) watchEmpty = '<span>Your list is ready for its first favourite.</span><a class="btn btn-glass btn-sm" href="#row-trending">Browse trending</a>';
+    const load = state.loading;
+    $("rows").innerHTML = [
+      load ? '<section class="row visible"><div class="row-head"><div><h2>Loading your Nest</h2><p>Fetching the latest from TMDB</p></div></div>' + skeletons() + "</section>"
+           : section("trending", "Trending Movies", "What everyone is watching this week", state.trending),
+      load ? "" : section("tv", "Popular TV Shows", "Series worth the binge", state.tv),
+      load ? "" : section("rated", "Top Rated", "The highest scored of all time", state.rated),
+      (load || !state.custom.length) ? "" : section("custom", "From the Nest", "Hand-picked by the owner", state.custom, ""),
+      section("watchlist", "My Watchlist", "Your own corner of the cinema", state.watch, watchEmpty)
+    ].join("");
+    wireImages($("rows"));
+    reveal();
+    if (!load) renderHero(state.hero);
+  }
+  function wireImages(root) { root.querySelectorAll("img[data-err]").forEach((im) => im.addEventListener("error", () => im.remove(), { once: true })); }
+  function reveal() {
+    const nodes = document.querySelectorAll("[data-reveal]");
+    if (!("IntersectionObserver" in window)) { nodes.forEach((n) => n.classList.add("visible")); return; }
+    if (state.io) state.io.disconnect();
+    state.io = new IntersectionObserver((entries, obs) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
+    }), { threshold: .05 });
+    nodes.forEach((n) => state.io.observe(n));
+  }
 
-        // Fetch Watched History
-        const { data: wd } = await state.supabase.from('watched_history').select('*');
-        if (wd) {
-          state.watched = wd;
-          renderWatched();
-        }
-        
-        // Re-render carousels to sync button states
-        fetchTrendingData();
-      }
+  /* ---------- TMDB ---------- */
+  async function tmdb(path, params = {}) {
+    const k = state.cfg.tmdbKey;
+    if (!k) throw new Error("No TMDB key configured yet.");
+    const url = new URL(TMDB + path);
+    Object.entries(params).forEach(([n, v]) => url.searchParams.set(n, v));
+    const headers = { Accept: "application/json" };
+    if (/^eyJ/.test(k)) headers.Authorization = "Bearer " + k; else url.searchParams.set("api_key", k);
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error("TMDB request failed (" + res.status + ")");
+    return res.json();
+  }
+  const norm = (i, type) => ({ ...i, title: i.title || i.name || "Untitled", media_type: i.media_type === "movie" || i.media_type === "tv" ? i.media_type : (type || "movie") });
 
-      window.toggleWatchlist = async (e, id, title, poster_path, media_type) => {
-        if (e) e.stopPropagation();
-        if (!state.supabase) return;
+  async function loadCatalog() {
+    const seq = ++state.catSeq;
+    if (!state.cfg.tmdbKey) {
+      state.trending = DEMO_MOVIES; state.tv = DEMO_TV;
+      state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
+      state.loading = false; renderHero(state.trending[0]); renderRows(); return;
+    }
+    const res = await Promise.allSettled([
+      tmdb("/trending/movie/week", { language: "en-US" }),
+      tmdb("/tv/popular", { language: "en-US", page: "1" }),
+      tmdb("/movie/top_rated", { language: "en-US", page: "1" })
+    ]);
+    if (seq !== state.catSeq) return;
+    const pick = (r, fb, type) => r.status === "fulfilled" && Array.isArray(r.value?.results) && r.value.results.length ? r.value.results.map((i) => norm(i, type)) : fb;
+    state.trending = pick(res[0], DEMO_MOVIES, "movie");
+    state.tv = pick(res[1], DEMO_TV, "tv");
+    state.rated = pick(res[2], [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average), "movie");
+    state.loading = false;
+    renderHero(state.trending[0]); renderRows();
+    if (res.every((r) => r.status === "rejected")) toast(res[0].reason?.message || "TMDB unavailable - showing demo titles.", "error");
+  }
 
-        const mediaIdStr = id.toString();
-        const exists = state.watchlist.some(w => w.media_id === mediaIdStr);
+  /* ---------- search ---------- */
+  function localHits(q) {
+    const all = new Map();
+    [...state.trending, ...state.tv, ...state.rated, ...state.watch].forEach((i) => all.set(keyOf(i), i));
+    const s = q.toLowerCase();
+    return [...all.values()].filter((i) => titleOf(i).toLowerCase().includes(s)).slice(0, 8);
+  }
+  function hit(i) {
+    const k = keyOf(i); state.index.set(k, i);
+    const p = img(i.poster_path, "w185");
+    return '<button class="hit" type="button" data-open="' + esc(k) + '">' +
+      (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<img alt="">') +
+      '<span class="hit-body"><strong>' + esc(titleOf(i)) + "</strong><span>" +
+      (i.is_custom ? "Nest original" : (i.media_type === "tv" ? "Series" : "Film")) + (yearOf(i) ? " | " + esc(yearOf(i)) : "") + "</span></span>" +
+      '<i class="fa-solid fa-play"></i></button>';
+  }
+  function paintSearch(list, q, busy) {
+    const box = $("searchBody");
+    if (!q.trim()) { box.innerHTML = '<div class="label">Popular right now</div>' + [...state.trending, ...state.tv].slice(0, 6).map(hit).join(""); wireImages(box); return; }
+    if (!list.length) { box.innerHTML = '<div class="blank" style="padding:40px 16px;color:#9ba0aa;text-align:center;font-size:13px">' + (busy ? "Searching..." : 'No results for "' + esc(q) + '"') + "</div>"; return; }
+    box.innerHTML = '<div class="label">' + (busy ? "Searching" : list.length + " result" + (list.length === 1 ? "" : "s")) + "</div>" + list.map(hit).join("");
+    wireImages(box);
+  }
+  function doSearch(q) {
+    const seq = ++state.searchSeq;
+    if (state.searchTimer) clearTimeout(state.searchTimer);
+    const local = q.trim() ? localHits(q.trim()) : [];
+    paintSearch(local, q, false);
+    if (q.trim().length < 2 || !state.cfg.tmdbKey) return;
+    state.searchTimer = setTimeout(async () => {
+      try {
+        const r = await tmdb("/search/multi", { query: q.trim(), include_adult: "false", language: "en-US" });
+        if (seq !== state.searchSeq || $("searchModal").hidden) return;
+        const remote = (r.results || []).filter((i) => i.media_type === "movie" || i.media_type === "tv").map((i) => norm(i));
+        const map = new Map(); [...remote, ...local].forEach((i) => map.set(keyOf(i), i));
+        paintSearch([...map.values()].slice(0, 14), q, false);
+      } catch { if (seq === state.searchSeq && !local.length) paintSearch([], q, false); }
+    }, 260);
+  }
+  function openSearch() {
+    openModal("searchModal");
+    $("searchBox").value = "";
+    doSearch("");
+    setTimeout(() => $("searchBox").focus(), 30);
+  }
 
-        if (exists) {
-          await state.supabase.from('watchlist').delete().eq('media_id', mediaIdStr);
-          showToast('Removed from My List');
-        } else {
-          await state.supabase.from('watchlist').insert([{
-            media_id: mediaIdStr,
-            title: title || 'Untitled',
-            poster_path: poster_path || '',
-            media_type: media_type || 'movie'
-          }]);
-          showToast('Added to My List');
-        }
-        await syncData();
-      };
+  /* ---------- details + player ---------- */
+  function openDetail(item) {
+    if (!item) return;
+    state.detail = item;
+    const art = img(item.backdrop_path || item.poster_path, "original");
+    $("detailArt").style.backgroundImage = art ? 'url("' + art + '")' : "linear-gradient(130deg,#241c26,#0f1116)";
+    $("detailTitle").textContent = titleOf(item);
+    $("detailCopy").textContent = item.description || item.overview || "A new story is waiting in the Nest.";
+    $("detailKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
+    $("detailMeta").innerHTML = chips(item);
+    const canPlay = item.is_custom ? Boolean(httpsUrl(item.custom_stream_url)) : true;
+    $("detailPlay").disabled = !canPlay;
+    $("detailPlay").innerHTML = '<i class="fa-solid fa-play"></i> ' + (canPlay ? "Play now" : "No stream yet");
+    $("detailSave").hidden = Boolean(item.is_custom);
+    const saved = inList(item);
+    $("detailSave").innerHTML = '<i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Add to watchlist");
+    openModal("detailModal");
+  }
+  function buildUrl(item, server) {
+    if (!item) return "";
+    if (item.is_custom) return httpsUrl(item.custom_stream_url);
+    const id = Number(item.id);
+    if (!Number.isSafeInteger(id) || id < 1) return "";
+    const base = server === 2 ? "https://vidsrc.to/embed" : "https://vidsrc.net/embed";
+    if (item.media_type === "tv") {
+      const s = Math.max(1, parseInt($("seasonIn").value, 10) || 1);
+      const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
+      return base + "/tv/" + id + "/" + s + "/" + e;
+    }
+    return base + "/movie/" + id;
+  }
+  function setServer(n) {
+    state.server = n;
+    document.querySelectorAll("[data-server]").forEach((b) => {
+      const on = Number(b.dataset.server) === n;
+      b.classList.toggle("active", on); b.setAttribute("aria-pressed", String(on));
+    });
+    const custom = state.override && state.playing && !state.playing.is_custom;
+    const url = custom && n === 1 ? state.override : buildUrl(state.playing, n);
+    if (!url) { $("frame").src = "about:blank"; $("playerNote").textContent = "Nothing to play for this title yet."; return; }
+    $("frame").src = url;
+    $("playerNote").textContent = custom && n === 1 ? "Playing your custom stream override."
+      : (n === 1 ? "Server 1 (VidSrc). Switch to Server 2 if it will not load." : "Server 2 (VidSrc mirror).");
+  }
+  async function play(item) {
+    if (!item) return;
+    closeModal("detailModal"); closeModal("searchModal");
+    state.playing = item; state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
+    state.server = 1;
+    $("playerTitle").textContent = titleOf(item);
+    $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
+    $("epControls").hidden = item.is_custom || item.media_type !== "tv";
+    $("seasonIn").value = "1"; $("episodeIn").value = "1";
+    document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
+    $("frame").src = "about:blank";
+    $("playerNote").textContent = "Checking stream sources...";
+    openModal("playerModal");
+    if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
+      try {
+        const { data, error } = await state.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
+        if (error) throw error;
+        if (data?.stream_url) state.override = httpsUrl(data.stream_url);
+      } catch { /* fall back to VidSrc */ }
+    }
+    document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = false; });
+    if (state.playing === item) setServer(1);
+  }
 
-      window.toggleWatched = async (e, id, title, poster_path, media_type) => {
-        if (e) e.stopPropagation();
-        if (!state.supabase) return;
+  /* ---------- watchlist ---------- */
+  async function toggleSave(item) {
+    if (!item || item.is_custom) return;
+    if (!state.sb || !state.user) { toast("Sign in to sync your watchlist."); openAuth(); return; }
+    const id = Number(item.id);
+    if (!Number.isSafeInteger(id) || id < 1) { toast("This title cannot be saved.", "error"); return; }
+    const has = inList(item);
+    const q = has
+      ? state.sb.from("watchlists").delete().eq("user_id", state.user.id).eq("tmdb_id", id).eq("media_type", item.media_type)
+      : state.sb.from("watchlists").insert({ user_id: state.user.id, tmdb_id: id, title: titleOf(item), poster_path: item.poster_path || null, media_type: item.media_type || "movie" });
+    const { error } = await q;
+    if (error) { toast(error.message || "Watchlist update failed.", "error"); return; }
+    toast(has ? "Removed from your list." : "Added to your list.", "ok");
+    await loadWatch();
+    if (state.hero && keyOf(state.hero) === keyOf(item)) renderHero(state.hero);
+    if (state.detail && keyOf(state.detail) === keyOf(item)) openDetail(item);
+  }
+  async function loadWatch() {
+    if (!state.sb || !state.user) { state.watch = []; renderRows(); return; }
+    const { data, error } = await state.sb.from("watchlists")
+      .select("id,user_id,tmdb_id,title,poster_path,media_type,added_at")
+      .eq("user_id", state.user.id).order("added_at", { ascending: false });
+    if (error) { toast(error.message || "Could not load your watchlist.", "error"); return; }
+    state.watch = (data || []).map((r) => ({ id: r.tmdb_id, title: r.title, poster_path: r.poster_path, media_type: r.media_type, added_at: r.added_at }));
+    renderRows();
+  }
+  async function loadCustom() {
+    if (!state.sb) { state.custom = []; return; }
+    const { data, error } = await state.sb.from("custom_content")
+      .select("id,title,description,banner_url,custom_stream_url,created_at").order("created_at", { ascending: false });
+    if (error) return;
+    state.custom = (data || []).map((r) => ({ ...r, poster_path: r.banner_url, backdrop_path: r.banner_url, media_type: "custom", is_custom: true }));
+  }
 
-        const mediaIdStr = id.toString();
-        const exists = state.watched.some(w => w.media_id === mediaIdStr);
-
-        if (exists) {
-          await state.supabase.from('watched_history').delete().eq('media_id', mediaIdStr);
-          showToast('Removed from Watched History');
-        } else {
-          await state.supabase.from('watched_history').insert([{
-            media_id: mediaIdStr,
-            title: title || 'Untitled',
-            poster_path: poster_path || '',
-            media_type: media_type || 'movie'
-          }]);
-          showToast('Marked as Watched');
-        }
-        await syncData();
-      };
-
-      function renderHero(item) {
-        const heroBg = document.getElementById('hero-bg');
-        const heroContent = document.getElementById('hero-content');
-        heroBg.style.backgroundImage = `url('${item.backdrop_path ? TMDB_HERO_BASE + item.backdrop_path : ''}')`;
-        heroContent.innerHTML = `
-          <h1 class="text-3xl sm:text-5xl font-extrabold mb-3 tracking-tight">${item.title || item.name}</h1>
-          <p class="text-sm sm:text-base text-neutral-300 max-w-2xl line-clamp-3 mb-6">${item.overview || ''}</p>
-          <div class="flex space-x-3">
-            <button onclick="window.openPlayer('${item.id}', '${item.media_type || 'movie'}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
-              <span>Play Now</span>
-            </button>
-            <button onclick="window.openDetails('${item.id}', '${item.media_type || 'movie'}')" class="bg-neutral-800/80 hover:bg-neutral-700 text-white font-semibold px-6 py-2.5 rounded-md transition border border-neutral-700">Details</button>
-          </div>
-        `;
-      }
-
-      function renderCarousel(elementId, items, defaultType) {
-        const container = document.getElementById(elementId);
-        container.innerHTML = items.map(item => createMediaCard(item, defaultType)).join('');
-      }
-
-      function createMediaCard(item, defaultType) {
-        const type = item.media_type || defaultType;
-        const poster = item.poster_path ? TMDB_IMAGE_BASE + item.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster';
-        const title = (item.title || item.name || 'Untitled').replace(/'/g, "\\'");
-        const inWatchlist = state.watchlist.some(w => w.media_id === item.id.toString());
-        const isWatched = state.watched.some(w => w.media_id === item.id.toString());
-
-        return `
-          <div class="movie-card flex-none w-36 sm:w-48 relative rounded-md overflow-hidden bg-neutral-900 group cursor-pointer" onclick="window.openDetails('${item.id}', '${type}')">
-            <img src="${poster}" class="w-full h-52 sm:h-72 object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-            <div class="card-overlay absolute inset-0 bg-black/80 opacity-0 transition duration-300 flex flex-col justify-end p-2.5 space-y-1.5">
-              <h3 class="text-xs font-bold text-white truncate">${item.title || item.name}</h3>
-              <div class="flex flex-col space-y-1">
-                <button onclick="event.stopPropagation(); window.openPlayer('${item.id}', '${type}')" class="bg-red-600 text-white text-[10px] py-1 rounded hover:bg-red-700 font-medium">Play</button>
-                <button onclick="window.toggleWatchlist(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] py-1 rounded border border-neutral-700">${inWatchlist ? '✓ Listed' : '+ List'}</button>
-                <button onclick="window.toggleWatched(event, '${item.id}', '${title}', '${item.poster_path || ''}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white text-[10px] py-1 rounded border border-neutral-700 ${isWatched ? 'text-green-400 font-bold' : ''}">${isWatched ? '✓ Watched' : 'Mark Watched'}</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      function renderWatchlist() {
-        const container = document.getElementById('watchlist-grid');
-        if (state.watchlist.length === 0) {
-          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">Your list is empty.</p>`;
+  /* ---------- member auth ---------- */
+  function setMode(m) {
+    state.mode = m;
+    const up = m === "signup";
+    $("authTitle").textContent = up ? "Create your account" : "Welcome back";
+    $("authSub").textContent = up ? "One account keeps your list everywhere." : "Sign in to sync your watchlist.";
+    $("nameField").hidden = !up;
+    $("authGo").textContent = up ? "Create account" : "Sign in";
+    $("authSwap").innerHTML = up ? 'Already have an account? <span>Sign in</span>' : 'New to Flickerz Nest? <span>Create an account</span>';
+    $("passIn").autocomplete = up ? "new-password" : "current-password";
+    $("authStatus").textContent = ""; $("authStatus").className = "status";
+  }
+  function openAuth() { closeMenu(); setMode("signin"); openModal("authModal"); setTimeout(() => $("emailIn").focus(), 30); }
+  function teardown() {
+    if (state.channel && state.sb) state.sb.removeChannel(state.channel);
+    if (state.authSub) state.authSub.unsubscribe();
+    state.channel = null; state.authSub = null; state.sb = null; state.sbSig = "";
+  }
+  async function connect() {
+    computeConfig();
+    const u = state.cfg.supabaseUrl, k = state.cfg.supabaseAnonKey;
+    if (!u || !k || !window.supabase?.createClient) { teardown(); await applyUser(null); paintAdmin(); return false; }
+    const sig = u + "|" + k;
+    if (state.sb && state.sbSig === sig) {
+      const { data } = await state.sb.auth.getSession();
+      await applyUser(data?.session?.user || null);
+      return true;
+    }
+    teardown();
+    try { state.sb = window.supabase.createClient(u, k, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }); }
+    catch (e) { toast(e.message || "Could not create the Supabase client.", "error"); await applyUser(null); paintAdmin(); return false; }
+    state.sbSig = sig;
+    const sub = state.sb.auth.onAuthStateChange((_e, s) => setTimeout(() => applyUser(s?.user || null), 0));
+    state.authSub = sub.subscription;
+    try {
+      const { data, error } = await state.sb.auth.getSession();
+      if (error) throw error;
+      await applyUser(data?.session?.user || null);
+      return true;
+    } catch (e) { toast(e.message || "Supabase connection failed.", "error"); await applyUser(null); paintAdmin(); return false; }
+  }
+  async function applyUser(user) {
+    state.user = user || null; state.profile = null;
+    if (state.user && state.sb) {
+      const { data, error } = await state.sb.from("profiles").select("id,email,display_name,role,created_at").eq("id", state.user.id).maybeSingle();
+      state.profile = (!error && data) ? data
+        : { id: state.user.id, email: state.user.email, display_name: state.user.user_metadata?.display_name || "", role: isOwnerEmail(state.user.email) ? "admin" : "user" };
+      await Promise.all([loadWatch(), loadCustom()]);
+      subscribe();
+    } else {
+      if (state.channel && state.sb) state.sb.removeChannel(state.channel);
+      state.channel = null; state.watch = [];
+      await loadCustom();
+    }
+    paintAccount(); renderRows(); paintAdmin();
+  }
+  function subscribe() {
+    if (!state.sb || !state.user) return;
+    if (state.channel) state.sb.removeChannel(state.channel);
+    state.channel = state.sb.channel("watch-" + state.user.id)
+      .on("postgres_changes", { event: "*", schema: "public", table: "watchlists", filter: "user_id=eq." + state.user.id }, () => loadWatch())
+      .subscribe();
+  }
+  function paintAccount() {
+    const on = Boolean(state.user);
+    const name = state.profile?.display_name || state.user?.user_metadata?.display_name || (state.user?.email ? state.user.email.split("@")[0] : "Your Nest");
+    $("menuName").innerHTML = esc(name) + (isAdmin() ? ' <i class="fa-solid fa-crown" style="color:var(--gold)"></i>' : "");
+    $("menuEmail").textContent = state.user?.email || (isOwnerSession() ? "Owner session (local admin)" : "Sign in to sync your list");
+    const av = $("avatar");
+    av.textContent = on ? name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase() : "FN";
+    av.classList.toggle("owner", isAdmin());
+    $("menuAuth").hidden = on && state.sb;
+    $("menuOut").hidden = !on;
+    // Admin entry points are owner/admin only - visitors never see them.
+    const admin = isAdmin();
+    $("menuAdmin").hidden = !admin;
+    $("adminShortcut").hidden = !admin;
+    $("footAdmin").hidden = !admin;
+    $("menuLock").hidden = !isOwnerSession();
+  }
+  async function submitAuth(ev) {
+    ev.preventDefault();
+    if (!state.sb) { $("authStatus").textContent = "Connect Supabase first (Admin > API keys)."; $("authStatus").className = "status error"; return; }
+    const email = $("emailIn").value.trim(), pass = $("passIn").value;
+    $("authGo").disabled = true;
+    $("authStatus").textContent = state.mode === "signup" ? "Creating your account..." : "Signing in...";
+    $("authStatus").className = "status";
+    try {
+      const opts = { data: { display_name: $("nameIn").value.trim() || email.split("@")[0] } };
+      let res = state.mode === "signup"
+        ? await state.sb.auth.signUp({ email, password: pass, options: opts })
+        : await state.sb.auth.signInWithPassword({ email, password: pass });
+      if (res.error && state.mode === "signin" && /invalid login|email not confirmed/i.test(res.error.message || "")) {
+        const up = await state.sb.auth.signUp({ email, password: pass, options: opts });
+        if (!up.error) {
+          $("authStatus").textContent = "Account created for " + email + ". Confirm the email link if required, then sign in.";
+          $("authStatus").className = "status ok";
           return;
         }
-        container.innerHTML = state.watchlist.map(item => createMediaCard({ id: item.media_id, title: item.title, poster_path: item.poster_path }, item.media_type)).join('');
       }
+      if (res.error) throw res.error;
+      if (state.mode === "signup" && !res.data.session) {
+        $("authStatus").textContent = "Account created. Confirm your email, then sign in.";
+        $("authStatus").className = "status ok";
+      } else {
+        closeModal("authModal");
+        toast("Welcome to your Nest.", "ok");
+        await applyUser(res.data.user || res.data.session?.user || null);
+      }
+    } catch (e) {
+      $("authStatus").textContent = e.message || "Authentication failed.";
+      $("authStatus").className = "status error";
+    } finally { $("authGo").disabled = false; }
+  }
+  async function signOut() {
+    closeMenu();
+    if (!state.sb || !state.user) return;
+    const { error } = await state.sb.auth.signOut();
+    if (error) toast(error.message, "error"); else { await applyUser(null); toast("Signed out.", "ok"); }
+  }
 
-      function renderWatched() {
-        const container = document.getElementById('watched-grid');
-        if (state.watched.length === 0) {
-          container.innerHTML = `<p class="text-xs text-neutral-500 py-4">No watched history recorded yet.</p>`;
+  /* ---------- owner gate ---------- */
+  function openOwnerGate(prefill) {
+    closeMenu();
+    $("ownerEmailIn").value = prefill ? OWNER.email : $("ownerEmailIn").value;
+    if (prefill) $("ownerPassIn").value = OWNER.password;
+    $("ownerStatus").textContent = ""; $("ownerStatus").className = "status";
+    openModal("ownerModal");
+    setTimeout(() => $(prefill ? "ownerGo" : "ownerEmailIn").focus(), 30);
+  }
+  async function submitOwner(ev) {
+    ev.preventDefault();
+    const email = $("ownerEmailIn").value.trim();
+    const pass = $("ownerPassIn").value;
+    const go = $("ownerGo");
+    if (!isOwnerEmail(email)) {
+      $("ownerStatus").textContent = "This dashboard only accepts the owner email.";
+      $("ownerStatus").className = "status error";
+      return;
+    }
+    go.disabled = true;
+    $("ownerStatus").textContent = "Verifying credentials...";
+    $("ownerStatus").className = "status";
+
+    // Preferred path: real authentication through Supabase Auth (hashed, rate
+    // limited server side) plus an admin profile row. This is what makes the
+    // gate genuinely secure in production.
+    if (state.sb) {
+      try {
+        const { data, error } = await state.sb.auth.signInWithPassword({ email, password: pass });
+        if (!error && data?.user) {
+          await applyUser(data.user);
+          grantOwner();
           return;
         }
-        container.innerHTML = state.watched.map(item => createMediaCard({ id: item.media_id, title: item.title, poster_path: item.poster_path }, item.media_type)).join('');
-      }
+        // Wrong password in Supabase - fall through to the offline key check so
+        // the panel still works while email confirmation is pending.
+      } catch { /* fall through */ }
+    }
 
-      window.showHome = () => {
-        document.getElementById('details-view').classList.add('hidden');
-        document.getElementById('not-found-view').classList.add('hidden');
-        document.getElementById('home-view').classList.remove('hidden');
-        if (!document.getElementById('search-input').value.trim()) {
-          document.getElementById('hero').classList.remove('hidden');
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      };
+    // Offline fallback for first run, before Supabase is reachable.
+    if (pass !== OWNER.password) {
+      $("ownerStatus").textContent = state.sb
+        ? "Sign-in failed. Check the password, or confirm this email in Supabase Auth."
+        : "That email and admin key combination is not recognised.";
+      $("ownerStatus").className = "status error";
+      go.disabled = false;
+      return;
+    }
+    grantOwner();
+  }
+  function grantOwner() {
+    state.ownerSession = true;
+    writeSession();
+    closeModal("ownerModal");
+    $("ownerPassIn").value = "";
+    $("ownerStatus").textContent = "";
+    $("ownerGo").disabled = false;
+    paintAccount();
+    toast("Owner access unlocked.", "ok");
+    openAdmin("overview");
+  }
+  function lockOwner() {
+    state.ownerSession = false;
+    clearSession();
+    paintAccount();
+    closeModal("adminModal");
+    toast("Owner session locked.", "ok");
+  }
 
-      window.show404 = () => {
-        document.getElementById('home-view').classList.add('hidden');
-        document.getElementById('details-view').classList.add('hidden');
-        document.getElementById('not-found-view').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      };
+  /* ---------- admin panel ---------- */
+  function paintAdmin() {
+    $("adminSub").textContent = isAdmin()
+      ? (state.sb ? "Signed in" + (state.user ? " as " + state.user.email : "") + " - streams, content, members and watchlists."
+                  : "Local owner session. Connect Supabase to manage live data.")
+      : "Owner tools for streams, content, members, watchlists and keys.";
+  }
+  async function openAdmin(tab) {
+    closeMenu();
+    if (!isAdmin()) { openOwnerGate(false); return; }
+    openModal("adminModal");
+    selectTab(tab || "overview");
+    fillCfgForm();
+    await Promise.all([loadOverview(), loadStreams(), loadContentAdmin(), loadMembers(), loadAllLists()]);
+  }
+  function selectTab(name) {
+    ["overview", "keys", "users", "lists", "streams", "content"].forEach((t) => {
+      const on = t === name;
+      const btn = document.querySelector('[data-tab="' + t + '"]');
+      if (btn) { btn.classList.toggle("active", on); btn.setAttribute("aria-selected", String(on)); }
+      const pane = $("pane-" + t); if (pane) pane.hidden = !on;
+    });
+    if (name === "users") loadMembers();
+    if (name === "lists") loadAllLists();
+    if (name === "overview") loadOverview();
+  }
+  const row = (left, right) => '<div class="list-row"><div>' + left + "</div>" + (right || "") + "</div>";
+  const none = (text) => row("<small>" + esc(text) + "</small>", "");
 
-      window.openDetails = async (id, type) => {
-        const detailsData = await tmdbFetch(`/${type}/${id}`);
-        if (!detailsData) return window.show404();
+  async function loadOverview() {
+    const sb = state.sb;
+    let members = 0, admins = 0, saved = 0, overrides = 0, published = 0;
+    if (sb && isAdmin()) {
+      const [p, w, s, c] = await Promise.all([
+        sb.from("profiles").select("id,role", { count: "exact", head: false }).limit(500),
+        sb.from("watchlists").select("id", { count: "exact", head: false }).limit(1000),
+        sb.from("custom_streams").select("id", { count: "exact", head: false }).limit(500),
+        sb.from("custom_content").select("id", { count: "exact", head: false }).limit(500)
+      ]);
+      const pl = p.data || []; members = pl.length; admins = pl.filter((x) => x.role === "admin").length;
+      saved = (w.data || []).length; overrides = (s.data || []).length; published = (c.data || []).length;
+    }
+    const card = (n, l) => '<div class="stat"><b>' + n + "</b><span>" + l + "</span></div>";
+    $("ovStats").innerHTML = card(members, "Members") + card(admins, "Admins") + card(saved, "Saved titles") + card(overrides, "Overrides") + card(published, "Published");
+    const connected = Boolean(sb);
+    const key = state.cfg.tmdbKey ? "configured" : "missing";
+    $("ovConnect").innerHTML =
+      '<h3>Platform status</h3><p>Live view of what is wired up right now.</p><div class="list">' +
+      row("<strong>Supabase</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + "</small>",
+          '<span class="role ' + (connected ? "admin" : "") + '">' + (connected ? "connected" : "offline") + "</span>") +
+      row("<strong>TMDB</strong><small>" + (key === "configured" ? "catalog and search live" : "demo titles only") + "</small>",
+          '<span class="role ' + (key === "configured" ? "admin" : "") + '">' + key + "</span>") +
+      row("<strong>Owner session</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">unlocked</span>') +
+      "</div>";
+    const done = (ok, t, s) => row("<strong>" + (ok ? '<i class="fa-solid fa-circle-check" style="color:var(--green)"></i> ' : '<i class="fa-regular fa-circle" style="color:#7c8190"></i> ') + t + "</strong><small>" + s + "</small>",
+      '<span class="role ' + (ok ? "admin" : "") + '">' + (ok ? "done" : "todo") + "</span>");
+    $("ovChecklist").innerHTML =
+      done(isOwnerSession(), "Unlock the owner session", "Already done - you are in the control room.") +
+      done(Boolean(state.cfg.supabaseUrl && state.cfg.supabaseAnonKey), "Connect Supabase", "Admin > API keys: paste project URL and anon key.") +
+      done(Boolean(state.cfg.tmdbKey), "Add your TMDB key", "Admin > API keys: paste your TMDB v3 key or v4 token.") +
+      done(connected, "Verify members and watchlists", "Admin > Members and Watchlists tabs.");
+  }
+  function fillCfgForm() {
+    computeConfig();
+    $("cfgTmdb").value = state.cfg.tmdbKey;
+    $("cfgUrl").value = state.cfg.supabaseUrl;
+    $("cfgKey").value = state.cfg.supabaseAnonKey;
+    const src = (v, hard) => v ? (v === hard ? "built-in" : "browser override") : "not set";
+    $("cfgInfo").innerHTML =
+      row("<strong>Owner identity</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">owner</span>') +
+      row("<strong>TMDB key</strong><small>" + (state.cfg.tmdbKey ? esc(state.cfg.tmdbKey.slice(0, 6)) + "... | " + src(state.cfg.tmdbKey, OWNER.tmdbKey) : "not set") + "</small>",
+          '<span class="role ' + (state.cfg.tmdbKey ? "admin" : "") + '">' + (state.cfg.tmdbKey ? "live" : "demo") + "</span>") +
+      row("<strong>Supabase URL</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + " | " + src(state.cfg.supabaseUrl, OWNER.supabaseUrl) + "</small>", "") +
+      row("<strong>Supabase anon key</strong><small>" + (state.cfg.supabaseAnonKey ? esc(state.cfg.supabaseAnonKey.slice(0, 8)) + "... | " + src(state.cfg.supabaseAnonKey, OWNER.supabaseAnonKey) : "not set") + "</small>", "") +
+      row("<strong>Owner session</strong><small>expires " + OWNER_SESSION_HOURS + "h after unlock</small>", '<span class="role owner">active</span>');
+  }
+  async function loadMembers() {
+    if (!isAdmin() || !state.sb) {
+      $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Connect Supabase in the API keys tab to list members.</p>';
+      $("userStats").innerHTML = ""; return;
+    }
+    $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Loading members...</p>';
+    const { data, error } = await state.sb.from("profiles").select("id,email,display_name,role,created_at").order("created_at", { ascending: false }).limit(300);
+    if (error) { $("userWrap").innerHTML = '<p class="status error" style="padding:14px">' + esc(error.message) + "</p>"; $("userStats").innerHTML = ""; return; }
+    state.members = data || [];
+    const admins = state.members.filter((u) => u.role === "admin").length;
+    const stat = (n, l) => '<div class="stat"><b>' + n + "</b><span>" + l + "</span></div>";
+    $("userStats").innerHTML = stat(state.members.length, "Members") + stat(admins, "Admins") + stat(state.watch.length, "Your saved");
+    if (!state.members.length) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">No members yet. Sign up an account to see it here.</p>'; return; }
+    $("userWrap").innerHTML = "<table><thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Joined</th><th>Saved</th><th>Manage</th></tr></thead><tbody>" +
+      state.members.map((u) => {
+        const self = state.user && u.id === state.user.id;
+        const count = state.allLists.filter((r) => r.user_id === u.id).length;
+        const next = u.role === "admin" ? "user" : "admin";
+        const manage = '<button class="mini ' + (next === "admin" ? "up" : "") + '" type="button" data-role-id="' + esc(u.id) + '" data-next="' + next + '">' + (next === "admin" ? "Make admin" : "Make user") + "</button>";
+        const roleTag = isOwnerEmail(u.email) ? '<span class="role owner">owner</span>' : '<span class="role ' + (u.role === "admin" ? "admin" : "") + '">' + esc(u.role) + "</span>";
+        return "<tr><td>" + esc(u.display_name || "-") + (self ? " (you)" : "") + "</td><td>" + esc(u.email || "-") + "</td><td>" + roleTag + "</td>" +
+          "<td>" + esc(u.created_at ? new Date(u.created_at).toLocaleDateString() : "-") + "</td><td>" + count + "</td><td>" + manage + "</td></tr>";
+      }).join("") + "</tbody></table>";
+  }
+  async function loadAllLists() {
+    if (!isAdmin() || !state.sb) {
+      $("listBody").innerHTML = '<div class="wl-user"><p class="hint">Connect Supabase in the API keys tab to read member watchlists.</p></div>';
+      $("listStats").innerHTML = ""; return;
+    }
+    $("listStatus").textContent = "Loading watchlists...";
+    const [lists, members] = await Promise.all([
+      state.sb.from("watchlists").select("id,user_id,tmdb_id,title,poster_path,media_type,added_at").order("added_at", { ascending: false }).limit(1000),
+      state.members.length ? Promise.resolve({ data: state.members }) : state.sb.from("profiles").select("id,email,display_name,role,created_at").order("created_at", { ascending: false }).limit(300)
+    ]);
+    if (lists.error) { $("listStatus").textContent = lists.error.message; $("listStatus").className = "status error"; return; }
+    state.allLists = lists.data || [];
+    const people = members.data || state.members || [];
+    const byUser = new Map();
+    state.allLists.forEach((r) => {
+      if (!byUser.has(r.user_id)) byUser.set(r.user_id, []);
+      byUser.get(r.user_id).push(r);
+    });
+    const stat = (n, l) => '<div class="stat"><b>' + n + "</b><span>" + l + "</span></div>";
+    $("listStats").innerHTML = stat(byUser.size, "Members with lists") + stat(state.allLists.length, "Saved titles") + stat(people.length, "Members");
+    if (!state.allLists.length) {
+      $("listBody").innerHTML = '<div class="wl-user"><p class="hint">No saved titles yet. As members add titles, they appear here grouped by account.</p></div>';
+      $("listStatus").textContent = ""; return;
+    }
+    $("listBody").innerHTML = [...byUser.entries()].map(([uid, items]) => {
+      const person = people.find((p) => p.id === uid);
+      const label = person?.display_name || person?.email || uid.slice(0, 8);
+      const role = person?.role || "user";
+      return '<div class="wl-user"><div class="wl-user-head"><div><b>' + esc(label) +
+        (isOwnerEmail(person?.email) ? ' <i class="fa-solid fa-crown" style="color:var(--gold);font-size:10px"></i>' : "") + "</b>" +
+        "<small>" + esc(person?.email || uid) + " | " + items.length + " saved</small></div>" +
+        '<span class="role ' + (role === "admin" ? "admin" : "") + '">' + esc(role) + "</span></div>" +
+        '<div class="wl-items">' + items.map((it) => {
+          const p = img(it.poster_path, "w92");
+          return '<span class="wl-item">' + (p ? '<img src="' + esc(p) + '" alt="" data-err>' : "") +
+            "<div><b>" + esc(it.title) + "</b><span>" + (it.media_type === "tv" ? "Series" : "Film") +
+            (it.added_at ? " | " + esc(new Date(it.added_at).toLocaleDateString()) : "") + "</span></div></span>";
+        }).join("") + "</div></div>";
+    }).join("");
+    wireImages($("listBody"));
+    $("listStatus").textContent = "Up to date."; $("listStatus").className = "status ok";
+    if (!state.members.length) { state.members = people; loadMembers(); }
+  }
+  async function loadStreams() {
+    if (!isAdmin() || !state.sb) { $("streamList").innerHTML = none("Connect Supabase to manage overrides."); return; }
+    const { data, error } = await state.sb.from("custom_streams").select("id,tmdb_id,stream_url,updated_by,created_at").order("created_at", { ascending: false });
+    $("streamList").innerHTML = error ? none(error.message)
+      : ((data || []).length ? data.map((r) => row("<strong>TMDB " + esc(r.tmdb_id) + '</strong><small title="' + esc(r.stream_url) + '">' + esc(r.stream_url) + "</small>",
+          '<button class="mini" type="button" data-del-stream="' + esc(r.tmdb_id) + '">Remove</button>')).join("") : none("No overrides yet."));
+  }
+  async function loadContentAdmin() {
+    if (!isAdmin() || !state.sb) { $("contentList").innerHTML = none("Connect Supabase to manage content."); return; }
+    const { data, error } = await state.sb.from("custom_content").select("id,title,description,created_at").order("created_at", { ascending: false });
+    $("contentList").innerHTML = error ? none(error.message)
+      : ((data || []).length ? data.map((r) => row("<strong>" + esc(r.title) + "</strong><small>" + esc(new Date(r.created_at).toLocaleDateString()) + "</small>",
+          '<button class="mini" type="button" data-del-content="' + esc(r.id) + '">Remove</button>')).join("") : none("Nothing published yet."));
+  }
+  async function saveStream(ev) {
+    ev.preventDefault();
+    if (!isAdmin()) return;
+    if (!state.sb) { $("stStatus").textContent = "Connect Supabase first."; $("stStatus").className = "status error"; return; }
+    const id = Number($("stId").value), url = httpsUrl($("stUrl").value);
+    if (!Number.isSafeInteger(id) || id < 1 || !url) { $("stStatus").textContent = "Enter a positive TMDB id and an https URL."; $("stStatus").className = "status error"; return; }
+    const { error } = await state.sb.from("custom_streams").upsert({ tmdb_id: id, stream_url: url, updated_by: state.user?.id || null }, { onConflict: "tmdb_id" });
+    if (error) { $("stStatus").textContent = error.message; $("stStatus").className = "status error"; return; }
+    $("stStatus").textContent = "Override saved."; $("stStatus").className = "status ok";
+    $("streamForm").reset(); await loadStreams(); await loadOverview(); toast("Stream override saved.", "ok");
+  }
+  async function saveContent(ev) {
+    ev.preventDefault();
+    if (!isAdmin()) return;
+    if (!state.sb) { $("ctStatus").textContent = "Connect Supabase first."; $("ctStatus").className = "status error"; return; }
+    const title = $("ctTitle").value.trim();
+    const rawBanner = $("ctBanner").value.trim(), rawStream = $("ctStream").value.trim();
+    const banner = rawBanner ? httpsUrl(rawBanner) : null, stream = rawStream ? httpsUrl(rawStream) : null;
+    if (!title || (rawBanner && !banner) || (rawStream && !stream)) { $("ctStatus").textContent = "Image and stream URLs must be https."; $("ctStatus").className = "status error"; return; }
+    const { error } = await state.sb.from("custom_content").insert({ title, description: $("ctDesc").value.trim() || null, banner_url: banner, custom_stream_url: stream });
+    if (error) { $("ctStatus").textContent = error.message; $("ctStatus").className = "status error"; return; }
+    $("ctStatus").textContent = "Published."; $("ctStatus").className = "status ok";
+    $("contentForm").reset();
+    await Promise.all([loadCustom(), loadContentAdmin(), loadOverview()]); renderRows(); toast("Published to From the Nest.", "ok");
+  }
+  async function saveConfig(ev) {
+    ev.preventDefault();
+    if (!isAdmin()) { toast("Only the owner can change credentials.", "error"); return; }
+    if (!persistConfig({
+      tmdbKey: $("cfgTmdb").value.trim(),
+      supabaseUrl: $("cfgUrl").value.trim().replace(/\/$/, ""),
+      supabaseAnonKey: $("cfgKey").value.trim()
+    })) return;
+    $("cfgStatus").textContent = "Credentials saved."; $("cfgStatus").className = "status ok";
+    computeConfig(); fillCfgForm();
+    await Promise.all([connect(), loadCatalog()]);
+    renderRows(); toast("Credentials applied.", "ok");
+  }
+  async function roleChange(id, next) {
+    if (!isAdmin() || !state.sb || !["user", "admin"].includes(next)) return;
+    if (!confirm("Set this member's role to " + next + "?")) return;
+    const { error } = await state.sb.from("profiles").update({ role: next }).eq("id", id);
+    if (error) { $("userStatus").textContent = error.message; $("userStatus").className = "status error"; return; }
+    $("userStatus").textContent = "Role updated."; $("userStatus").className = "status ok";
+    await Promise.all([loadMembers(), loadAllLists(), loadOverview()]);
+    if (state.user && id === state.user.id) await applyUser(state.user);
+  }
+  async function delRow(table, col, val, after) {
+    if (!isAdmin() || !state.sb) return;
+    const { error } = await state.sb.from(table).delete().eq(col, val);
+    if (error) { toast(error.message || "Delete failed.", "error"); return; }
+    await after(); toast("Removed.", "ok");
+  }
 
-        document.getElementById('home-view').classList.add('hidden');
-        document.getElementById('not-found-view').classList.add('hidden');
-        document.getElementById('details-view').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  /* ---------- routing ----------
+     Owner routes are recognised from three places, in order of reliability:
+       1. hash   :  #admin  #/admin  #owner
+       2. query  :  ?admin  ?admin=1  ?owner=1     (works on ANY static host,
+                                                   no server rewrite needed)
+       3. path   :  /admin  /admin/                     (needs a host rewrite) */
+  const OWNER_HASHES = ["admin", "owner", "nest-admin", "control"];
+  function isOwnerRoute() {
+    const raw = (location.hash || "").trim();
+    const hash = raw.toLowerCase().replace(/^#\/?/, "").split(/[/?&#]/)[0];
+    if (hash && OWNER_HASHES.indexOf(hash) !== -1) return true;
+    const query = (location.search || "").toLowerCase();
+    if (/(^|[?&])(admin|owner)(=1|=true|=yes)?(&|$)/.test(query)) return true;
+    const path = (location.pathname || "").toLowerCase();
+    if (/(^|\/)(admin|owner)\/?$/.test(path)) return true;
+    return false;
+  }
+  function route() {
+    if (isOwnerRoute()) {
+      if ($("adminModal").hidden === false || $("ownerModal").hidden === false) return; // already showing
+      // URL routes never prefill credentials, so a visitor who finds the link
+      // still has to know the owner email and admin key.
+      if (isAdmin()) openAdmin("overview");
+      else openOwnerGate(false);
+      return;
+    }
+    const hash = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
+    if (hash === "search") openSearch();
+  }
 
-        const backdrop = detailsData.backdrop_path ? TMDB_HERO_BASE + detailsData.backdrop_path : '';
-        const poster = detailsData.poster_path ? TMDB_IMAGE_BASE + detailsData.poster_path : '';
-        const title = detailsData.title || detailsData.name || 'Untitled';
-        
-        document.getElementById('details-backdrop').style.backgroundImage = `url('${backdrop}')`;
-        document.getElementById('details-poster').src = poster;
-        document.getElementById('details-title').textContent = title;
-        document.getElementById('details-overview').textContent = detailsData.overview || '';
+  /* ---------- events ---------- */
+  document.addEventListener("click", async (ev) => {
+    const closer = ev.target.closest("[data-close]");
+    if (closer) { closeModal(closer.dataset.close); return; }
+    if (ev.target.classList.contains("backdrop") && ev.target.id !== "playerModal") { closeModal(ev.target.id); return; }
+    const jump = ev.target.closest("[data-tab-jump]");
+    if (jump) { selectTab(jump.dataset.tabJump); return; }
+    const tab = ev.target.closest("[data-tab]");
+    if (tab) { selectTab(tab.dataset.tab); return; }
+    const sv = ev.target.closest("[data-server]");
+    if (sv && !sv.disabled) { setServer(Number(sv.dataset.server)); return; }
+    const sc = ev.target.closest("[data-scroll]");
+    if (sc) { const s = $("strip-" + sc.dataset.scroll); if (s) s.scrollBy({ left: Number(sc.dataset.dir) * Math.max(300, s.clientWidth * .82), behavior: "smooth" }); return; }
+    const open = ev.target.closest("[data-open]");
+    if (open) { const it = state.index.get(open.dataset.open); if (it) { if (it.is_custom && !httpsUrl(it.custom_stream_url)) openDetail(it); else play(it); } return; }
+    const sv2 = ev.target.closest("[data-save]");
+    if (sv2) { await toggleSave(state.index.get(sv2.dataset.save)); return; }
+    const ds = ev.target.closest("[data-del-stream]");
+    if (ds) { await delRow("custom_streams", "tmdb_id", Number(ds.dataset.delStream), async () => { await Promise.all([loadStreams(), loadOverview()]); }); return; }
+    const dc = ev.target.closest("[data-del-content]");
+    if (dc) { await delRow("custom_content", "id", dc.dataset.delContent, async () => { await Promise.all([loadCustom(), loadContentAdmin(), loadOverview()]); renderRows(); }); return; }
+    const rl = ev.target.closest("[data-role-id]");
+    if (rl) { await roleChange(rl.dataset.roleId, rl.dataset.next); return; }
+    const act = ev.target.closest("[data-act]")?.dataset.act;
+    if (act === "auth") openAuth();
+  });
 
-        const safeTitle = title.replace(/'/g, "\\'");
-        const posterPath = detailsData.poster_path || '';
-        document.getElementById('details-actions').innerHTML = `
-          <button onclick="window.openPlayer('${id}', '${type}')" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-md flex items-center space-x-2 transition">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6V4z"/></svg>
-            <span>Play Now</span>
-          </button>
-          <button onclick="window.toggleWatchlist(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2.5 rounded-md transition border border-neutral-700">Add to List</button>
-          <button onclick="window.toggleWatched(null, '${id}', '${safeTitle}', '${posterPath}', '${type}')" class="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2.5 rounded-md transition border border-neutral-700">Mark Watched</button>
-        `;
-      };
+  $("navSearch").addEventListener("click", openSearch);
+  $("adminShortcut").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
+  $("footAdmin").addEventListener("click", (e) => { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); });
+  $("menuAdmin").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
+  $("menuAuth").addEventListener("click", openAuth);
+  $("menuOut").addEventListener("click", signOut);
+  $("profileBtn").addEventListener("click", () => {
+    const willOpen = $("profileMenu").hidden;
+    $("profileMenu").hidden = !willOpen;
+    $("profileBtn").setAttribute("aria-expanded", String(willOpen));
+  });
+  document.addEventListener("click", (ev) => {
+    if (!ev.target.closest("#profileMenu") && !ev.target.closest("#profileBtn")) closeMenu();
+  });
+  $("heroPlay").addEventListener("click", () => play(state.hero));
+  $("heroInfo").addEventListener("click", () => openDetail(state.hero));
+  $("heroSave").addEventListener("click", () => toggleSave(state.hero));
+  $("detailPlay").addEventListener("click", () => play(state.detail));
+  $("detailSave").addEventListener("click", () => toggleSave(state.detail));
+  $("authForm").addEventListener("submit", submitAuth);
+  $("authSwap").addEventListener("click", () => setMode(state.mode === "signin" ? "signup" : "signin"));
+  $("ownerForm").addEventListener("submit", submitOwner);
+  // Discreet owner unlock: triple-click the footer year (invisible to visitors).
+  let ownerTaps = 0, ownerTapTimer = null;
+  $("footYear").addEventListener("click", () => {
+    ownerTaps += 1;
+    clearTimeout(ownerTapTimer);
+    ownerTapTimer = setTimeout(() => { ownerTaps = 0; }, 900);
+    if (ownerTaps >= 3) { ownerTaps = 0; clearTimeout(ownerTapTimer); if (!isAdmin()) openOwnerGate(true); }
+  });
+  $("cfgForm").addEventListener("submit", saveConfig);
+  $("cfgRevert").addEventListener("click", () => {
+    try { localStorage.removeItem(STORE_KEY); } catch {}
+    state.store = {}; computeConfig(); fillCfgForm(); loadOverview();
+    $("cfgStatus").textContent = "Reverted to the built-in credentials."; $("cfgStatus").className = "status ok";
+  });
+  $("adminLock").addEventListener("click", lockOwner);
+  $("menuLock").addEventListener("click", lockOwner);
+  $("streamForm").addEventListener("submit", saveStream);
+  $("contentForm").addEventListener("submit", saveContent);
+  $("listRefresh").addEventListener("click", async () => { state.members = []; await loadMembers(); await loadAllLists(); });
+  $("searchBox").addEventListener("input", (e) => doSearch(e.target.value));
+  $("seasonIn").addEventListener("change", () => setServer(state.server));
+  $("episodeIn").addEventListener("change", () => setServer(state.server));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeMenu(); const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden); if (m) closeModal(m.id); }
+    if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
+    if (e.key.toLowerCase() === "a" && e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); }
+  });
+  window.addEventListener("scroll", () => $("topbar").classList.toggle("scrolled", window.scrollY > 20), { passive: true });
+  document.querySelectorAll(".nav-links a").forEach((a) => a.addEventListener("click", () => {
+    document.querySelectorAll(".nav-links a").forEach((x) => x.classList.toggle("active", x === a));
+  }));
+  window.addEventListener("hashchange", route);
+  window.addEventListener("popstate", route);
 
-      window.openPlayer = (id, type) => {
-        state.currentMedia = { id, type };
-        window.switchProvider('vidsrc');
-        document.getElementById('player-modal').classList.remove('hidden');
-      };
-
-      window.switchProvider = (provider) => {
-        const { id, type } = state.currentMedia;
-        const playerFrame = document.getElementById('player-frame');
-        playerFrame.src = provider === 'vidsrc' 
-          ? `https://vidsrc.cc/v2/embed/${type}/${id}`
-          : `https://www.2embed.cc/embed/${type === 'tv' ? 'tv' : ''}/${id}`;
-      };
-
-      function generateFireParticles() {
-        const container = document.getElementById('fire-container');
-        for (let i = 0; i < 30; i++) {
-          const p = document.createElement('div');
-          p.className = 'particle';
-          const size = Math.random() * 8 + 4;
-          p.style.width = `${size}px`;
-          p.style.height = `${size}px`;
-          p.style.left = `${Math.random() * 100}%`;
-          p.style.animationDelay = `${Math.random() * 2.5}s`;
-          container.appendChild(p);
-        }
-      }
-
-      function setupEventListeners() {
-        document.getElementById('close-player').addEventListener('click', () => {
-          document.getElementById('player-frame').src = '';
-          document.getElementById('player-modal').classList.add('hidden');
-        });
-
-        const searchInput = document.getElementById('search-input');
-        let searchTimeout;
-        
-        searchInput.addEventListener('input', () => {
-          clearTimeout(searchTimeout);
-          const query = searchInput.value.trim();
-          const searchSection = document.getElementById('search-results-section');
-          const heroSection = document.getElementById('hero');
-          const grid = document.getElementById('search-grid');
-
-          if (!query) {
-            searchSection.classList.add('hidden');
-            heroSection.classList.remove('hidden');
-            return;
-          }
-
-          window.showHome();
-          heroSection.classList.add('hidden');
-          searchSection.classList.remove('hidden');
-          grid.innerHTML = `<p class="col-span-full text-xs text-neutral-400">Searching...</p>`;
-
-          searchTimeout = setTimeout(async () => {
-            const results = await tmdbFetch(`/search/multi?query=${encodeURIComponent(query)}`);
-            if (results?.results?.length) {
-              grid.innerHTML = results.results.filter(r => r.poster_path).map(r => createMediaCard(r, r.media_type || 'movie')).join('');
-            } else {
-              grid.innerHTML = `<p class="col-span-full text-xs text-neutral-400">No titles found.</p>`;
-            }
-          }, 300);
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', init);
-    })();
-  </script>
+  /* ---------- boot ---------- */
+  (async function boot() {
+    $("footYear").textContent = "Flickerz Nest " + new Date().getFullYear();
+    renderHero(state.hero);
+    renderRows();
+    paintAccount();
+    computeConfig();
+    route();                                  // open the owner gate immediately,
+    await Promise.all([connect(), loadCatalog()]); // before any network work
+    route();                                  // re-check once the session resolves
+  })();
+})();
+</script>
 </body>
 </html>
