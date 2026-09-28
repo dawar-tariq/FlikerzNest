@@ -372,8 +372,71 @@
   @keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
   @keyframes beat{0%,100%{transform:scale(1)}18%{transform:scale(1.22)}36%{transform:scale(1)}54%{transform:scale(1.16)}}
 
+  /* ---------- dedicated title page ---------- */
+  .title-page{position:relative;z-index:2;min-height:100vh;padding-bottom:80px;animation:fade .28s ease-out}
+  .tp-hero{position:relative;height:min(76vh,700px);min-height:440px;overflow:hidden;background:#0c0e13}
+  .tp-bg{position:absolute;inset:0;background-position:center 28%;background-size:cover;transform:scale(1.04)}
+  .tp-bg::after{position:absolute;inset:0;content:"";background:
+    linear-gradient(90deg,rgba(8,9,13,.98) 0%,rgba(8,9,13,.88) 28%,rgba(8,9,13,.48) 62%,rgba(8,9,13,.8) 100%),
+    linear-gradient(0deg,var(--ink) 2%,rgba(8,9,13,.6) 26%,transparent 72%)}
+  .tp-inner{position:relative;z-index:2;height:100%;display:flex;align-items:flex-end;gap:clamp(18px,3vw,42px);
+    padding:104px clamp(16px,4.5vw,68px) 34px;max-width:1740px;margin:0 auto}
+  .tp-poster{flex:0 0 clamp(132px,17vw,248px);aspect-ratio:2/3;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line-2);box-shadow:0 24px 60px rgba(0,0,0,.6);background:linear-gradient(150deg,#232733,#12141a)}
+  .tp-poster img{width:100%;height:100%;object-fit:cover;display:block}
+  .tp-poster-ph{width:100%;height:100%;display:grid;place-items:center;padding:16px;text-align:center;color:#8b909c;font-size:12px;font-weight:700;line-height:1.5}
+  .tp-body{min-width:0;flex:1}
+  .tp-title{margin:10px 0 0;font-size:clamp(1.85rem,4.4vw,3.5rem);font-weight:800;letter-spacing:-.05em;line-height:1.03;text-wrap:balance}
+  .tp-tag{margin:10px 0 0;color:#c6cad2;font-size:13.5px;font-style:italic}
+  .tp-facts{display:flex;flex-wrap:wrap;gap:10px 24px;margin:17px 0 0;color:#c9cdd6;font-size:12.5px;font-weight:500}
+  .tp-facts b{color:#fff;font-weight:700}
+  .tp-genres{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+  .genre{padding:5px 12px;border:1px solid var(--line-2);border-radius:999px;background:rgba(255,255,255,.05);font-size:11px;font-weight:600}
+  .tp-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:24px}
+  .tp-back{position:absolute;z-index:3;top:88px;left:clamp(16px,4.5vw,68px);display:inline-flex;align-items:center;gap:9px;
+    padding:9px 16px;border:1px solid var(--line-2);border-radius:999px;background:rgba(10,11,15,.62);
+    backdrop-filter:blur(10px);cursor:pointer;font-size:12.5px;font-weight:600}
+  .tp-back:hover{background:rgba(255,255,255,.15);color:#fff}
+  .tp-sec{max-width:1740px;margin:0 auto;padding:0 clamp(16px,4.5vw,68px)}
+  .tp-sec h3{display:flex;align-items:center;gap:10px;margin:36px 0 15px;font-size:19px;font-weight:800;letter-spacing:-.03em}
+  .tp-sec h3::before{width:4px;height:20px;border-radius:4px;content:"";background:linear-gradient(180deg,var(--red-2),#8d050c)}
+  .tp-sec p.lead{max-width:820px;margin:0;color:#c8ccd4;font-size:14px;line-height:1.8}
+  .tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:16px}
+  .cast-card{text-align:center}
+  .cast-card img,.cast-ph{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:#1c2029}
+  .cast-ph{display:grid;place-items:center;color:#7f8592;font-size:20px}
+  .cast-card img[data-err]{display:none}
+  .cast-card b{display:block;margin-top:9px;font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cast-card span{display:block;margin-top:3px;color:#8b909c;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .season-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+  .season-row::-webkit-scrollbar{display:none}
+  .season{flex:0 0 216px;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);
+    cursor:pointer;text-align:left;transition:border-color .2s,background .2s,transform .2s}
+  .season:hover{border-color:var(--line-2);background:rgba(255,255,255,.07);transform:translateY(-3px)}
+  .season b{display:block;font-size:13px}
+  .season span{display:block;margin-top:7px;color:#8b909c;font-size:11px;line-height:1.55}
+  .quote{padding:16px 18px;border-left:3px solid var(--red);border-radius:0 12px 12px 0;background:rgba(255,255,255,.035);
+    color:#d4d7de;font-size:13.5px;line-height:1.75;font-style:italic}
+  .fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+  .fact{padding:14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025)}
+  .fact span{display:block;color:#8b909c;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+  .fact b{display:block;margin-top:6px;font-size:13px;font-weight:600;line-height:1.5}
+  .tp-loading{display:grid;place-items:center;min-height:70vh;gap:14px;color:#a6abb6;font-size:13px}
+
+  /* ---------- player states (prevents the black-screen bug) ---------- */
+  .stage{position:relative}
+  .stage-note{position:absolute;inset:0;z-index:2;display:grid;place-content:center;justify-items:center;gap:13px;
+    padding:26px;text-align:center;background:radial-gradient(circle at 50% 40%,#12141b,#07080c 75%);color:#a7acb8;font-size:13px;line-height:1.7}
+  .stage-note b{color:#fff;font-size:15.5px;letter-spacing:-.02em}
+  .stage-note .mini{margin-top:4px}
+  .stage-note.hide{display:none}
+  .spin{width:40px;height:40px;border:3px solid rgba(255,255,255,.13);border-top-color:var(--red-2);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
   @media (max-width:920px){
     .nav-links{display:none}
+    .tp-inner{padding-top:96px}
+    .tp-grid{grid-template-columns:repeat(auto-fill,minmax(116px,1fr))}
     .nav-search{width:auto;padding:0 12px}
     .nav-search span,.nav-search kbd{display:none}
     .split{grid-template-columns:1fr}
@@ -448,7 +511,7 @@
 </header>
 
 <main id="top">
-  <section class="hero" aria-label="Featured title">
+  <section class="hero" id="homeHero" aria-label="Featured title">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-veil"></div>
     <div class="hero-glow"></div>
@@ -466,6 +529,7 @@
     </div>
   </section>
   <div class="shell" id="rows"></div>
+  <div class="title-page" id="titlePage" hidden></div>
 </main>
 
 <footer class="foot">
@@ -538,7 +602,10 @@
         <button class="x" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
-    <div class="stage"><iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe></div>
+    <div class="stage">
+      <div class="stage-note" id="stageNote"><div class="spin"></div><b>Preparing your stream</b><span>This usually takes a few seconds.</span></div>
+      <iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
+    </div>
     <div class="player-foot">
       <span id="playerNote">If playback does not start, switch servers.</span>
       <div class="ep" id="epControls" hidden>
@@ -770,7 +837,8 @@
     mode: "signin", sb: null, sbSig: "", authSub: null, channel: null,
     user: null, profile: null,
     members: [], allLists: [],
-    searchSeq: 0, searchTimer: null, catSeq: 0, io: null, loading: true
+    searchSeq: 0, searchTimer: null, catSeq: 0, io: null, loading: true,
+    titleSeq: 0, titlePlaying: null, playTimer: null, loadToken: 0
   };
   state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
 
@@ -782,12 +850,35 @@
     $("toasts").appendChild(el);
     setTimeout(() => el.remove(), 4000);
   }
-  function openModal(id) { closeMenu(); $(id).hidden = false; document.body.classList.add("locked"); }
+  /* Keeps scroll-lock in sync with whatever is actually on screen. This is the
+     fix for the "whole page goes black / frozen" bug: if any code path throws
+     between open and close, the lock is always re-derived from real state. */
+  function syncLock() {
+    const anyModal = [...document.querySelectorAll(".backdrop")].some((b) => !b.hidden);
+    const titleOpen = !$("titlePage").hidden;
+    document.body.classList.toggle("locked", Boolean(anyModal || titleOpen));
+  }
+  function openModal(id) {
+    closeMenu();
+    const m = $(id); if (!m) return;
+    m.hidden = false;
+    syncLock();
+  }
   function closeModal(id) {
     const m = $(id); if (!m || m.hidden) return;
     m.hidden = true;
-    if (![...document.querySelectorAll(".backdrop")].some((b) => !b.hidden)) document.body.classList.remove("locked");
-    if (id === "playerModal") { $("frame").src = "about:blank"; state.playing = null; state.override = ""; }
+    if (id === "playerModal") stopPlayback();
+    syncLock();
+  }
+  function closeAllModals() {
+    document.querySelectorAll(".backdrop").forEach((b) => { b.hidden = true; });
+    stopPlayback();
+    syncLock();
+  }
+  function stopPlayback() {
+    if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
+    const f = $("frame"); if (f) f.src = "about:blank";
+    state.playing = null; state.override = "";
   }
   function closeMenu() { $("profileMenu").hidden = true; $("profileBtn").setAttribute("aria-expanded", "false"); }
   const keyOf = (i) => (i.media_type || "movie") + ":" + i.id;
@@ -843,7 +934,7 @@
     const saved = inList(item);
     return '<article class="tile">' +
       '<button class="poster" type="button" data-open="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
-        (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" data-err>' : "") +
+        (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" data-err>' : '<span class="tp-poster-ph">' + esc(t) + "</span>") +
         '<span class="poster-veil"></span>' +
         (item.vote_average ? '<span class="score"><i class="fa-solid fa-star"></i>' + Number(item.vote_average).toFixed(1) + "</span>" : "") +
         '<span class="poster-play"><i class="fa-solid fa-play"></i></span>' +
@@ -909,6 +1000,21 @@
   }
   const norm = (i, type) => ({ ...i, title: i.title || i.name || "Untitled", media_type: i.media_type === "movie" || i.media_type === "tv" ? i.media_type : (type || "movie") });
 
+  /* Only keep titles that can actually be rendered. This is the main fix for
+     "some movies crash to load": TMDB list endpoints occasionally return stub
+     entries with no id, no artwork and no text, which used to break the row. */
+  function usable(i) {
+    if (!i || typeof i !== "object") return false;
+    const id = Number(i.id);
+    if (!Number.isSafeInteger(id) || id <= 0) return false;
+    if (!i.poster_path && !i.backdrop_path && !i.profile_path) return false;
+    return Boolean(i.title || i.name || i.original_title || i.original_name);
+  }
+  function sanitize(list, fallback, type) {
+    const out = (Array.isArray(list) ? list : []).filter(usable).map((i) => norm(i, type));
+    return out.length ? out : fallback;
+  }
+
   async function loadCatalog() {
     const seq = ++state.catSeq;
     if (!state.cfg.tmdbKey) {
@@ -916,19 +1022,30 @@
       state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
       state.loading = false; renderHero(state.trending[0]); renderRows(); return;
     }
-    const res = await Promise.allSettled([
-      tmdb("/trending/movie/week", { language: "en-US" }),
-      tmdb("/tv/popular", { language: "en-US", page: "1" }),
-      tmdb("/movie/top_rated", { language: "en-US", page: "1" })
-    ]);
-    if (seq !== state.catSeq) return;
-    const pick = (r, fb, type) => r.status === "fulfilled" && Array.isArray(r.value?.results) && r.value.results.length ? r.value.results.map((i) => norm(i, type)) : fb;
-    state.trending = pick(res[0], DEMO_MOVIES, "movie");
-    state.tv = pick(res[1], DEMO_TV, "tv");
-    state.rated = pick(res[2], [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average), "movie");
-    state.loading = false;
-    renderHero(state.trending[0]); renderRows();
-    if (res.every((r) => r.status === "rejected")) toast(res[0].reason?.message || "TMDB unavailable - showing demo titles.", "error");
+    try {
+      const res = await Promise.allSettled([
+        tmdb("/trending/movie/week", { language: "en-US" }),
+        tmdb("/tv/popular", { language: "en-US", page: "1" }),
+        tmdb("/movie/top_rated", { language: "en-US", page: "1" })
+      ]);
+      if (seq !== state.catSeq) return;
+      const pick = (r, fb, type) => r.status === "fulfilled" ? sanitize(r.value?.results, fb, type) : fb;
+      state.trending = pick(res[0], DEMO_MOVIES, "movie");
+      state.tv = pick(res[1], DEMO_TV, "tv");
+      state.rated = pick(res[2], [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average), "movie");
+      if (res.every((r) => r.status === "rejected")) toast("TMDB is unreachable right now - showing the demo collection.", "error");
+    } catch (e) {
+      if (seq === state.catSeq) toast(e.message || "Could not load the catalog.", "error");
+    } finally {
+      if (seq === state.catSeq) {
+        state.loading = false;
+        if (!state.trending.length) state.trending = DEMO_MOVIES;
+        if (!state.tv.length) state.tv = DEMO_TV;
+        if (!state.rated.length) state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
+        renderHero(state.trending[0]);
+        renderRows();
+      }
+    }
   }
 
   /* ---------- search ---------- */
@@ -942,7 +1059,7 @@
     const k = keyOf(i); state.index.set(k, i);
     const p = img(i.poster_path, "w185");
     return '<button class="hit" type="button" data-open="' + esc(k) + '">' +
-      (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<img alt="">') +
+      (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<img alt="" style="display:none">') +
       '<span class="hit-body"><strong>' + esc(titleOf(i)) + "</strong><span>" +
       (i.is_custom ? "Nest original" : (i.media_type === "tv" ? "Series" : "Film")) + (yearOf(i) ? " | " + esc(yearOf(i)) : "") + "</span></span>" +
       '<i class="fa-solid fa-play"></i></button>';
@@ -977,23 +1094,161 @@
     setTimeout(() => $("searchBox").focus(), 30);
   }
 
-  /* ---------- details + player ---------- */
-  function openDetail(item) {
+  /* ---------- dedicated title screen ---------- */
+  const detailCache = new Map();
+  const runtime = (m) => {
+    if (!m) return "";
+    const n = Number(m.runtime || m.episode_run_time);
+    return n > 0 ? Math.floor(n / 60) + "h " + (n % 60) + "m" : "";
+  };
+  const money = (n) => {
+    const v = Number(n);
+    if (!v || v <= 0) return "";
+    return "$" + v.toLocaleString("en-US");
+  };
+  const dateNice = (d) => {
+    if (!d) return "";
+    const t = new Date(d);
+    return isNaN(t) ? "" : t.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  };
+
+  function titleRoute(item) {
+    const type = item.is_custom ? "custom" : (item.media_type === "tv" ? "tv" : "movie");
+    return "#title/" + type + "/" + item.id;
+  }
+  async function openDetail(item) {
     if (!item) return;
+    const target = titleRoute(item);
+    if ((location.hash || "").toLowerCase() === target) await loadTitlePage(item.is_custom ? "custom" : item.media_type, item.id, item);
+    else location.hash = target;
+  }
+  function closeTitlePage() {
+    if ($("titlePage").hidden) return;
+    $("titlePage").hidden = true;
+    $("titlePage").innerHTML = "";
+    $("rows").hidden = false;
+    $("homeHero").hidden = false;
+    state.detail = null;
+    syncLock();
+    window.scrollTo(0, 0);
+  }
+
+  async function loadTitlePage(type, id, preset) {
+    const seq = ++state.titleSeq;
+    closeAllModals();
+    $("rows").hidden = true;
+    $("homeHero").hidden = true;
+    $("titlePage").hidden = false;
+    syncLock();
+    window.scrollTo(0, 0);
+    $("titlePage").innerHTML = '<div class="tp-loading"><div class="spin"></div><span>Loading title...</span></div>';
+
+    let item = preset || null, full = null;
+    try {
+      if (type === "custom") {
+        item = state.custom.find((c) => String(c.id) === String(id)) || preset || null;
+      } else if (state.cfg.tmdbKey) {
+        const key = type + ":" + id;
+        if (detailCache.has(key)) full = detailCache.get(key);
+        else {
+          const append = type === "tv"
+            ? "credits,videos,similar,external_ids,content_ratings"
+            : "credits,videos,similar,external_ids,release_dates";
+          full = await tmdb("/" + type + "/" + id, { language: "en-US", append_to_response: append });
+          detailCache.set(key, full);
+        }
+        item = norm(full, type);
+      }
+    } catch (e) {
+      if (seq !== state.titleSeq) return;
+      $("titlePage").innerHTML =
+        '<div class="tp-hero" style="min-height:60vh"></div>' +
+        '<div class="tp-sec" style="margin-top:-260px;position:relative;z-index:2"><div class="lockbox">' +
+        '<i class="fa-solid fa-triangle-exclamation"></i><h3>Could not load this title</h3>' +
+        "<p>" + esc(e.message || "The details service did not respond.") + "</p>" +
+        '<div class="actions" style="justify-content:center"><button class="btn btn-glass" type="button" data-act="back-home"><i class="fa-solid fa-house"></i> Back to home</button>' +
+        '<button class="btn btn-primary" type="button" data-act="retry"><i class="fa-solid fa-rotate"></i> Try again</button></div>' +
+        "</div></div>";
+      return;
+    }
+    if (seq !== state.titleSeq) return;
+    if (!item) { closeTitlePage(); toast("That title is not available.", "error"); return; }
+
     state.detail = item;
-    const art = img(item.backdrop_path || item.poster_path, "original");
-    $("detailArt").style.backgroundImage = art ? 'url("' + art + '")' : "linear-gradient(130deg,#241c26,#0f1116)";
-    $("detailTitle").textContent = titleOf(item);
-    $("detailCopy").textContent = item.description || item.overview || "A new story is waiting in the Nest.";
-    $("detailKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
-    $("detailMeta").innerHTML = chips(item);
-    const canPlay = item.is_custom ? Boolean(httpsUrl(item.custom_stream_url)) : true;
-    $("detailPlay").disabled = !canPlay;
-    $("detailPlay").innerHTML = '<i class="fa-solid fa-play"></i> ' + (canPlay ? "Play now" : "No stream yet");
-    $("detailSave").hidden = Boolean(item.is_custom);
+    renderTitlePage(item, full, type);
+  }
+
+  function renderTitlePage(item, full, type) {
+    const isTv = item.media_type === "tv";
+    const isCustom = Boolean(item.is_custom);
+    const t = titleOf(item);
+    const backdrop = img(item.backdrop_path || item.poster_path, "w1280");
+    const poster = img(item.poster_path, "w500");
+    const overview = item.overview || item.description || "No synopsis has been added for this title yet.";
     const saved = inList(item);
-    $("detailSave").innerHTML = '<i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Add to watchlist");
-    openModal("detailModal");
+    const canPlay = isCustom ? Boolean(httpsUrl(item.custom_stream_url)) : true;
+    const genres = (full?.genres || []).map((g) => '<span class="genre">' + esc(g.name) + "</span>").join("");
+    const tagline = full?.tagline ? '<p class="tp-tag">' + esc(full.tagline) + "</p>" : "";
+    const crew = (full?.credits?.crew || []).filter((c) => ["Director", "Creator", "Writer"].includes(c.job)).slice(0, 3);
+    const cast = (full?.credits?.cast || []).slice(0, 14);
+    const similar = (full?.similar?.results || []).filter(usable).slice(0, 14).map((i) => norm(i, type));
+    const seasons = (full?.seasons || []).filter((s) => Number(s.season_number) > 0 || s.episode_count);
+    const trailer = (full?.videos?.results || []).find((v) => v.site === "YouTube" && /trailer|teaser/i.test(v.type));
+    const certs = type === "tv"
+      ? (full?.content_ratings?.results || []).find((r) => r.iso_3166_1 === "US")?.rating
+      : (full?.release_dates?.results || []).find((r) => r.iso_3166_1 === "US")?.release_dates?.[0]?.certification;
+
+    const facts = [
+      certs ? ["Rating", esc(certs)] : null,
+      yearOf(item) ? ["Release", esc(dateNice(item.release_date || item.first_air_date) || yearOf(item))] : null,
+      isTv && full?.number_of_seasons ? ["Seasons", esc(full.number_of_seasons) + " (" + esc(full.number_of_episodes || 0) + " eps)"] : null,
+      runtime(full) ? ["Runtime", esc(runtime(full))] : null,
+      item.vote_average ? ["TMDB score", esc(Number(item.vote_average).toFixed(1)) + " / 10"] : null,
+      full?.status ? ["Status", esc(String(full.status).replace(/_/g, " "))] : null,
+      money(full?.budget) ? ["Budget", esc(money(full.budget))] : null,
+      money(full?.revenue) ? ["Revenue", esc(money(full.revenue))] : null,
+      full?.original_language ? ["Language", esc(String(full.original_language).toUpperCase())] : null,
+      (full?.production_companies || []).length ? ["Studios", esc(full.production_companies.slice(0, 2).map((c) => c.name).join(", "))] : null
+    ].filter(Boolean).map((f) => '<div class="fact"><span>' + f[0] + "</span><b>" + f[1] + "</b></div>").join("");
+
+    $("titlePage").innerHTML =
+      '<div class="tp-hero">' +
+        '<div class="tp-bg" style="' + (backdrop ? "background-image:url('" + esc(backdrop) + "')" : "background:linear-gradient(130deg,#241c26,#0f1116)") + '"></div>' +
+        '<button class="tp-back" type="button" data-act="back"><i class="fa-solid fa-arrow-left"></i> Back</button>' +
+        '<div class="tp-inner">' +
+          '<div class="tp-poster">' + (poster ? '<img src="' + esc(poster) + '" alt="' + esc(t) + '" data-err>' : '<div class="tp-poster-ph">' + esc(t) + "</div>") + "</div>" +
+          '<div class="tp-body">' +
+            '<p class="eyebrow">' + esc(isCustom ? "From the Nest" : (isTv ? "Series" : "Film")) + "</p>" +
+            '<h1 class="tp-title">' + esc(t) + "</h1>" + tagline +
+            '<div class="chips">' + chips(item) + "</div>" +
+            (genres ? '<div class="tp-genres">' + genres + "</div>" : "") +
+            (crew.length ? '<div class="tp-facts">' + crew.map((c) => "<span>" + esc(c.job) + ": <b>" + esc(c.name) + "</b></span>").join("") + "</div>" : "") +
+            '<div class="tp-actions">' +
+              '<button class="btn btn-light" type="button" data-play-now="1"' + (canPlay ? "" : " disabled") + '><i class="fa-solid fa-play"></i> ' + (canPlay ? "Play now" : "No stream yet") + "</button>" +
+              (isCustom ? "" : '<button class="btn btn-glass" type="button" data-save-page="1"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Add to watchlist") + "</button>") +
+              (trailer ? '<a class="btn btn-glass" href="https://www.youtube.com/watch?v=' + esc(trailer.key) + '" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>' : "") +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+      '<div class="tp-sec">' +
+        "<h3>Storyline</h3><p class=\"lead\">" + esc(overview) + "</p>" +
+        (facts ? "<h3>Details</h3><div class=\"fact-grid\">" + facts + "</div>" : "") +
+        (seasons.length ? "<h3>Seasons</h3><div class=\"season-row\">" + seasons.map((s) =>
+          '<button class="season" type="button" data-season="' + esc(s.season_number) + '"><b>' + esc(s.name) + "</b><span>" +
+          esc(s.episode_count || 0) + " episodes" + (s.air_date ? " | " + esc(String(s.air_date).slice(0, 4)) : "") +
+          (s.overview ? "</span><span style=\"margin-top:7px\">" + esc(String(s.overview).slice(0, 90)) + "..." : "") + "</span></button>").join("") + "</div>" : "") +
+        (cast.length ? "<h3>Top billed cast</h3><div class=\"tp-grid\">" + cast.map((c) => {
+          const pic = img(c.profile_path, "w185");
+          return '<div class="cast-card">' + (pic ? '<img src="' + esc(pic) + '" alt="' + esc(c.name) + '" loading="lazy" data-err>' : '<div class="cast-ph"><i class="fa-solid fa-user"></i></div>') +
+            "<b>" + esc(c.name) + "</b><span>" + esc(c.character || c.job || "") + "</span></div>";
+        }).join("") + "</div>" : "") +
+        (similar.length ? '<h3>More like this</h3><div class="strip-wrap"><div class="strip">' + similar.map((i) => tile(i, true)).join("") + "</div></div>" : "") +
+      "</div>";
+
+    wireImages($("titlePage"));
+    reveal();
+    state.titlePlaying = item;
   }
   function buildUrl(item, server) {
     if (!item) return "";
@@ -1008,37 +1263,87 @@
     }
     return base + "/movie/" + id;
   }
+  /* Player states. The iframe is kept visually out of the way until a source is
+     actually assigned, so the user never stares at an empty black rectangle. */
+  function noteHTML(icon, title, body, actions) {
+    return '<i class="fa-solid ' + icon + '" style="font-size:26px;color:var(--red-2)"></i>' +
+      "<b>" + esc(title) + "</b><span>" + esc(body) + "</span>" + (actions || "");
+  }
+  function setNote(mode, title, body, actions) {
+    const n = $("stageNote");
+    if (!n) return;
+    n.classList.remove("hide");
+    n.innerHTML = mode === "load"
+      ? '<div class="spin"></div><b>' + esc(title) + "</b><span>" + esc(body) + "</span>"
+      : noteHTML(mode === "fail" ? "fa-circle-exclamation" : "fa-circle-info", title, body, actions || "");
+  }
+  function hideNote() { const n = $("stageNote"); if (n) n.classList.add("hide"); }
+  function failState(item, n) {
+    $("frame").src = "about:blank";
+    setNote("fail", "This source did not respond",
+      "Try the other server, or come back later. Some titles are simply not available on public embed providers.",
+      '<button class="mini" type="button" data-server="' + (n === 1 ? 2 : 1) + '">Switch to Server ' + (n === 1 ? 2 : 1) + "</button>");
+    $("playerNote").textContent = "Source " + n + " did not load.";
+  }
   function setServer(n) {
     state.server = n;
     document.querySelectorAll("[data-server]").forEach((b) => {
       const on = Number(b.dataset.server) === n;
       b.classList.toggle("active", on); b.setAttribute("aria-pressed", String(on));
     });
-    const custom = state.override && state.playing && !state.playing.is_custom;
-    const url = custom && n === 1 ? state.override : buildUrl(state.playing, n);
-    if (!url) { $("frame").src = "about:blank"; $("playerNote").textContent = "Nothing to play for this title yet."; return; }
-    $("frame").src = url;
+    const item = state.playing;
+    if (!item) return;
+    if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
+
+    const custom = state.override && !item.is_custom;
+    const url = (custom && n === 1) ? state.override : buildUrl(item, n);
+
+    if (!url) {
+      $("frame").src = "about:blank";
+      setNote("info", "No stream available",
+        item.is_custom
+          ? "This Nest title has no stream URL yet. The owner can add one in the admin panel."
+          : "We could not build a source for this title.",
+        '<button class="mini" type="button" data-close="playerModal">Close player</button>');
+      $("playerNote").textContent = "No stream available for this title.";
+      return;
+    }
+
+    setNote("load", "Connecting to source " + n, "Streaming should begin in a moment.");
     $("playerNote").textContent = custom && n === 1 ? "Playing your custom stream override."
       : (n === 1 ? "Server 1 (VidSrc). Switch to Server 2 if it will not load." : "Server 2 (VidSrc mirror).");
+
+    const frame = $("frame");
+    frame.style.visibility = "hidden";
+    frame.src = url;
+
+    const token = ++state.loadToken;
+    frame.onload = () => { if (token === state.loadToken) hideNote(); };
+    // If nothing has signalled a load after 9s, assume the source is dead and
+    // tell the user instead of leaving a black rectangle on screen.
+    state.playTimer = setTimeout(() => {
+      if (token === state.loadToken && !$("playerModal").hidden) failState(item, n);
+    }, 9000);
   }
   async function play(item) {
     if (!item) return;
-    closeModal("detailModal"); closeModal("searchModal");
-    state.playing = item; state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
+    closeModal("searchModal");
+    state.playing = item;
+    state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
     state.server = 1;
+    state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
     $("epControls").hidden = item.is_custom || item.media_type !== "tv";
     $("seasonIn").value = "1"; $("episodeIn").value = "1";
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
     $("frame").src = "about:blank";
-    $("playerNote").textContent = "Checking stream sources...";
+    setNote("load", "Preparing your stream", "Checking for the best available source.");
     openModal("playerModal");
     if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
       try {
         const { data, error } = await state.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
-        if (error) throw error;
-        if (data?.stream_url) state.override = httpsUrl(data.stream_url);
+        if (!error && data?.stream_url) state.override = httpsUrl(data.stream_url);
       } catch { /* fall back to VidSrc */ }
     }
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = false; });
@@ -1423,7 +1728,7 @@
     if (!isAdmin() || !state.sb) { $("contentList").innerHTML = none("Connect Supabase to manage content."); return; }
     const { data, error } = await state.sb.from("custom_content").select("id,title,description,created_at").order("created_at", { ascending: false });
     $("contentList").innerHTML = error ? none(error.message)
-      : ((data || []).length ? data.map((r) => row("<strong>" + esc(r.title) + "</strong><small>" + esc(new Date(r.created_at).toLocaleDateString()) + "</small>",
+      : ((data || []).length ? data.map((r) => row("<strong>" + esc(r.title) + "</strong><small>" + esc(r.created_at ? new Date(r.created_at).toLocaleDateString() : "-") + "</small>",
           '<button class="mini" type="button" data-del-content="' + esc(r.id) + '">Remove</button>')).join("") : none("Nothing published yet."));
   }
   async function saveStream(ev) {
@@ -1499,15 +1804,16 @@
   }
   function route() {
     if (isOwnerRoute()) {
-      if ($("adminModal").hidden === false || $("ownerModal").hidden === false) return; // already showing
-      // URL routes never prefill credentials, so a visitor who finds the link
-      // still has to know the owner email and admin key.
+      if ($("adminModal").hidden === false || $("ownerModal").hidden === false) return;
       if (isAdmin()) openAdmin("overview");
       else openOwnerGate(false);
       return;
     }
-    const hash = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
-    if (hash === "search") openSearch();
+    const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
+    const title = /^title\/(custom|movie|tv)\/([a-z0-9-]+)/.exec(raw);
+    if (title) { loadTitlePage(title[1], title[2], null); return; }
+    if (raw === "search") { openSearch(); return; }
+    closeTitlePage();                       // any other hash = back to home
   }
 
   /* ---------- events ---------- */
@@ -1533,8 +1839,23 @@
     if (dc) { await delRow("custom_content", "id", dc.dataset.delContent, async () => { await Promise.all([loadCustom(), loadContentAdmin(), loadOverview()]); renderRows(); }); return; }
     const rl = ev.target.closest("[data-role-id]");
     if (rl) { await roleChange(rl.dataset.roleId, rl.dataset.next); return; }
+    const season = ev.target.closest("[data-season]");
+    if (season) {
+      if (state.detail) { closeModal("playerModal"); $("seasonIn").value = season.dataset.season || "1"; $("episodeIn").value = "1"; play(state.detail); }
+      return;
+    }
+    if (ev.target.closest("[data-play-now]")) { const b = ev.target.closest("[data-play-now]"); if (!b.disabled) play(state.detail); return; }
+    const savePage = ev.target.closest("[data-save-page]");
+    if (savePage) { await toggleSave(state.detail); return; }
     const act = ev.target.closest("[data-act]")?.dataset.act;
     if (act === "auth") openAuth();
+    if (act === "back" || act === "back-home") {
+      // Always return to the home view rather than leaving the site.
+      history.replaceState(null, "", location.pathname + location.search + "#top");
+      closeTitlePage();
+      return;
+    }
+    if (act === "retry") { const d = state.detail; closeTitlePage(); if (d) openDetail(d); else route(); return; }
   });
 
   $("navSearch").addEventListener("click", openSearch);
@@ -1594,15 +1915,33 @@
   window.addEventListener("popstate", route);
 
   /* ---------- boot ---------- */
+  // A single unexpected error must never leave the user on a blank screen.
+  window.addEventListener("error", (e) => {
+    if (state.loading) { state.loading = false; try { renderRows(); } catch {} }
+    syncLock();
+    console.error("[Flickerz Nest]", e.error || e.message);
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    console.warn("[Flickerz Nest]", e.reason);
+    syncLock();
+  });
+  document.addEventListener("visibilitychange", syncLock);
+
+  function safe(fn, label) {
+    try { return fn(); }
+    catch (e) { console.error("[Flickerz Nest] " + label, e); toast("Something went wrong loading " + label + ".", "error"); return null; }
+  }
+
   (async function boot() {
     $("footYear").textContent = "Flickerz Nest " + new Date().getFullYear();
-    renderHero(state.hero);
-    renderRows();
-    paintAccount();
+    safe(() => renderHero(state.hero), "the hero banner");
+    safe(() => renderRows(), "the catalog");
+    safe(() => paintAccount(), "your profile");
     computeConfig();
-    route();                                  // open the owner gate immediately,
-    await Promise.all([connect(), loadCatalog()]); // before any network work
-    route();                                  // re-check once the session resolves
+    try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); }
+    try { await Promise.all([connect(), loadCatalog()]); }
+    catch (e) { console.error("[Flickerz Nest] boot", e); state.loading = false; renderRows(); }
+    try { route(); } catch (e) { console.error("[Flickerz Nest] route2", e); }
   })();
 })();
 </script>
