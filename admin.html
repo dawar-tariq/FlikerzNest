@@ -30,7 +30,7 @@
           <span class="w-2.5 h-2.5 bg-red-600 rounded-full inline-block"></span>
           <span>Admin Access Required</span>
         </h1>
-        <p class="text-xs text-neutral-400">Sign in with your administrative account to manage application data and history.</p>
+        <p class="text-xs text-neutral-400">Sign in with your administrative account to manage application data.</p>
       </div>
 
       <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
@@ -51,17 +51,16 @@
       <p id="auth-error" class="text-red-500 text-xs mt-4 text-center hidden"></p>
     </div>
 
-    <!-- ADMIN DASHBOARD VIEW (Hidden by default) -->
+    <!-- ADMIN DASHBOARD VIEW -->
     <div id="dashboard-container" class="hidden space-y-8">
       <div class="flex justify-between items-center bg-neutral-900 border border-neutral-800 p-4 rounded-xl">
         <div>
           <h2 class="text-lg font-bold">Dashboard Management</h2>
-          <p class="text-xs text-neutral-400">Manage user lists and database contents.</p>
+          <p class="text-xs text-neutral-400">Manage watchlist database contents.</p>
         </div>
         <button onclick="handleLogout()" class="bg-neutral-800 hover:bg-neutral-700 text-xs px-3 py-1.5 rounded-lg transition">Sign Out</button>
       </div>
 
-      <!-- Watched History & Watchlist Management Table -->
       <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-4">
         <h3 class="text-sm font-bold tracking-wide">Database Records (Watchlist)</h3>
         <div class="overflow-x-auto">
@@ -96,7 +95,10 @@
       supabaseKey: 'sb_publishable_4BX5xVy7t61xpD1twkq2WA_JXb0tVC'
     };
 
-    const supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+    // Disable session persistence to prevent 401 Unauthorized errors on mobile
+    const supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
 
     function checkSession() {
       if (sessionStorage.getItem('flickerz_admin_logged_in') === 'true') {
@@ -116,19 +118,23 @@
         .from('admin_users')
         .select('*')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
-        errorEl.textContent = 'Invalid email or password.';
+        errorEl.textContent = 'Account not found or database error.';
         errorEl.classList.remove('hidden');
         return;
       }
 
-      if (data.password_hash === password || data.password === password) {
+      // Check password matching either plain text column or hash column
+      const matched = (data.password && data.password === password) || 
+                      (data.password_hash && data.password_hash === password);
+
+      if (matched) {
         sessionStorage.setItem('flickerz_admin_logged_in', 'true');
         showDashboard();
       } else {
-        errorEl.textContent = 'Invalid email or password.';
+        errorEl.textContent = 'Incorrect password.';
         errorEl.classList.remove('hidden');
       }
     }
