@@ -713,6 +713,10 @@
     .foot-bottom{flex-direction:column;align-items:flex-start}
     .prose p,.prose li{font-size:13.5px}
   }
+  /* v5: sign-in required to watch */
+  .when-guest{display:none}
+  body.guest .when-guest{display:inline}
+  body.guest .when-user{display:none}
   /* v4: member history */
   .dot-history{background:#b39bff}
   .hist-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px}
@@ -770,7 +774,7 @@
       <div class="chips" id="heroMeta"></div>
       <p class="hero-copy" id="heroCopy">A calm, premium place to queue up your next movie night.</p>
       <div class="hero-actions">
-        <button class="btn btn-light" id="heroPlay" type="button"><i class="fa-solid fa-play"></i> Play Now</button>
+        <button class="btn btn-light" id="heroPlay" type="button"><i class="fa-solid fa-play"></i> <span class="when-user">Play Now</span><span class="when-guest">Sign in to watch</span></button>
         <button class="btn btn-glass" id="heroInfo" type="button"><i class="fa-solid fa-circle-info"></i> Details</button>
         <button class="btn btn-glass" id="heroSave" type="button"><i class="fa-solid fa-plus"></i> Watchlist</button>
       </div>
@@ -1213,6 +1217,8 @@
     const m = $(id); if (!m || m.hidden) return;
     m.hidden = true;
     if (id === "playerModal") stopPlayback();
+    // Closing sign-in without signing in cancels the title they wanted to watch.
+    if (id === "authModal" && !state.user) state.pendingPlay = null;
     syncLock();
   }
   function closeAllModals() {
@@ -1670,7 +1676,7 @@
             (genres ? '<div class="tp-genres">' + genres + "</div>" : "") +
             (crew.length ? '<div class="tp-facts">' + crew.map((c) => "<span>" + esc(c.job) + ": <b>" + esc(c.name) + "</b></span>").join("") + "</div>" : "") +
             '<div class="tp-actions">' +
-              '<button class="btn btn-light" type="button" data-play-now="1"' + (canPlay ? "" : " disabled") + '><i class="fa-solid fa-play"></i> ' + (canPlay ? "Play now" : "No stream yet") + "</button>" +
+              '<button class="btn btn-light" type="button" data-play-now="1"' + (canPlay ? "" : " disabled") + '><i class="fa-solid fa-play"></i> ' + (canPlay ? '<span class="when-user">Play now</span><span class="when-guest">Sign in to watch</span>' : "No stream yet") + "</button>" +
               (isCustom ? "" : '<button class="btn btn-glass" type="button" data-save-page="1"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Add to watchlist") + "</button>") +
               (trailer ? '<a class="btn btn-glass" href="https://www.youtube.com/watch?v=' + esc(trailer.key) + '" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>' : "") +
             "</div>" +
@@ -1796,6 +1802,12 @@
     if (!item) return;
     opts = opts || {};
     closeModal("searchModal");
+    // Sign-in is required to watch. Guests see the sign-in box first and the
+    // title starts automatically as soon as they sign in.
+    if (!state.user) {
+      if (!state.authReady && state.sessionReady) await state.sessionReady;   // session still restoring
+      if (!state.user) { requireLogin(item, opts); return; }
+    }
     // A device that was kicked out for a suspension cannot keep streaming.
     if (deviceSuspended() && !isAdmin()) { showBlocked(deviceSuspended()); return; }
     // Inside a sandboxed preview the provider always refuses to render, so skip
@@ -1901,6 +1913,11 @@
     $("authSwap").innerHTML = up ? 'Already have an account? <span>Sign in</span>' : 'New to Flickerz Nest? <span>Create an account</span>';
     $("passIn").autocomplete = up ? "new-password" : "current-password";
     $("authStatus").textContent = ""; $("authStatus").className = "status";
+    if (state.pendingPlay) {
+      const t = titleOf(state.pendingPlay.item);
+      $("authTitle").textContent = up ? "Create a free account to watch" : "Sign in to watch";
+      $("authSub").textContent = '"' + t + '" starts as soon as you ' + (up ? "create your account." : "sign in.");
+    }
   }
   function openAuth() { closeMenu(); setMode("signin"); openModal("authModal"); setTimeout(() => $("emailIn").focus(), 30); }
   function teardown() {
@@ -1954,6 +1971,14 @@
       await loadCustom();
     }
     paintAccount(); renderRows(); paintAdmin(); renderMyListGrid();
+    // Signed in after pressing Play: start that title now.
+    if (state.user && state.pendingPlay) {
+      const p = state.pendingPlay;
+      state.pendingPlay = null;
+      if (!$("authModal").hidden) { $("authModal").hidden = true; syncLock(); }
+      toast("Signed in - starting " + titleOf(p.item) + ".", "ok");
+      play(p.item, p.opts);
+    }
   }
   function subscribe() {
     if (!state.sb || !state.user) return;
@@ -1985,6 +2010,9 @@
     $("footAdmin").hidden = !admin;
     $("menuLock").hidden = !isOwnerSession();
     paintSessionBanner();
+    // Only switch labels to "Sign in to watch" once the saved session has been
+    // checked, so signed-in members never see it flash on load.
+    document.body.classList.toggle("guest", !state.user && Boolean(state.authReady));
   }
   async function submitAuth(ev) {
     ev.preventDefault();
@@ -2010,9 +2038,10 @@
         $("authStatus").textContent = "Account created. Confirm your email, then sign in.";
         $("authStatus").className = "status ok";
       } else {
+        const resuming = Boolean(state.pendingPlay);
+        await applyUser(res.data.user || res.data.session?.user || null);   // also starts the pending title
         closeModal("authModal");
-        toast("Welcome to your Nest.", "ok");
-        await applyUser(res.data.user || res.data.session?.user || null);
+        if (!resuming) toast("Welcome to your Nest.", "ok");
       }
     } catch (e) {
       const msg = e.message || "Authentication failed.";
@@ -2787,6 +2816,7 @@
     if (state.kicking) return;
     state.kicking = true;
     try { localStorage.setItem(SUSP_KEY, reason || "1"); } catch {}
+    state.pendingPlay = null;
     closeAllModals();
     try { if (state.sb) await state.sb.auth.signOut(); } catch {}
     state.kicking = false;
@@ -2971,7 +3001,21 @@
   /* =====================================================================
      v4 - Reliable owner sign-in, database diagnostics, member watch history
      ===================================================================== */
-  Object.assign(state, { myHistory: [], sbAuthError: "" });
+  Object.assign(state, { myHistory: [], sbAuthError: "", pendingPlay: null, authReady: false, sessionReady: null });
+
+  /* Opens sign-in for a guest who pressed Play, and remembers the title so it
+     starts automatically after they sign in (see applyUser). */
+  function requireLogin(item, opts) {
+    state.pendingPlay = { item: item, opts: opts || {} };
+    closeMenu();
+    setMode("signin");
+    openModal("authModal");
+    if (!state.sb) {
+      $("authStatus").textContent = "Sign-in is temporarily unavailable. Please try again in a moment.";
+      $("authStatus").className = "status error";
+    }
+    setTimeout(() => $("emailIn").focus(), 30);
+  }
 
   function friendlyAuthError(msg, email) {
     const m = String(msg || "");
@@ -3387,7 +3431,10 @@
     safe(() => paintAccount(), "your profile");
     computeConfig();
     try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); }
-    try { await Promise.all([connect(), loadCatalog()]); }
+    state.sessionReady = connect()
+      .catch((e) => console.error("[Flickerz Nest] connect", e))
+      .then(() => { state.authReady = true; paintAccount(); });
+    try { await Promise.all([state.sessionReady, loadCatalog()]); }
     catch (e) { console.error("[Flickerz Nest] boot", e); state.loading = false; renderRows(); }
     try { route(); } catch (e) { console.error("[Flickerz Nest] route2", e); }
   })();
