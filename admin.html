@@ -33,15 +33,20 @@
         <p class="text-xs text-neutral-400">Sign in with your administrative account to manage application data.</p>
       </div>
 
-      <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+      <!-- AUTOCOMPLETE BLOCKED FORM -->
+      <form id="login-form" class="space-y-4" autocomplete="off" onsubmit="handleLogin(event)">
+        <!-- Hidden dummy fields to trick browser autofill managers -->
+        <input type="text" style="display:none" name="fakeusernameremembered">
+        <input type="password" style="display:none" name="fakepasswordremembered">
+
         <div>
           <label class="block text-xs font-medium text-neutral-300 mb-1">Email</label>
-          <input type="email" id="email-input" autocomplete="off" placeholder="wanidawar03@gmail.com" required
+          <input type="email" id="email-input" name="admin_identifier_no_autofill" autocomplete="off" placeholder="Enter admin email" required
                  class="w-full bg-neutral-950 border border-neutral-800 text-xs rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-red-600 transition">
         </div>
         <div>
           <label class="block text-xs font-medium text-neutral-300 mb-1">Password</label>
-          <input type="password" id="password-input" autocomplete="new-password" placeholder="admin123" required
+          <input type="password" id="password-input" name="admin_credential_no_autofill" autocomplete="new-password" placeholder="Enter password" required
                  class="w-full bg-neutral-950 border border-neutral-800 text-xs rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-red-600 transition">
         </div>
         <button type="submit" id="login-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs py-2.5 rounded-lg transition">
@@ -52,19 +57,19 @@
     </div>
 
     <!-- ADMIN DASHBOARD VIEW -->
-    <div id="dashboard-container" class="hidden space-y-8">
-      <div class="flex justify-between items-center bg-neutral-900 border border-neutral-800 p-4 rounded-xl">
+    <div id="dashboard-container" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-neutral-900 border border-neutral-800 p-4 rounded-xl">
         <div>
-          <h2 class="text-lg font-bold">Dashboard Management</h2>
+          <h2 class="text-base font-bold">Dashboard Management</h2>
           <p class="text-xs text-neutral-400">Manage watchlist database contents.</p>
         </div>
-        <button onclick="handleLogout()" class="bg-neutral-800 hover:bg-neutral-700 text-xs px-3 py-1.5 rounded-lg transition">Sign Out</button>
+        <button onclick="handleLogout()" class="bg-neutral-800 hover:bg-neutral-700 text-xs px-4 py-2 rounded-lg transition text-neutral-200">Sign Out</button>
       </div>
 
-      <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-4">
+      <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-4 sm:p-6 space-y-4">
         <h3 class="text-sm font-bold tracking-wide">Database Records (Watchlist)</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-neutral-300">
+        <div class="overflow-x-auto -mx-4 sm:mx-0">
+          <table class="w-full text-left text-xs text-neutral-300 min-w-[300px]">
             <thead class="bg-neutral-950 text-neutral-400 uppercase text-[10px] border-b border-neutral-800">
               <tr>
                 <th class="p-3">Title</th>
@@ -92,11 +97,10 @@
   <script>
     const config = {
       supabaseUrl: 'https://ctbrfynxmgcyvsrdihfg.supabase.co',
-      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA' 
-      
+      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA'
     };
 
-    // Disable session persistence to prevent mobile 401 token sync issues
+    // Disable session persistence to prevent mobile token sync issues
     const supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
       auth: { persistSession: false, autoRefreshToken: false }
     });
@@ -115,7 +119,7 @@
 
       errorEl.classList.add('hidden');
 
-      // Fetch all user records safely to bypass server-side query discrepancies
+      // Fetch user records safely
       const { data, error } = await supabaseClient
         .from('admin_users')
         .select('*');
@@ -132,7 +136,7 @@
         return;
       }
 
-      // Perform a clean, case-insensitive match on the client side
+      // Perform a clean, case-insensitive match
       const user = data.find(u => u.email && u.email.trim().toLowerCase() === email);
 
       if (!user) {
@@ -156,6 +160,7 @@
       sessionStorage.removeItem('flickerz_admin_logged_in');
       document.getElementById('dashboard-container').classList.add('hidden');
       document.getElementById('auth-container').classList.remove('hidden');
+      document.getElementById('login-form').reset();
     }
 
     function showDashboard() {
