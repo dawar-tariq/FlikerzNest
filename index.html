@@ -25,7 +25,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- Phosphor Icons: consistent, professional line icon set (regular + fill) -->
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
 <style>
   :root{
     color-scheme:dark;
@@ -532,6 +534,185 @@
     .foot{padding:30px 14px 26px}
     .credit{justify-content:center;text-align:center}
   }
+  /* =================== v2: explore, my list, moderation =================== */
+  .row{scroll-margin-top:90px}
+  .view-page{position:relative;z-index:2;min-height:100vh;max-width:1740px;margin:0 auto;padding:104px clamp(16px,4.5vw,68px) 90px;animation:fade .25s ease-out}
+  .page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}
+  .page-head h1{margin:6px 0 0;font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.05em}
+  .page-head .sub{max-width:620px;margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
+  .pseg{display:inline-flex;gap:4px;padding:4px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#12141a}
+  .pseg button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 14px;border:0;border-radius:8px;background:none;color:#a6aab5;cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;transition:background .18s,color .18s}
+  .pseg button:hover{color:#fff}
+  .pseg button.active{background:#2b303c;color:#fff}
+  .chip-row{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin-bottom:10px;scrollbar-width:none}
+  .chip-row::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04);color:#cfd2d9;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;transition:all .18s}
+  .chip:hover{border-color:var(--line-2);color:#fff}
+  .chip.on{border-color:transparent;background:linear-gradient(135deg,#ff2e3d,#c20710);color:#fff;box-shadow:0 8px 22px rgba(229,9,20,.3)}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
+  .ffield{display:grid;gap:6px;min-width:0}
+  .ffield>span{color:#9aa0ad;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .ffield-btn{align-content:end}
+  .fsel{width:100%;min-height:40px;padding:0 12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#0e1015;color:#f3f4f7;font-size:12.5px}
+  .fsel option{background:#14161d;color:#f3f4f7}
+  .fsel:focus{outline:none;border-color:rgba(229,9,20,.7);box-shadow:0 0 0 3px rgba(229,9,20,.15)}
+  .ex-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin:18px 2px 14px;color:var(--muted);font-size:12px}
+  .ex-meta #exCount{color:#fff;font-weight:700}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 16px}
+  .fgrid .tile,.fgrid .skeleton{flex:none;width:auto}
+  .ex-more{display:grid;place-items:center;gap:10px;margin-top:30px}
+  #exSentinel{width:100%;height:2px}
+  .ml-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+  .ml-tabs::-webkit-scrollbar{display:none}
+  .ml-tab{display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04);color:#cfd2d9;cursor:pointer;font-size:12.5px;font-weight:600}
+  .ml-tab b{min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.1);font-size:10.5px;text-align:center}
+  .ml-tab.on{border-color:#f7f8fa;background:#f7f8fa;color:#0c0d11}
+  .ml-tab.on b{background:#0c0d11;color:#fff}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+  .dot-plan{background:#6ea8ff}.dot-watching{background:var(--gold)}.dot-completed{background:var(--green)}
+  .ml-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:10px;margin-bottom:20px}
+  .ml-search{position:relative;display:block}
+  .ml-search i{position:absolute;top:50%;left:13px;transform:translateY(-50%);color:var(--muted);font-size:12px}
+  .ml-search input{padding-left:34px}
+  .ml-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .ml-card{display:flex;gap:13px;padding:11px 11px 11px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);transition:border-color .2s,background .2s}
+  .ml-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.055)}
+  .st-plan{box-shadow:inset 3px 0 0 #6ea8ff}.st-watching{box-shadow:inset 3px 0 0 var(--gold)}.st-completed{box-shadow:inset 3px 0 0 var(--green)}
+  .ml-poster{position:relative;flex:0 0 84px;aspect-ratio:2/3;overflow:hidden;padding:0;border:0;border-radius:10px;background:#1c2029;cursor:pointer}
+  .ml-poster img{display:block;width:100%;height:100%;object-fit:cover}
+  .ml-poster .poster-play i{width:36px;height:36px;font-size:12px}
+  .ml-poster:hover .poster-play{opacity:1;transform:none}
+  .ml-body{display:flex;flex:1;flex-direction:column;gap:7px;min-width:0}
+  .ml-body>b{display:-webkit-box;overflow:hidden;font-size:13.5px;line-height:1.35;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .ml-sub{color:#8b909c;font-size:11px}
+  .ml-status{min-height:34px;font-size:12px}
+  .ml-actions{display:flex;gap:6px;margin-top:auto}
+  .act-bar{margin-bottom:14px}
+  .act-bar .fsel{flex:1;width:auto;min-width:170px}
+  .act-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .act-row img,.act-ph{flex:0 0 auto;width:34px;height:50px;border-radius:6px;object-fit:cover;background:#232733}
+  .act-row>div{flex:1;min-width:0}
+  .act-row b{display:block;overflow:hidden;font-size:12.5px;text-overflow:ellipsis;white-space:nowrap}
+  .act-row small{display:block;margin-top:3px;color:#8b909c;font-size:10.5px}
+  .act-when{color:#9aa0ad;font-size:10.5px;white-space:nowrap}
+  .role.blocked{background:rgba(255,99,109,.18);color:#ff8a92}
+  .role.active-tag{background:rgba(94,217,164,.15);color:var(--green)}
+  .mini.danger{border-color:rgba(255,99,109,.45);color:#ff8a92}
+  .mini.good{border-color:rgba(94,217,164,.45);color:var(--green)}
+  .mgr{display:flex;flex-wrap:wrap;gap:6px}
+  .tabbar{display:none}
+  @media (hover:none){.info-btn{top:auto;bottom:9px;left:9px;opacity:1;transform:none}}
+  @media (max-width:920px){
+    .tabbar{position:fixed;z-index:70;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);
+      padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(9,10,14,.95);backdrop-filter:blur(18px)}
+    .tabbar a,.tabbar button{display:grid;justify-items:center;gap:4px;padding:7px 0;border:0;background:none;color:#8e939e;cursor:pointer;font-size:10.5px;font-weight:600}
+    .tabbar i{font-size:17px}
+    .tabbar .active{color:#fff}
+    .tabbar .active i{color:var(--red-2)}
+    body{padding-bottom:70px}
+    .toasts{bottom:84px}
+  }
+  @media (max-width:620px){
+    .view-page{padding:84px 14px 40px}
+    .page-head .pseg{width:100%}
+    .page-head .pseg button{flex:1}
+    .filters{grid-template-columns:1fr 1fr;padding:12px}
+    .fgrid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:16px 10px}
+    .ml-toolbar{grid-template-columns:1fr 1fr}
+    .ml-toolbar .ml-search,.ml-toolbar .pseg{grid-column:1/-1}
+    .ml-toolbar .pseg button{flex:1}
+    .ml-grid{grid-template-columns:1fr}
+  }
+  /* =================== v3: professional polish =================== */
+  .ph,.ph-fill{line-height:1;vertical-align:-.125em}
+  .ic-spin{display:inline-block;animation:spin .9s linear infinite}
+  /* calmer surfaces: fewer glows and gradients */
+  .aura{opacity:.5}
+  .grain{display:none}
+  .brand-mark{background:var(--red);box-shadow:none}
+  .brand em,.hero-logo em,.foot-brand em{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--red-2)!important;-webkit-text-fill-color:var(--red-2)}
+  .hero-logo i{background:var(--red);box-shadow:none}
+  .btn-primary{background:var(--red);box-shadow:none}
+  .btn-primary:hover{background:var(--red-2);box-shadow:none}
+  .chip.on{background:var(--red);box-shadow:none}
+  .stat::before{display:none}
+  .lockbox i{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--red-2);-webkit-text-fill-color:var(--red-2)}
+  .row-head h2::before{width:3px;height:18px;background:var(--red)}
+  .nav-links a::after{background:var(--red)}
+  .tab.active::after{background:var(--red)}
+  /* header controls */
+  .icon-btn{width:38px;height:38px;border:1px solid var(--line);font-size:17px}
+  .icon-btn.shield{border-color:var(--line);background:transparent;color:#d6d8de}
+  .icon-btn.shield:hover{border-color:var(--line-2);background:rgba(255,255,255,.08);color:#fff}
+  .nav-search i{font-size:15px}
+  .avatar{font-size:12px}
+  .avatar.owner{background:#262a33;color:#fff;box-shadow:0 0 0 2px rgba(255,207,112,.7)}
+  .menu-item i{font-size:16px}
+  /* poster cards: badges never cover the title text */
+  .poster{border-radius:10px}
+  .poster:hover{box-shadow:0 22px 44px rgba(0,0,0,.55)}
+  .score{top:8px;left:8px;padding:3px 7px;font-size:10.5px}
+  .save,.info-btn{width:32px;height:32px;font-size:15px}
+  .save{top:8px;right:8px}
+  .info-btn{top:46px;right:8px;bottom:auto;left:auto}
+  .poster-play i{font-size:18px}
+  .tile-name{margin-top:10px}
+  @media (hover:none){
+    .save,.info-btn{opacity:1;transform:none}
+    .row-nav{display:none}
+    .poster:hover{transform:none}
+  }
+  /* footer */
+  .foot{padding:52px clamp(16px,4.5vw,68px) 26px;background:#07080b}
+  .foot-grid{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:34px;width:min(100%,1740px);margin:0 auto}
+  .foot-brand{font-size:18px}
+  .foot-tag{max-width:360px;margin:12px 0 0;color:#8f94a0;font-size:12.5px;line-height:1.7}
+  .foot-col h4{margin:0 0 14px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .foot-col a{display:block;width:max-content;padding:5px 0;color:#9aa0ad;font-size:13px;transition:color .18s}
+  .foot-col a:hover{color:#fff}
+  .tmdb-credit{display:flex;align-items:center;gap:14px;max-width:420px;margin-top:20px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+  .tmdb-credit img{flex:0 0 auto;width:90px;height:auto}
+  .tmdb-credit p{margin:0;color:#8b909c;font-size:11px;line-height:1.55}
+  .tmdb-credit b{color:#01b4e4;font-weight:800}
+  .foot-bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;width:min(100%,1740px);margin:34px auto 0;padding-top:20px;border-top:1px solid var(--line);color:#7d828d;font-size:12px}
+  .foot-bottom .made{display:inline-flex;align-items:center;gap:6px;color:#c9ccd3}
+  .foot-bottom .made i{color:var(--red-2)}
+  .foot-bottom .made b{color:#fff}
+  .foot-icons{display:flex;gap:8px}
+  .foot-icons a{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:9px;color:#a4a8b2;font-size:15px;transition:all .18s}
+  .foot-icons a:hover{color:#fff;border-color:var(--line-2);background:rgba(255,255,255,.06)}
+  /* info pages (about, privacy, terms, dmca, contact) */
+  .info-tabs{display:flex;gap:8px;overflow-x:auto;margin:0 0 26px;padding-bottom:4px;scrollbar-width:none}
+  .info-tabs::-webkit-scrollbar{display:none}
+  .info-tabs a{flex:0 0 auto;padding:8px 14px;border:1px solid var(--line);border-radius:999px;color:#cfd2d9;font-size:12.5px;font-weight:600}
+  .info-tabs a.on{border-color:#f7f8fa;background:#f7f8fa;color:#0c0d11}
+  .prose{max-width:820px}
+  .prose h2{margin:34px 0 10px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+  .prose p,.prose li{color:#c4c8d0;font-size:14px;line-height:1.85}
+  .prose ul{margin:8px 0;padding-left:20px}
+  .prose a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+  .value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:26px 0 8px}
+  .value{padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}
+  .value i{font-size:24px;color:var(--red-2)}
+  .value b{display:block;margin:12px 0 6px;font-size:14px}
+  .value span{display:block;color:#9aa0ad;font-size:12.5px;line-height:1.65}
+  .contact-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+  .contact-card b{display:block;font-size:14px}
+  .contact-card span{display:block;margin-top:4px;color:#9aa0ad;font-size:12.5px}
+  @media (max-width:920px){
+    .foot-grid{grid-template-columns:1fr 1fr;gap:28px}
+    .foot-brand-col{grid-column:1/-1}
+  }
+  @media (max-width:620px){
+    .icon-btn{width:36px;height:36px;font-size:16px}
+    .nav-search{width:36px;height:36px;padding:0;justify-content:center}
+    .row-head h2{font-size:18px}
+    .save,.info-btn{width:30px;height:30px;font-size:14px}
+    .info-btn{top:42px}
+    .foot{padding:36px 16px 22px}
+    .foot-bottom{flex-direction:column;align-items:flex-start}
+    .prose p,.prose li{font-size:13.5px}
+  }
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
@@ -544,11 +725,11 @@
 <header class="topbar" id="topbar">
   <a class="brand" href="#top" aria-label="Flickerz Nest home"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></a>
   <nav class="nav-links" aria-label="Main">
-    <a class="active" href="#top">Home</a>
-    <a href="#row-trending">Movies</a>
-    <a href="#row-tv">TV Shows</a>
-    <a href="#row-rated">Top Rated</a>
-    <a href="#row-watchlist">My List</a>
+    <a class="active" href="#top" data-nav="home">Home</a>
+    <a href="#explore" data-nav="explore">Explore</a>
+    <a href="#explore/movie" data-nav="explore-movie">Movies</a>
+    <a href="#explore/tv" data-nav="explore-tv">TV Shows</a>
+    <a href="#mylist" data-nav="mylist">My List</a>
   </nav>
   <div class="nav-actions">
     <button class="nav-search" type="button" id="navSearch" aria-label="Search titles">
@@ -593,31 +774,73 @@
   </section>
   <div class="shell" id="rows"></div>
   <div class="title-page" id="titlePage" hidden></div>
+  <div class="view-page" id="explorePage" hidden></div>
+  <div class="view-page" id="listPage" hidden></div>
+  <div class="view-page" id="infoPage" hidden></div>
 </main>
 
 <footer class="foot">
-  <div class="foot-top">
-    <div>
-      <div class="foot-brand"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em style="font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent">Nest</em></b></div>
-      <p class="foot-tag">Stories worth staying in for. Metadata by TMDB, playback by your chosen stream sources.</p>
+  <div class="foot-grid">
+    <div class="foot-brand-col">
+      <div class="foot-brand brand"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></div>
+      <p class="foot-tag">Discover trending films and series, organise your watchlist and pick up where you left off.</p>
+      <div class="tmdb-credit">
+        <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" aria-label="The Movie Database (TMDB)">
+          <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB logo" width="90" height="12" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'TMDB'}))">
+        </a>
+        <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+      </div>
     </div>
-    <nav class="foot-nav" aria-label="Footer">
-      <a href="#row-trending">Movies</a>
-      <a href="#row-tv">TV Shows</a>
-      <a href="#row-rated">Top Rated</a>
-      <a href="#row-watchlist">My List</a>
+    <nav class="foot-col" aria-label="Browse">
+      <h4>Browse</h4>
+      <a href="#top">Home</a>
+      <a href="#explore">Explore</a>
+      <a href="#explore/movie">Movies</a>
+      <a href="#explore/tv">TV Shows</a>
+      <a href="#mylist">My List</a>
+    </nav>
+    <nav class="foot-col" aria-label="Company">
+      <h4>Company</h4>
+      <a href="#about">About us</a>
+      <a href="#contact">Contact</a>
+      <a href="#dmca">DMCA</a>
+    </nav>
+    <nav class="foot-col" aria-label="Legal">
+      <h4>Legal</h4>
+      <a href="#privacy">Privacy policy</a>
+      <a href="#terms">Terms of use</a>
     </nav>
   </div>
-  <div class="credit">
-    <span class="love">Made with <i class="fa-solid fa-heart"></i> by <b>Dawar Tariq</b></span>
+  <div class="foot-bottom">
+    <span class="made">Made with <i class="fa-solid fa-heart"></i> by <b>Dawar Tariq</b></span>
     <span id="footYear">Flickerz Nest</span>
-    <span class="socials">
-      <a href="#top" aria-label="Top of page"><i class="fa-solid fa-arrow-up"></i></a>
-      <a href="#row-watchlist" aria-label="My list"><i class="fa-solid fa-bookmark"></i></a>
+    <span class="foot-icons">
+      <a href="#top" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></a>
+      <a href="#contact" aria-label="Contact"><i class="fa-solid fa-envelope"></i></a>
       <a href="#admin" id="footAdmin" aria-label="Admin panel" hidden><i class="fa-solid fa-shield-halved"></i></a>
     </span>
   </div>
 </footer>
+
+<nav class="tabbar" aria-label="Quick navigation">
+  <a href="#top" data-nav="home" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="#explore" data-nav="explore"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+  <button type="button" id="tabSearch"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
+  <a href="#mylist" data-nav="mylist"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
+</nav>
+
+<!-- Suspended account notice -->
+<div class="backdrop" id="blockedModal" role="dialog" aria-modal="true" aria-labelledby="blockedTitle" hidden>
+  <div class="card">
+    <div class="lockbox">
+      <i class="fa-solid fa-user-slash"></i>
+      <h3 id="blockedTitle">Your account is suspended</h3>
+      <p>The site owner has paused this account, so you have been signed out and playback is disabled on this device.</p>
+      <p class="hint" id="blockedReason"></p>
+      <button class="btn btn-glass" type="button" data-close="blockedModal">OK</button>
+    </div>
+  </div>
+</div>
 
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
@@ -735,9 +958,10 @@
       </div>
       <div class="tabs" role="tablist">
         <button class="tab active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="keys">API keys</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="keys">Platform</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="users">Members</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="lists">Watchlists</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="activity">Watch activity</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="streams">Stream overrides</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="content">Content manager</button>
       </div>
@@ -762,26 +986,10 @@
 
       <!-- Keys -->
       <section class="pane" id="pane-keys" role="tabpanel" hidden>
-        <div class="split">
-          <div>
-            <h3>Platform credentials</h3>
-            <p>Only the owner can change these. Visitors can never enter or edit keys.</p>
-            <form class="form" id="cfgForm">
-              <div class="field"><label for="cfgTmdb">TMDB API key</label><input id="cfgTmdb" type="password" autocomplete="off" placeholder="v3 api key or v4 read access token"><p class="hint">Powers the hero banner, all catalog rows and live search.</p></div>
-              <div class="field"><label for="cfgUrl">Supabase project URL</label><input id="cfgUrl" type="url" placeholder="https://your-project.supabase.co"></div>
-              <div class="field"><label for="cfgKey">Supabase anon / publishable key</label><input id="cfgKey" type="password" autocomplete="off" placeholder="eyJ... or sb_publishable_..."><p class="hint">Public key only - never paste a service_role key.</p></div>
-              <p class="status" id="cfgStatus" role="status"></p>
-              <div class="actions"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save credentials</button><button class="btn btn-glass" type="button" id="cfgRevert">Revert to built-in</button></div>
-            </form>
-            <p class="note" style="margin-top:14px"><b>Built-in credentials are active.</b> The TMDB key and Supabase project are baked into index.html, so every visitor loads the live catalog automatically. Overrides here only affect your own browser.</p>
-          </div>
-          <div>
-            <h3>Where keys are stored</h3>
-            <p>Credentials live in this browser's local storage. To ship them to every visitor, also paste them into the OWNER block at the top of the script in index.html.</p>
-            <div class="list" id="cfgInfo"></div>
-            <p class="note" style="margin-top:16px"><strong>Tip:</strong> run this page on the same browser where you save the keys, or hard-code them in the OWNER block, so visitors see the live catalog too.</p>
-          </div>
-        </div>
+        <h3>Platform configuration</h3>
+        <p>Read-only. The TMDB key and Supabase project are built into the site, so nobody - visitors or admins - can enter or change keys from the browser.</p>
+        <div class="list" id="cfgInfo"></div>
+        <p class="note" style="margin-top:16px"><b>To rotate a key:</b> edit the OWNER block near the top of the script in index.html, then redeploy the file.</p>
       </section>
 
       <!-- Members -->
@@ -806,6 +1014,18 @@
       </section>
 
       <!-- Streams -->
+      <section class="pane" id="pane-activity" role="tabpanel" hidden>
+        <div class="stats" id="actStats"></div>
+        <h3>Watch activity</h3>
+        <p>Every title signed-in members have opened, newest first. Filter by member to review one account, then suspend it from the Members tab if needed.</p>
+        <div class="actions act-bar">
+          <select class="fsel" id="actUser" aria-label="Filter by member"><option value="">All members</option></select>
+          <input class="fsel" id="actSearch" type="search" placeholder="Filter by title" aria-label="Filter by title">
+          <button class="btn btn-glass btn-sm" type="button" id="actRefresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        </div>
+        <div id="actBody"></div>
+      </section>
+
       <section class="pane" id="pane-streams" role="tabpanel" hidden>
         <div class="split">
           <div>
@@ -844,6 +1064,52 @@
   </div>
 </div>
 
+<script>
+/* Icon system. Markup keeps short semantic names (fa-play, fa-heart ...) and
+   they are rendered with the Phosphor icon font. One map controls every icon
+   on the site, including ones added later by the app. */
+(() => {
+  const MAP = {
+    "magnifying-glass": "magnifying-glass", "shield-halved": "shield-check", "chevron-down": "caret-down",
+    "chevron-left": "caret-left", "chevron-right": "caret-right", "circle-user": "user-circle",
+    "arrow-right-from-bracket": "sign-out", "right-to-bracket": "sign-in", "lock": "lock-simple",
+    "unlock": "lock-simple-open", "play": "fill:play", "circle-play": "play-circle", "circle-info": "info",
+    "plus": "plus", "check": "check", "star": "fill:star", "film": "film-strip", "tv": "television-simple",
+    "xmark": "x", "crown": "fill:crown-simple", "key": "key", "users": "users", "list-checks": "list-checks",
+    "tower-broadcast": "broadcast", "clapperboard": "film-slate", "floppy-disk": "floppy-disk",
+    "paper-plane": "paper-plane-tilt", "rotate": "arrows-clockwise", "rotate-left": "arrow-counter-clockwise",
+    "stethoscope": "pulse", "triangle-exclamation": "warning", "circle-exclamation": "warning-circle",
+    "arrow-left": "arrow-left", "arrow-up": "arrow-up", "house": "house", "heart": "fill:heart",
+    "bookmark": "bookmark-simple", "up-right-from-square": "arrow-square-out", "youtube": "youtube-logo",
+    "spinner": "circle-notch", "user": "user", "circle-check": "fill:check-circle", "circle": "circle",
+    "compass": "compass", "cube": "app-window", "user-slash": "prohibit", "broom": "broom", "trash": "trash",
+    "ban": "prohibit", "clock-rotate-left": "clock-counter-clockwise", "envelope": "envelope-simple",
+    "shield": "shield", "scale-balanced": "scales", "file-lines": "file-text", "globe": "globe",
+    "layer-group": "stack", "bolt": "lightning", "list": "list-bullets", "eye": "eye", "question": "question"
+  };
+  const META = { "fa-solid": 1, "fa-regular": 1, "fa-brands": 1, "fa-spin": 1, "fa-fw": 1 };
+  function convert(el) {
+    const cls = Array.from(el.classList);
+    const name = cls.find((c) => c.indexOf("fa-") === 0 && !META[c]);
+    if (!name) return;
+    const spec = MAP[name.slice(3)] || "circle";
+    const fill = spec.indexOf("fill:") === 0;
+    const keep = cls.filter((c) => c.indexOf("fa-") !== 0 && c !== "fa");
+    el.className = [fill ? "ph-fill" : "ph", "ph-" + (fill ? spec.slice(5) : spec), cls.indexOf("fa-spin") !== -1 ? "ic-spin" : ""]
+      .concat(keep).filter(Boolean).join(" ");
+    el.setAttribute("aria-hidden", "true");
+  }
+  function scan(root) { root.querySelectorAll('i[class*="fa-"]').forEach(convert); }
+  scan(document);
+  new MutationObserver((muts) => {
+    muts.forEach((m) => m.addedNodes.forEach((n) => {
+      if (n.nodeType !== 1) return;
+      if (n.matches('i[class*="fa-"]')) convert(n);
+      else scan(n);
+    }));
+  }).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (() => {
@@ -928,9 +1194,10 @@
      fix for the "whole page goes black / frozen" bug: if any code path throws
      between open and close, the lock is always re-derived from real state. */
   function syncLock() {
+    // Only real modals lock scrolling. Full pages (title, explore, my list)
+    // must scroll normally - locking them hid everything below the fold.
     const anyModal = [...document.querySelectorAll(".backdrop")].some((b) => !b.hidden);
-    const titleOpen = !$("titlePage").hidden;
-    document.body.classList.toggle("locked", Boolean(anyModal || titleOpen));
+    document.body.classList.toggle("locked", anyModal);
   }
   function openModal(id) {
     closeMenu();
@@ -988,11 +1255,13 @@
   const isOwnerSession = () => state.ownerSession === true;
   const isAdmin = () => isOwnerSession() || Boolean(state.user && (isOwnerEmail(state.user.email) || state.profile?.role === "admin"));
 
+  // Keys come only from the OWNER block in this file. Browser storage can no
+  // longer override them, so nobody can swap in their own keys.
   function computeConfig() {
     state.cfg = {
-      tmdbKey: state.store.tmdbKey || OWNER.tmdbKey || "",
-      supabaseUrl: (state.store.supabaseUrl || OWNER.supabaseUrl || "").replace(/\/$/, ""),
-      supabaseAnonKey: state.store.supabaseAnonKey || OWNER.supabaseAnonKey || ""
+      tmdbKey: OWNER.tmdbKey || "",
+      supabaseUrl: (OWNER.supabaseUrl || "").replace(/\/$/, ""),
+      supabaseAnonKey: OWNER.supabaseAnonKey || ""
     };
   }
   function persistConfig(next) {
@@ -1057,14 +1326,16 @@
   }
   const skeletons = () => '<div class="strip">' + Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join("") + "</div>";
   function renderRows() {
-    state.index.clear();
+    // The index is shared with Explore and My List, so it is never cleared here -
+    // clearing it made cards on those pages stop responding to taps.
     let watchEmpty = "<span>Your watchlist lives here once you sign in.</span>";
     if (!state.user) watchEmpty = '<span>Sign in to keep your favourite films and series in sync.</span><button class="btn btn-glass btn-sm" type="button" data-act="auth">Sign in</button>';
     else if (!state.watch.length) watchEmpty = '<span>Your list is ready for its first favourite.</span><a class="btn btn-glass btn-sm" href="#row-trending">Browse trending</a>';
     const load = state.loading;
     // Persistent diagnostic banner: a broken catalog must explain itself on
     // screen, not vanish after a 4-second toast.
-    const alert = (state.tmdbState && !state.tmdbState.ok && !load) ? state.tmdbState : null;
+    // Technical diagnostics are for admins only - visitors never see key details.
+    const alert = (state.tmdbState && !state.tmdbState.ok && !load && isAdmin()) ? state.tmdbState : null;
     const alertHTML = alert
       ? '<div class="diag"><i class="fa-solid fa-triangle-exclamation"></i><div><b>Catalog is showing the demo collection</b>' +
         "<span>" + esc(alert.reason) + "</span></div>" +
@@ -1072,6 +1343,8 @@
       : "";
     $("rows").innerHTML = [
       alertHTML,
+      (load || !state.watch.some((w) => w.status === "watching")) ? ""
+        : section("continue", "Continue Watching", "Pick up where you left off", state.watch.filter((w) => w.status === "watching")),
       load ? '<section class="row visible"><div class="row-head"><div><h2>Loading your Nest</h2><p>Fetching the latest from TMDB</p></div></div>' + skeletons() + "</section>"
            : section("trending", "Trending Movies", "What everyone is watching this week", state.trending),
       load ? "" : section("tv", "Popular TV Shows", "Series worth the binge", state.tv),
@@ -1296,6 +1569,9 @@
   async function loadTitlePage(type, id, preset) {
     const seq = ++state.titleSeq;
     closeAllModals();
+    if (!$("explorePage").hidden) EX.scrollY = window.scrollY;
+    VIEWS.forEach((v) => { $(v).hidden = true; });
+    setNavActive([]);
     $("rows").hidden = true;
     $("homeHero").hidden = true;
     $("titlePage").hidden = false;
@@ -1511,9 +1787,12 @@
       if (token === state.loadToken && !$("playerModal").hidden && !state.loadedOk) slowState(item, n);
     }, 9000);
   }
-  async function play(item) {
+  async function play(item, opts) {
     if (!item) return;
+    opts = opts || {};
     closeModal("searchModal");
+    // A device that was kicked out for a suspension cannot keep streaming.
+    if (deviceSuspended() && !isAdmin()) { showBlocked(deviceSuspended()); return; }
     // Inside a sandboxed preview the provider always refuses to render, so skip
     // the doomed iframe and give the user the route that actually works.
     if (state.env.sandboxed) {
@@ -1535,11 +1814,14 @@
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
     $("epControls").hidden = item.is_custom || item.media_type !== "tv";
-    $("seasonIn").value = "1"; $("episodeIn").value = "1";
+    $("seasonIn").value = String(Math.max(1, parseInt(opts.season, 10) || 1));
+    $("episodeIn").value = String(Math.max(1, parseInt(opts.episode, 10) || 1));
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
     $("frame").src = "about:blank";
     setNote("load", "Preparing your stream", "Checking for the best available source.");
     openModal("playerModal");
+    recordWatch(item);
+    markWatching(item);
     if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
       try {
         const { data, error } = await state.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
@@ -1568,13 +1850,24 @@
     if (state.detail && keyOf(state.detail) === keyOf(item)) openDetail(item);
   }
   async function loadWatch() {
-    if (!state.sb || !state.user) { state.watch = []; renderRows(); return; }
-    const { data, error } = await state.sb.from("watchlists")
-      .select("id,user_id,tmdb_id,title,poster_path,media_type,added_at")
+    if (!state.sb || !state.user) { state.watch = []; renderRows(); renderMyListGrid(); return; }
+    const base = "id,user_id,tmdb_id,title,poster_path,media_type,added_at";
+    let res = await state.sb.from("watchlists").select(base + ",status")
       .eq("user_id", state.user.id).order("added_at", { ascending: false });
-    if (error) { toast(error.message || "Could not load your watchlist.", "error"); return; }
-    state.watch = (data || []).map((r) => ({ id: r.tmdb_id, title: r.title, poster_path: r.poster_path, media_type: r.media_type, added_at: r.added_at }));
+    // Works before and after the STEP 12 database update.
+    if (res.error && /status/i.test(res.error.message || "")) {
+      state.hasStatus = false;
+      res = await state.sb.from("watchlists").select(base)
+        .eq("user_id", state.user.id).order("added_at", { ascending: false });
+    } else if (!res.error) state.hasStatus = true;
+    if (res.error) { toast(res.error.message || "Could not load your watchlist.", "error"); return; }
+    state.watch = (res.data || []).map((r) => ({
+      id: r.tmdb_id, title: r.title, poster_path: r.poster_path, media_type: r.media_type, added_at: r.added_at,
+      status: ["plan", "watching", "completed"].indexOf(r.status) !== -1 ? r.status : "plan"
+    }));
     renderRows();
+    renderMyListGrid();
+    if (!$("explorePage").hidden && EX.items.length) renderExploreGrid(false);
   }
   async function loadCustom() {
     if (!state.sb) { state.custom = []; return; }
@@ -1628,9 +1921,18 @@
   async function applyUser(user) {
     state.user = user || null; state.profile = null;
     if (state.user && state.sb) {
-      const { data, error } = await state.sb.from("profiles").select("id,email,display_name,role,created_at").eq("id", state.user.id).maybeSingle();
+      const base = "id,email,display_name,role,created_at";
+      let pr = await state.sb.from("profiles").select(base + ",is_blocked,blocked_reason").eq("id", state.user.id).maybeSingle();
+      if (pr.error && /is_blocked|blocked_reason|column/i.test(pr.error.message || "")) {
+        state.hasBlock = false;
+        pr = await state.sb.from("profiles").select(base).eq("id", state.user.id).maybeSingle();
+      } else if (!pr.error) state.hasBlock = true;
+      const { data, error } = pr;
       state.profile = (!error && data) ? data
         : { id: state.user.id, email: state.user.email, display_name: state.user.user_metadata?.display_name || "", role: isOwnerEmail(state.user.email) ? "admin" : "user" };
+      // Suspended accounts are signed out before anything else loads.
+      if (state.profile.is_blocked && !isOwnerEmail(state.user.email)) { await kickOut(state.profile.blocked_reason); return; }
+      try { localStorage.removeItem(SUSP_KEY); } catch {}
       await Promise.all([loadWatch(), loadCustom()]);
       subscribe();
     } else {
@@ -1638,13 +1940,19 @@
       state.channel = null; state.watch = [];
       await loadCustom();
     }
-    paintAccount(); renderRows(); paintAdmin();
+    paintAccount(); renderRows(); paintAdmin(); renderMyListGrid();
   }
   function subscribe() {
     if (!state.sb || !state.user) return;
     if (state.channel) state.sb.removeChannel(state.channel);
-    state.channel = state.sb.channel("watch-" + state.user.id)
-      .on("postgres_changes", { event: "*", schema: "public", table: "watchlists", filter: "user_id=eq." + state.user.id }, () => loadWatch())
+    const uid = state.user.id;
+    state.channel = state.sb.channel("watch-" + uid)
+      .on("postgres_changes", { event: "*", schema: "public", table: "watchlists", filter: "user_id=eq." + uid }, () => loadWatch())
+      // Live suspension: the moment an admin suspends this account, kick it out.
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "profiles", filter: "id=eq." + uid }, (payload) => {
+        const row = payload && payload.new;
+        if (row && row.is_blocked && !isOwnerEmail(state.user && state.user.email)) kickOut(row.blocked_reason);
+      })
       .subscribe();
   }
   function paintAccount() {
@@ -1695,7 +2003,10 @@
         await applyUser(res.data.user || res.data.session?.user || null);
       }
     } catch (e) {
-      $("authStatus").textContent = e.message || "Authentication failed.";
+      const msg = e.message || "Authentication failed.";
+      const banned = /banned/i.test(msg);
+      if (banned) { closeModal("authModal"); showBlocked(""); }
+      $("authStatus").textContent = banned ? "This account is suspended." : msg;
       $("authStatus").className = "status error";
     } finally { $("authGo").disabled = false; }
   }
@@ -1793,10 +2104,14 @@
     openModal("adminModal");
     selectTab(tab || "overview");
     fillCfgForm();
+    await fetchHistory();
     await Promise.all([loadOverview(), loadStreams(), loadContentAdmin(), loadMembers(), loadAllLists()]);
+    paintActivityUsers();
+    renderActivity();
   }
   function selectTab(name) {
-    ["overview", "keys", "users", "lists", "streams", "content"].forEach((t) => {
+    if (name === "activity") loadActivity();
+    ["overview", "keys", "users", "lists", "activity", "streams", "content"].forEach((t) => {
       const on = t === name;
       const btn = document.querySelector('[data-tab="' + t + '"]');
       if (btn) { btn.classList.toggle("active", on); btn.setAttribute("aria-selected", String(on)); }
@@ -1844,22 +2159,21 @@
       '<span class="role ' + (ok ? "admin" : "") + '">' + (ok ? "done" : "todo") + "</span>");
     $("ovChecklist").innerHTML =
       done(isOwnerSession(), "Unlock the owner session", "Already done - you are in the control room.") +
-      done(Boolean(state.cfg.supabaseUrl && state.cfg.supabaseAnonKey), "Connect Supabase", "Admin > API keys: paste project URL and anon key.") +
-      done(Boolean(state.cfg.tmdbKey), "Add your TMDB key", "Admin > API keys: paste your TMDB v3 key or v4 token.") +
+      done(Boolean(state.cfg.supabaseUrl && state.cfg.supabaseAnonKey), "Connect Supabase", "Built into index.html (OWNER block).") +
+      done(Boolean(state.cfg.tmdbKey), "Add your TMDB key", "Built into index.html (OWNER block).") +
       done(connected, "Verify members and watchlists", "Admin > Members and Watchlists tabs.");
   }
   function fillCfgForm() {
     computeConfig();
-    $("cfgTmdb").value = state.cfg.tmdbKey;
-    $("cfgUrl").value = state.cfg.supabaseUrl;
-    $("cfgKey").value = state.cfg.supabaseAnonKey;
-    const src = (v, hard) => v ? (v === hard ? "built-in" : "browser override") : "not set";
-    $("cfgInfo").innerHTML =
+    const box = $("cfgInfo");
+    if (!box) return;
+    const mask = (v, n) => v ? esc(v.slice(0, n)) + "..." : "not set";
+    const on = (v, a, b) => '<span class="role ' + (v ? "admin" : "") + '">' + (v ? a : b) + "</span>";
+    box.innerHTML =
       row("<strong>Owner identity</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">owner</span>') +
-      row("<strong>TMDB key</strong><small>" + (state.cfg.tmdbKey ? esc(state.cfg.tmdbKey.slice(0, 6)) + "... | " + src(state.cfg.tmdbKey, OWNER.tmdbKey) : "not set") + "</small>",
-          '<span class="role ' + (state.cfg.tmdbKey ? "admin" : "") + '">' + (state.cfg.tmdbKey ? "live" : "demo") + "</span>") +
-      row("<strong>Supabase URL</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + " | " + src(state.cfg.supabaseUrl, OWNER.supabaseUrl) + "</small>", "") +
-      row("<strong>Supabase anon key</strong><small>" + (state.cfg.supabaseAnonKey ? esc(state.cfg.supabaseAnonKey.slice(0, 8)) + "... | " + src(state.cfg.supabaseAnonKey, OWNER.supabaseAnonKey) : "not set") + "</small>", "") +
+      row("<strong>TMDB key</strong><small>" + mask(state.cfg.tmdbKey, 6) + " | built into the site</small>", on(state.cfg.tmdbKey, "live", "missing")) +
+      row("<strong>Supabase URL</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + "</small>", on(state.cfg.supabaseUrl, "set", "missing")) +
+      row("<strong>Supabase anon key</strong><small>" + mask(state.cfg.supabaseAnonKey, 8) + " | public key, protected by RLS</small>", on(state.cfg.supabaseAnonKey, "set", "missing")) +
       row("<strong>Owner session</strong><small>expires " + OWNER_SESSION_HOURS + "h after unlock</small>", '<span class="role owner">active</span>');
   }
   async function loadMembers() {
@@ -1867,22 +2181,36 @@
     if (!state.sb) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Connect Supabase in the API keys tab to list members.</p>'; $("userStats").innerHTML = ""; return; }
     if (!state.user) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Sign in with the button above - RLS hides all rows from anonymous requests.</p>'; $("userStats").innerHTML = ""; return; }
     $("userWrap").innerHTML = '<p class="hint" style="padding:14px">Loading members...</p>';
-    const { data, error } = await state.sb.from("profiles").select("id,email,display_name,role,created_at").order("created_at", { ascending: false }).limit(300);
+    const cols = "id,email,display_name,role,created_at";
+    let res = await state.sb.from("profiles").select(cols + ",is_blocked,blocked_reason,blocked_at").order("created_at", { ascending: false }).limit(300);
+    const modOn = !res.error;
+    if (res.error) res = await state.sb.from("profiles").select(cols).order("created_at", { ascending: false }).limit(300);
+    const { data, error } = res;
     if (error) { $("userWrap").innerHTML = '<p class="status error" style="padding:14px">' + esc(error.message) + "</p>"; $("userStats").innerHTML = ""; return; }
     state.members = data || [];
     const admins = state.members.filter((u) => u.role === "admin").length;
-    const stat = (n, l) => '<div class="stat"><b>' + n + "</b><span>" + l + "</span></div>";
-    $("userStats").innerHTML = stat(state.members.length, "Members") + stat(admins, "Admins") + stat(state.watch.length, "Your saved");
+    const blocked = state.members.filter((u) => u.is_blocked).length;
+    $("userStats").innerHTML = statCard(state.members.length, "Members") + statCard(admins, "Admins") + statCard(blocked, "Suspended") + statCard(state.history.length, "Plays logged");
     if (!state.members.length) { $("userWrap").innerHTML = '<p class="hint" style="padding:14px">No members yet. Sign up an account to see it here.</p>'; return; }
-    $("userWrap").innerHTML = "<table><thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Joined</th><th>Saved</th><th>Manage</th></tr></thead><tbody>" +
+    const setup = modOn ? "" : '<p class="note" style="margin:12px">Suspensions and watch history need the latest database update. Run STEP 12 of schema.sql in the Supabase SQL Editor.</p>';
+    $("userWrap").innerHTML = setup + "<table><thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Saved</th><th>Plays</th><th>Manage</th></tr></thead><tbody>" +
       state.members.map((u) => {
         const self = state.user && u.id === state.user.id;
-        const count = state.allLists.filter((r) => r.user_id === u.id).length;
+        const owner = isOwnerEmail(u.email);
+        const saved = state.allLists.filter((r) => r.user_id === u.id).length;
+        const plays = state.history.filter((h) => h.user_id === u.id).length;
         const next = u.role === "admin" ? "user" : "admin";
-        const manage = '<button class="mini ' + (next === "admin" ? "up" : "") + '" type="button" data-role-id="' + esc(u.id) + '" data-next="' + next + '">' + (next === "admin" ? "Make admin" : "Make user") + "</button>";
-        const roleTag = isOwnerEmail(u.email) ? '<span class="role owner">owner</span>' : '<span class="role ' + (u.role === "admin" ? "admin" : "") + '">' + esc(u.role) + "</span>";
-        return "<tr><td>" + esc(u.display_name || "-") + (self ? " (you)" : "") + "</td><td>" + esc(u.email || "-") + "</td><td>" + roleTag + "</td>" +
-          "<td>" + esc(u.created_at ? new Date(u.created_at).toLocaleDateString() : "-") + "</td><td>" + count + "</td><td>" + manage + "</td></tr>";
+        const roleTag = owner ? '<span class="role owner">owner</span>' : '<span class="role ' + (u.role === "admin" ? "admin" : "") + '">' + esc(u.role) + "</span>";
+        const statusTag = u.is_blocked
+          ? '<span class="role blocked" title="' + esc(u.blocked_reason || "No reason given") + '">suspended</span>'
+          : '<span class="role active-tag">active</span>';
+        const btns = ['<button class="mini" type="button" data-history="' + esc(u.id) + '"><i class="fa-solid fa-clock-rotate-left"></i> History</button>'];
+        if (!owner) btns.push('<button class="mini ' + (next === "admin" ? "up" : "") + '" type="button" data-role-id="' + esc(u.id) + '" data-next="' + next + '">' + (next === "admin" ? "Make admin" : "Make user") + "</button>");
+        if (!owner && !self && modOn) btns.push(u.is_blocked
+          ? '<button class="mini good" type="button" data-block-id="' + esc(u.id) + '" data-block="0"><i class="fa-solid fa-unlock"></i> Restore</button>'
+          : '<button class="mini danger" type="button" data-block-id="' + esc(u.id) + '" data-block="1"><i class="fa-solid fa-ban"></i> Suspend</button>');
+        return "<tr><td>" + esc(u.display_name || "-") + (self ? " (you)" : "") + "</td><td>" + esc(u.email || "-") + "</td><td>" + roleTag + "</td><td>" + statusTag + "</td>" +
+          "<td>" + esc(u.created_at ? new Date(u.created_at).toLocaleDateString() : "-") + "</td><td>" + saved + "</td><td>" + plays + '</td><td><div class="mgr">' + btns.join("") + "</div></td></tr>";
       }).join("") + "</tbody></table>";
   }
   async function loadAllLists() {
@@ -1995,6 +2323,632 @@
     await after(); toast("Removed.", "ok");
   }
 
+  /* =====================================================================
+     v2 - Explore, organised My List, watch history and member suspension
+     ===================================================================== */
+  const VIEWS = ["explorePage", "listPage", "infoPage"];
+  const SUSP_KEY = "flickerz.suspended.v1";
+  const STATUS = { plan: "Plan to watch", watching: "Watching", completed: "Completed" };
+  Object.assign(state, { history: [], hasStatus: true, hasHistory: true, hasBlock: true, actFilter: null, prevRoute: "", curRoute: null, kicking: false });
+
+  const statCard = (n, l) => '<div class="stat"><b>' + n + "</b><span>" + l + "</span></div>";
+  const exOpts = (list, sel) => list.map((o) => '<option value="' + esc(o[0]) + '"' + (String(sel) === String(o[0]) ? " selected" : "") + ">" + esc(o[1]) + "</option>").join("");
+  const exField = (label, control) => '<label class="ffield"><span>' + esc(label) + "</span>" + control + "</label>";
+  const memberOf = (id) => state.members.find((m) => m.id === id) || null;
+  function timeAgo(d) {
+    const t = new Date(d).getTime();
+    if (!t) return "-";
+    const s = Math.max(1, Math.round((Date.now() - t) / 1000));
+    if (s < 60) return "just now";
+    const m = Math.round(s / 60); if (m < 60) return m + "m ago";
+    const h = Math.round(m / 60); if (h < 24) return h + "h ago";
+    const dd = Math.round(h / 24); if (dd < 30) return dd + "d ago";
+    return new Date(t).toLocaleDateString();
+  }
+
+  /* ---------- page switching ---------- */
+  function setNavActive(names) {
+    const list = [].concat(names);
+    const exploring = list.some((n) => String(n).indexOf("explore") === 0);
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      const on = list.indexOf(a.dataset.nav) !== -1 || (exploring && a.dataset.nav === "explore" && a.closest(".tabbar"));
+      a.classList.toggle("active", Boolean(on));
+    });
+  }
+  function showView(id) {
+    document.querySelectorAll(".backdrop").forEach((b) => { if (b.id !== "blockedModal") b.hidden = true; });
+    stopPlayback();
+    if (!$("titlePage").hidden) { $("titlePage").hidden = true; $("titlePage").innerHTML = ""; state.detail = null; }
+    $("rows").hidden = true;
+    $("homeHero").hidden = true;
+    VIEWS.forEach((v) => { $(v).hidden = v !== id; });
+    syncLock();
+    window.scrollTo(0, 0);
+  }
+  function showHome() {
+    const away = VIEWS.some((v) => !$(v).hidden) || !$("titlePage").hidden;
+    VIEWS.forEach((v) => { $(v).hidden = true; });
+    closeTitlePage();
+    $("rows").hidden = false;
+    $("homeHero").hidden = false;
+    setNavActive("home");
+    syncLock();
+    if (away) window.scrollTo(0, 0);
+    return away;
+  }
+
+  /* ---------- EXPLORE ---------- */
+  const LANGS = [["", "Any language"], ["en", "English"], ["hi", "Hindi"], ["ur", "Urdu"], ["pa", "Punjabi"], ["ta", "Tamil"], ["te", "Telugu"],
+    ["ml", "Malayalam"], ["ko", "Korean"], ["ja", "Japanese"], ["zh", "Chinese"], ["es", "Spanish"], ["fr", "French"], ["de", "German"],
+    ["it", "Italian"], ["tr", "Turkish"], ["ar", "Arabic"]];
+  const SORTS = {
+    movie: [["popularity.desc", "Most popular"], ["vote_average.desc", "Top rated"], ["primary_release_date.desc", "Newest"],
+      ["primary_release_date.asc", "Oldest"], ["revenue.desc", "Highest grossing"], ["title.asc", "Title A-Z"]],
+    tv: [["popularity.desc", "Most popular"], ["vote_average.desc", "Top rated"], ["first_air_date.desc", "Newest"],
+      ["first_air_date.asc", "Oldest"], ["name.asc", "Title A-Z"]]
+  };
+  const EX_KEY = "flickerz.explore.v1";
+  const EX = Object.assign(
+    { type: "movie", genre: "", from: "", to: "", rating: "", lang: "", sort: "popularity.desc" },
+    (() => {
+      try {
+        const s = JSON.parse(localStorage.getItem(EX_KEY) || "{}");
+        return { type: s.type, genre: s.genre || "", from: s.from || "", to: s.to || "", rating: s.rating || "", lang: s.lang || "", sort: s.sort || "popularity.desc" };
+      } catch { return {}; }
+    })(),
+    { page: 0, totalPages: 1, total: 0, items: [], loading: false, seq: 0, genres: {}, loadedSig: "", io: null, scrollY: 0 }
+  );
+  if (EX.type !== "movie" && EX.type !== "tv") EX.type = "movie";
+  if (!SORTS[EX.type].some((o) => o[0] === EX.sort)) EX.sort = "popularity.desc";
+  const exSig = () => JSON.stringify([EX.type, EX.genre, EX.from, EX.to, EX.rating, EX.lang, EX.sort]);
+  function saveEx() {
+    try { localStorage.setItem(EX_KEY, JSON.stringify({ type: EX.type, genre: EX.genre, from: EX.from, to: EX.to, rating: EX.rating, lang: EX.lang, sort: EX.sort })); } catch {}
+  }
+  function yearOptions(sel) {
+    let h = '<option value="">Any</option>';
+    for (let y = new Date().getFullYear() + 1; y >= 1950; y--) h += '<option value="' + y + '"' + (String(sel) === String(y) ? " selected" : "") + ">" + y + "</option>";
+    return h;
+  }
+  function buildExplore() {
+    const t = EX.type;
+    $("explorePage").innerHTML =
+      '<div class="page-head"><div><p class="eyebrow">Discover</p><h1>Explore</h1>' +
+        '<p class="sub">Browse the full TMDB catalogue. Mix genre, year, rating and language to find exactly what you are in the mood for.</p></div>' +
+        '<div class="pseg" role="group" aria-label="Type">' +
+          '<button type="button" data-ex-type="movie" class="' + (t === "movie" ? "active" : "") + '"><i class="fa-solid fa-film"></i> Movies</button>' +
+          '<button type="button" data-ex-type="tv" class="' + (t === "tv" ? "active" : "") + '"><i class="fa-solid fa-tv"></i> TV Shows</button>' +
+        "</div></div>" +
+      '<div class="chip-row" id="exGenres"><span class="hint">Loading genres...</span></div>' +
+      '<div class="filters">' +
+        exField("Sort by", '<select class="fsel" data-ex="sort">' + exOpts(SORTS[t], EX.sort) + "</select>") +
+        exField("From year", '<select class="fsel" data-ex="from">' + yearOptions(EX.from) + "</select>") +
+        exField("To year", '<select class="fsel" data-ex="to">' + yearOptions(EX.to) + "</select>") +
+        exField("Min rating", '<select class="fsel" data-ex="rating">' + exOpts([["", "Any"], ["5", "5+"], ["6", "6+"], ["7", "7+"], ["8", "8+"]], EX.rating) + "</select>") +
+        exField("Language", '<select class="fsel" data-ex="lang">' + exOpts(LANGS, EX.lang) + "</select>") +
+        '<div class="ffield ffield-btn"><button class="btn btn-glass btn-sm" type="button" data-act="ex-reset"><i class="fa-solid fa-rotate-left"></i> Reset filters</button></div>' +
+      "</div>" +
+      '<div class="ex-meta"><span id="exCount"></span><span id="exActive"></span></div>' +
+      '<div class="fgrid" id="exGrid"></div>' +
+      '<div class="ex-more"><button class="btn btn-glass" type="button" id="exMore" hidden><i class="fa-solid fa-plus"></i> Load more</button><div id="exSentinel"></div></div>';
+  }
+  function paintGenres() {
+    const box = $("exGenres");
+    if (!box) return;
+    const list = EX.genres[EX.type] || [];
+    box.innerHTML = '<button type="button" class="chip' + (!EX.genre ? " on" : "") + '" data-ex-genre="">All genres</button>' +
+      list.map((g) => '<button type="button" class="chip' + (String(EX.genre) === String(g.id) ? " on" : "") + '" data-ex-genre="' + esc(g.id) + '">' + esc(g.name) + "</button>").join("");
+  }
+  async function loadGenres(type) {
+    if (!state.cfg.tmdbKey) { EX.genres[type] = []; paintGenres(); return; }
+    try {
+      const r = await tmdb("/genre/" + type + "/list", { language: "en-US" });
+      EX.genres[type] = Array.isArray(r.genres) ? r.genres : [];
+    } catch { /* not cached, so it retries next visit */ }
+    if (type === EX.type) { paintGenres(); const a = $("exActive"); if (a) a.textContent = activeFilterText(); }
+  }
+  function ensureGenres() { if (EX.genres[EX.type]) paintGenres(); else loadGenres(EX.type); }
+  function activeFilterText() {
+    const parts = [];
+    const g = (EX.genres[EX.type] || []).find((x) => String(x.id) === String(EX.genre));
+    if (g) parts.push(g.name);
+    if (EX.from || EX.to) parts.push((EX.from || "Any") + " - " + (EX.to || "Now"));
+    if (EX.rating) parts.push(EX.rating + "+ rating");
+    const l = LANGS.find((x) => x[0] && x[0] === EX.lang);
+    if (l) parts.push(l[1]);
+    return parts.length ? "Filters: " + parts.join(" | ") : "No filters applied";
+  }
+  function paintMore() {
+    const b = $("exMore");
+    if (!b) return;
+    b.hidden = !EX.items.length || EX.page >= EX.totalPages;
+    b.disabled = EX.loading;
+    b.innerHTML = EX.loading ? '<i class="fa-solid fa-spinner fa-spin"></i> Loading...' : '<i class="fa-solid fa-plus"></i> Load more';
+  }
+  function renderExploreGrid(skeleton) {
+    const g = $("exGrid");
+    if (!g) return;
+    if (skeleton) g.innerHTML = Array.from({ length: 12 }, () => '<div class="skeleton"></div>').join("");
+    else if (!EX.items.length) g.innerHTML = '<div class="empty-row" style="grid-column:1/-1"><span>No titles match these filters. Try a wider year range or a lower rating.</span><button class="btn btn-glass btn-sm" type="button" data-act="ex-reset">Reset filters</button></div>';
+    else { g.innerHTML = EX.items.map((i) => tile(i, true)).join(""); wireImages(g); }
+    const c = $("exCount");
+    if (c) c.textContent = (!skeleton && EX.items.length) ? Number(EX.total || EX.items.length).toLocaleString() + " titles" : "";
+    const a = $("exActive");
+    if (a) a.textContent = activeFilterText();
+    paintMore();
+  }
+  async function runExplore(reset) {
+    if (reset) {
+      EX.seq++; EX.page = 0; EX.totalPages = 1; EX.total = 0; EX.items = []; EX.loading = false;
+      EX.loadedSig = exSig();
+      renderExploreGrid(true);
+    }
+    if (EX.loading || EX.page >= EX.totalPages) return;
+    const seq = EX.seq, t = EX.type, next = EX.page + 1;
+    EX.loading = true;
+    paintMore();
+    const dk = t === "movie" ? "primary_release_date" : "first_air_date";
+    const p = { language: "en-US", include_adult: "false", page: String(next), sort_by: EX.sort };
+    if (EX.genre) p.with_genres = EX.genre;
+    if (EX.from) p[dk + ".gte"] = EX.from + "-01-01";
+    if (EX.to) p[dk + ".lte"] = EX.to + "-12-31";
+    else if (/date\.desc$/.test(EX.sort)) p[dk + ".lte"] = new Date().toISOString().slice(0, 10);
+    if (EX.rating) p["vote_average.gte"] = EX.rating;
+    if (EX.rating || EX.sort === "vote_average.desc") p["vote_count.gte"] = EX.lang ? "40" : "200";
+    if (EX.lang) p.with_original_language = EX.lang;
+    try {
+      if (!state.cfg.tmdbKey) {
+        EX.items = (t === "tv" ? DEMO_TV : DEMO_MOVIES).slice();
+        EX.page = 1; EX.totalPages = 1; EX.total = EX.items.length;
+      } else {
+        const r = await tmdb("/discover/" + t, p);
+        if (seq !== EX.seq) return;
+        const seen = new Set(EX.items.map(keyOf));
+        (r.results || []).filter(usable).map((i) => norm(i, t)).forEach((i) => {
+          if (!seen.has(keyOf(i))) { seen.add(keyOf(i)); EX.items.push(i); }
+        });
+        EX.page = Number(r.page) || next;
+        EX.totalPages = Math.min(Number(r.total_pages) || 1, 500);
+        EX.total = Number(r.total_results) || EX.items.length;
+      }
+    } catch (e) {
+      if (seq !== EX.seq) return;
+      EX.totalPages = EX.page;
+      toast("Explore could not load titles: " + (e.message || "TMDB error"), "error");
+    }
+    if (seq !== EX.seq) return;
+    EX.loading = false;
+    renderExploreGrid(false);
+  }
+  function observeSentinel() {
+    if (EX.io) EX.io.disconnect();
+    const s = $("exSentinel");
+    if (!s || !("IntersectionObserver" in window)) return;
+    EX.io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting) && !EX.loading && EX.items.length && EX.page < EX.totalPages && !$("explorePage").hidden) runExplore(false);
+    }, { rootMargin: "700px 0px" });
+    EX.io.observe(s);
+  }
+  async function openExplore(type) {
+    showView("explorePage");
+    if (type && type !== EX.type) { EX.type = type; EX.genre = ""; EX.sort = "popularity.desc"; saveEx(); }
+    setNavActive(type ? ["explore-" + type] : ["explore"]);
+    buildExplore();
+    observeSentinel();
+    ensureGenres();
+    if (EX.items.length && exSig() === EX.loadedSig) {
+      renderExploreGrid(false);
+      if (EX.scrollY) { const y = EX.scrollY; EX.scrollY = 0; requestAnimationFrame(() => window.scrollTo(0, y)); }
+    } else await runExplore(true);
+  }
+  function exSetType(t) {
+    if ((t !== "movie" && t !== "tv") || t === EX.type) return;
+    EX.type = t; EX.genre = ""; EX.sort = "popularity.desc";
+    saveEx();
+    history.replaceState(null, "", location.pathname + location.search + "#explore/" + t);
+    state.curRoute = "explore/" + t;
+    setNavActive(["explore-" + t]);
+    buildExplore(); observeSentinel(); ensureGenres(); runExplore(true);
+  }
+  function exSetField(k, v) {
+    if (["sort", "from", "to", "rating", "lang"].indexOf(k) === -1) return;
+    EX[k] = v;
+    if (EX.from && EX.to && Number(EX.from) > Number(EX.to)) {
+      const tmp = EX.from; EX.from = EX.to; EX.to = tmp;
+      buildExplore(); observeSentinel(); ensureGenres();
+    }
+    saveEx();
+    runExplore(true);
+  }
+  function exReset() {
+    Object.assign(EX, { genre: "", from: "", to: "", rating: "", lang: "", sort: "popularity.desc" });
+    saveEx(); buildExplore(); observeSentinel(); ensureGenres(); runExplore(true);
+  }
+
+  /* ---------- MY LIST ---------- */
+  const ML = { status: "all", type: "all", sort: "added-desc", q: "" };
+  function openMyList() {
+    showView("listPage");
+    setNavActive("mylist");
+    buildMyList();
+    renderMyListGrid();
+  }
+  function buildMyList() {
+    const box = $("listPage");
+    const head = '<div class="page-head"><div><p class="eyebrow">Your library</p><h1>My List</h1>' +
+      '<p class="sub">Track what you plan to watch, what you are watching and what you have finished.</p></div>' +
+      (state.user ? '<a class="btn btn-glass btn-sm" href="#explore"><i class="fa-solid fa-compass"></i> Find more to add</a>' : "") + "</div>";
+    if (!state.user) {
+      box.innerHTML = head + '<div class="lockbox"><i class="fa-solid fa-bookmark"></i><h3>Sign in to see your list</h3>' +
+        "<p>Your list syncs across every device once you sign in.</p>" +
+        '<button class="btn btn-primary" type="button" data-act="auth"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button></div>';
+      return;
+    }
+    box.innerHTML = head +
+      '<div class="stats" id="mlStats"></div>' +
+      '<div class="ml-tabs" id="mlTabs"></div>' +
+      '<div class="ml-toolbar">' +
+        '<label class="ml-search"><i class="fa-solid fa-magnifying-glass"></i><input class="fsel" id="mlSearch" type="search" placeholder="Search your list" value="' + esc(ML.q) + '"></label>' +
+        '<div class="pseg" role="group" aria-label="Type">' +
+          [["all", "All"], ["movie", "Movies"], ["tv", "Series"]].map((o) => '<button type="button" data-ml-type="' + o[0] + '">' + o[1] + "</button>").join("") +
+        "</div>" +
+        '<select class="fsel" id="mlSort" aria-label="Sort">' + exOpts([["added-desc", "Recently added"], ["added-asc", "Oldest first"], ["title-asc", "Title A-Z"], ["title-desc", "Title Z-A"]], ML.sort) + "</select>" +
+        '<button class="btn btn-glass btn-sm" type="button" id="mlClear" hidden><i class="fa-solid fa-broom"></i> Clear completed</button>' +
+      "</div>" +
+      '<div class="ml-grid" id="mlGrid"></div>';
+  }
+  function mlCard(w) {
+    const k = keyOf(w);
+    state.index.set(k, w);
+    const t = titleOf(w), p = img(w.poster_path, "w342"), st = STATUS[w.status] ? w.status : "plan";
+    return '<article class="ml-card st-' + st + '">' +
+      '<button class="ml-poster" type="button" data-play="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
+        (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<span class="tp-poster-ph">' + esc(t) + "</span>") +
+        '<span class="poster-play"><i class="fa-solid fa-play"></i></span></button>' +
+      '<div class="ml-body"><b title="' + esc(t) + '">' + esc(t) + "</b>" +
+        '<span class="ml-sub">' + (w.media_type === "tv" ? "Series" : "Film") + " | added " + esc(timeAgo(w.added_at)) + "</span>" +
+        '<select class="fsel ml-status" data-ml-set="' + esc(k) + '" aria-label="Status for ' + esc(t) + '"' + (state.hasStatus ? "" : " disabled") + ">" +
+          Object.keys(STATUS).map((s) => '<option value="' + s + '"' + (s === st ? " selected" : "") + ">" + STATUS[s] + "</option>").join("") + "</select>" +
+        '<div class="ml-actions">' +
+          '<button class="mini" type="button" data-play="' + esc(k) + '"><i class="fa-solid fa-play"></i> Play</button>' +
+          '<button class="mini" type="button" data-info="' + esc(k) + '"><i class="fa-solid fa-circle-info"></i> Details</button>' +
+          '<button class="mini danger" type="button" data-ml-remove="' + esc(k) + '" aria-label="Remove ' + esc(t) + '"><i class="fa-solid fa-trash"></i></button>' +
+        "</div></div></article>";
+  }
+  function renderMyListGrid() {
+    const box = $("listPage");
+    if (!box || box.hidden) return;
+    if (!state.user) { buildMyList(); return; }
+    if (!$("mlGrid")) buildMyList();
+    const all = state.watch;
+    const c = { all: all.length, plan: 0, watching: 0, completed: 0 };
+    all.forEach((w) => { c[STATUS[w.status] ? w.status : "plan"]++; });
+    const movies = all.filter((w) => w.media_type === "movie").length;
+    $("mlStats").innerHTML = statCard(c.all, "Saved") + statCard(movies, "Movies") + statCard(c.all - movies, "Series") + statCard(c.watching, "Watching") + statCard(c.completed, "Completed");
+    const tabBtn = (k, l) => '<button type="button" class="ml-tab' + (ML.status === k ? " on" : "") + '" data-ml-status="' + k + '">' +
+      (k === "all" ? "" : '<i class="dot dot-' + k + '"></i>') + esc(l) + "<b>" + c[k] + "</b></button>";
+    $("mlTabs").innerHTML = tabBtn("all", "All") + tabBtn("plan", STATUS.plan) + tabBtn("watching", STATUS.watching) + tabBtn("completed", STATUS.completed);
+    document.querySelectorAll("[data-ml-type]").forEach((b) => b.classList.toggle("active", b.dataset.mlType === ML.type));
+    $("mlClear").hidden = !c.completed || !state.hasStatus;
+    const q = ML.q.trim().toLowerCase();
+    const by = {
+      "added-desc": (a, b) => new Date(b.added_at) - new Date(a.added_at),
+      "added-asc": (a, b) => new Date(a.added_at) - new Date(b.added_at),
+      "title-asc": (a, b) => titleOf(a).localeCompare(titleOf(b)),
+      "title-desc": (a, b) => titleOf(b).localeCompare(titleOf(a))
+    };
+    const list = all.filter((w) =>
+      (ML.status === "all" || (STATUS[w.status] ? w.status : "plan") === ML.status) &&
+      (ML.type === "all" || w.media_type === ML.type) &&
+      (!q || titleOf(w).toLowerCase().indexOf(q) !== -1)
+    ).slice().sort(by[ML.sort] || by["added-desc"]);
+    const g = $("mlGrid");
+    if (!all.length) g.innerHTML = '<div class="empty-row" style="grid-column:1/-1"><span>Your list is empty. Tap the + on any poster to save it here.</span><a class="btn btn-glass btn-sm" href="#explore">Explore titles</a></div>';
+    else if (!list.length) g.innerHTML = '<div class="empty-row" style="grid-column:1/-1"><span>Nothing matches these filters.</span><button class="btn btn-glass btn-sm" type="button" data-ml-reset="1">Clear filters</button></div>';
+    else { g.innerHTML = list.map(mlCard).join(""); wireImages(g); }
+    if (!state.hasStatus && all.length) g.insertAdjacentHTML("afterbegin", '<p class="note" style="grid-column:1/-1">Statuses are read-only until the owner runs STEP 12 of schema.sql.</p>');
+  }
+  async function setStatus(k, status, quiet) {
+    if (!STATUS[status] || !state.sb || !state.user) return;
+    const w = state.watch.find((x) => keyOf(x) === k);
+    if (!w) return;
+    if (!state.hasStatus) { if (!quiet) toast("List statuses need the latest database update (STEP 12 of schema.sql).", "error"); renderMyListGrid(); return; }
+    const prev = w.status;
+    if (prev === status) return;
+    w.status = status;
+    renderMyListGrid(); renderRows();
+    const { error } = await state.sb.from("watchlists").update({ status }).eq("user_id", state.user.id).eq("tmdb_id", Number(w.id)).eq("media_type", w.media_type);
+    if (error) { w.status = prev; renderMyListGrid(); renderRows(); if (!quiet) toast(error.message || "Could not update the status.", "error"); return; }
+    if (!quiet) toast("Moved to " + STATUS[status] + ".", "ok");
+  }
+  function markWatching(item) {
+    if (!state.hasStatus || !state.user || !item || item.is_custom) return;
+    const w = state.watch.find((x) => keyOf(x) === keyOf(item));
+    if (w && (w.status || "plan") === "plan") setStatus(keyOf(item), "watching", true);
+  }
+  async function clearCompleted() {
+    if (!state.sb || !state.user || !state.hasStatus) return;
+    const n = state.watch.filter((w) => w.status === "completed").length;
+    if (!n || !confirm("Remove " + n + " completed title" + (n === 1 ? "" : "s") + " from your list?")) return;
+    const { error } = await state.sb.from("watchlists").delete().eq("user_id", state.user.id).eq("status", "completed");
+    if (error) { toast(error.message || "Could not clear completed titles.", "error"); return; }
+    toast("Cleared " + n + " completed title" + (n === 1 ? "" : "s") + ".", "ok");
+    await loadWatch();
+  }
+
+  /* ---------- WATCH HISTORY ---------- */
+  const recentPlays = new Map();
+  async function recordWatch(item) {
+    if (!item || item.is_custom || !state.sb || !state.user || !state.hasHistory) return;
+    const id = Number(item.id);
+    if (!Number.isSafeInteger(id) || id < 1) return;
+    const tv = item.media_type === "tv";
+    const s = tv ? Math.max(1, parseInt($("seasonIn").value, 10) || 1) : null;
+    const e = tv ? Math.max(1, parseInt($("episodeIn").value, 10) || 1) : null;
+    const k = keyOf(item) + ":" + s + ":" + e;
+    if (Date.now() - (recentPlays.get(k) || 0) < 5 * 60 * 1000) return;   // no duplicate spam
+    recentPlays.set(k, Date.now());
+    const { error } = await state.sb.from("watch_history").insert({
+      user_id: state.user.id, tmdb_id: id, media_type: tv ? "tv" : "movie",
+      title: titleOf(item), poster_path: item.poster_path || null, season: s, episode: e
+    });
+    if (!error) return;
+    const m = String(error.message || "");
+    if (/watch_history|relation|schema cache|does not exist/i.test(m)) state.hasHistory = false;
+    else if (/row-level security|violates/i.test(m)) checkBlocked();
+  }
+  async function fetchHistory() {
+    if (!isAdmin() || !state.sb || !state.user) { state.history = []; return { ok: false, msg: "signin" }; }
+    const { data, error } = await state.sb.from("watch_history")
+      .select("id,user_id,tmdb_id,media_type,title,poster_path,season,episode,watched_at")
+      .order("watched_at", { ascending: false }).limit(1000);
+    if (error) {
+      state.history = [];
+      if (/watch_history|relation|schema cache|does not exist/i.test(error.message || "")) { state.hasHistory = false; return { ok: false, msg: "missing" }; }
+      return { ok: false, msg: error.message };
+    }
+    state.hasHistory = true;
+    state.history = data || [];
+    return { ok: true };
+  }
+  async function loadActivity() {
+    if (!isAdmin()) return;
+    const body = $("actBody");
+    if (state.sb && state.user) body.innerHTML = '<p class="hint" style="padding:14px">Loading activity...</p>';
+    const r = await fetchHistory();
+    if (!r.ok && r.msg !== "missing" && r.msg !== "signin") { body.innerHTML = '<div class="wl-user"><p class="status error">' + esc(r.msg) + "</p></div>"; return; }
+    if (state.sb && state.user && !state.members.length) await loadMembers();
+    paintActivityUsers();
+    renderActivity();
+  }
+  function paintActivityUsers() {
+    const sel = $("actUser");
+    if (!sel) return;
+    const cur = state.actFilter != null ? state.actFilter : sel.value;
+    state.actFilter = null;
+    sel.innerHTML = '<option value="">All members</option>' + state.members.map((m) =>
+      '<option value="' + esc(m.id) + '"' + (m.id === cur ? " selected" : "") + ">" + esc(m.display_name || m.email || m.id) + (m.is_blocked ? " (suspended)" : "") + "</option>").join("");
+  }
+  function renderActivity() {
+    const body = $("actBody"), stats = $("actStats");
+    if (!body) return;
+    if (!state.sb || !state.user) { stats.innerHTML = ""; body.innerHTML = '<div class="wl-user"><p class="hint">Sign in with the owner button above - watch history is protected by Row Level Security.</p></div>'; return; }
+    if (!state.hasHistory) { stats.innerHTML = ""; body.innerHTML = '<div class="wl-user"><p class="hint">Watch history is not set up yet. Run STEP 12 of schema.sql in the Supabase SQL Editor, then press Refresh.</p></div>'; return; }
+    const uid = ($("actUser") || {}).value || "";
+    const q = (($("actSearch") || {}).value || "").trim().toLowerCase();
+    const rows = state.history.filter((h) => (!uid || h.user_id === uid) && (!q || String(h.title || "").toLowerCase().indexOf(q) !== -1));
+    const now = Date.now();
+    const day = rows.filter((h) => now - new Date(h.watched_at).getTime() < 864e5).length;
+    const viewers = new Set(rows.map((h) => h.user_id)).size;
+    const tally = {};
+    rows.forEach((h) => { tally[h.title] = (tally[h.title] || 0) + 1; });
+    const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0];
+    stats.innerHTML = statCard(rows.length, "Plays") + statCard(viewers, "Viewers") + statCard(day, "Last 24h") +
+      '<div class="stat"><b style="font-size:14px;line-height:1.35">' + esc(top ? top[0] : "-") + "</b><span>Most watched" + (top ? " (" + top[1] + ")" : "") + "</span></div>";
+    if (!rows.length) { body.innerHTML = '<div class="wl-user"><p class="hint">No activity yet. Plays are logged when signed-in members open a title.</p></div>'; return; }
+    body.innerHTML = '<div class="list">' + rows.slice(0, 300).map((h) => {
+      const m = memberOf(h.user_id);
+      const p = img(h.poster_path, "w92");
+      const ep = h.media_type === "tv" && h.season ? " - S" + h.season + " E" + (h.episode || 1) : "";
+      return '<div class="act-row">' + (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<span class="act-ph"></span>') +
+        "<div><b>" + esc(h.title) + esc(ep) + "</b><small>" + esc(m ? (m.display_name || m.email) : String(h.user_id).slice(0, 8)) +
+        (m && m.email ? " | " + esc(m.email) : "") + (m && m.is_blocked ? ' | <span style="color:#ff8a92">suspended</span>' : "") + "</small></div>" +
+        '<span class="act-when" title="' + esc(new Date(h.watched_at).toLocaleString()) + '">' + esc(timeAgo(h.watched_at)) + "</span></div>";
+    }).join("") + "</div>";
+    wireImages(body);
+  }
+
+  /* ---------- SUSPENSION ---------- */
+  function deviceSuspended() { try { return localStorage.getItem(SUSP_KEY); } catch { return null; } }
+  function showBlocked(reason) {
+    const r = reason && reason !== "1" ? String(reason) : "";
+    $("blockedReason").textContent = r ? "Reason: " + r : "If you think this is a mistake, contact the site owner.";
+    openModal("blockedModal");
+  }
+  async function kickOut(reason) {
+    if (state.kicking) return;
+    state.kicking = true;
+    try { localStorage.setItem(SUSP_KEY, reason || "1"); } catch {}
+    closeAllModals();
+    try { if (state.sb) await state.sb.auth.signOut(); } catch {}
+    state.kicking = false;
+    await applyUser(null);
+    showBlocked(reason);
+  }
+  async function checkBlocked() {
+    if (!state.sb || !state.user || !state.hasBlock || isOwnerEmail(state.user.email)) return false;
+    const { data, error } = await state.sb.from("profiles").select("is_blocked,blocked_reason").eq("id", state.user.id).maybeSingle();
+    if (error || !data) return false;
+    if (data.is_blocked) { await kickOut(data.blocked_reason); return true; }
+    return false;
+  }
+  async function setBlocked(id, block) {
+    if (!isAdmin() || !state.sb || !state.user) return;
+    const m = memberOf(id);
+    if (m && isOwnerEmail(m.email)) { toast("The owner account cannot be suspended.", "error"); return; }
+    if (id === state.user.id) { toast("You cannot suspend your own account.", "error"); return; }
+    const who = m ? (m.display_name || m.email) : "this member";
+    let reason = null;
+    if (block) {
+      reason = prompt("Suspend " + who + "?\n\nThey are signed out right away and cannot sign back in.\nOptional reason (shown to them):", "");
+      if (reason === null) return;
+      reason = reason.trim().slice(0, 300) || null;
+    } else if (!confirm("Restore access for " + who + "?")) return;
+    const patch = block ? { is_blocked: true, blocked_reason: reason } : { is_blocked: false, blocked_reason: null };
+    const { data, error } = await state.sb.from("profiles").update(patch).eq("id", id).select("id");
+    let msg = "";
+    if (error) msg = /is_blocked|blocked_reason|column/i.test(error.message || "") ? "Suspensions need the latest database update - run STEP 12 of schema.sql." : error.message;
+    else if (!data || !data.length) msg = "No permission to change this member. Sign in as the owner first.";
+    if (msg) { $("userStatus").textContent = msg; $("userStatus").className = "status error"; toast(msg, "error"); return; }
+    $("userStatus").textContent = block ? who + " suspended." : who + " restored.";
+    $("userStatus").className = "status ok";
+    toast(block ? who + " is suspended and is being signed out." : who + " can sign in again.", "ok");
+    await loadMembers();
+    paintActivityUsers();
+    renderActivity();
+  }
+
+  /* ---------- v2 listeners ---------- */
+  document.addEventListener("change", (ev) => {
+    const t = ev.target;
+    if (!t || !t.matches) return;
+    if (t.matches("[data-ex]")) exSetField(t.dataset.ex, t.value);
+    else if (t.matches("[data-ml-set]")) setStatus(t.dataset.mlSet, t.value, false);
+    else if (t.id === "mlSort") { ML.sort = t.value; renderMyListGrid(); }
+    else if (t.id === "actUser") renderActivity();
+  });
+  document.addEventListener("input", (ev) => {
+    const t = ev.target;
+    if (!t) return;
+    if (t.id === "mlSearch") { ML.q = t.value; renderMyListGrid(); }
+    else if (t.id === "actSearch") renderActivity();
+  });
+  ["seasonIn", "episodeIn"].forEach((id) => $(id).addEventListener("change", () => { if (state.playing) recordWatch(state.playing); }));
+  // Safety net for suspensions if Realtime is unavailable.
+  setInterval(() => { if (state.user && document.visibilityState === "visible") checkBlocked(); }, 60000);
+
+  /* =====================================================================
+     v3 - Info pages: About, Contact, Privacy, Terms, DMCA
+     ===================================================================== */
+  const SITE = {
+    name: "Flickerz Nest",
+    founder: "Dawar Tariq",
+    contact: "wanidawar03@gmail.com"     // public contact address shown on the site
+  };
+  const BASE_TITLE = document.title;
+  const mail = (subject) => '<a href="mailto:' + esc(SITE.contact) + "?subject=" + encodeURIComponent(subject) + '">' + esc(SITE.contact) + "</a>";
+  const INFO_TABS = [["about", "About us"], ["contact", "Contact"], ["privacy", "Privacy"], ["terms", "Terms"], ["dmca", "DMCA"]];
+  const value = (icon, t, s) => '<div class="value"><i class="fa-solid ' + icon + '"></i><b>' + esc(t) + "</b><span>" + esc(s) + "</span></div>";
+
+  const INFO_PAGES = {
+    about: () => ({
+      title: "About us", eyebrow: "About us", h1: "Stories worth staying in for",
+      sub: SITE.name + " is a calm, fast place to discover films and series and keep track of what you want to watch next.",
+      body:
+        '<div class="value-grid">' +
+          value("fa-compass", "Discover", "Trending picks, top-rated classics and a full explorer with genre, year, rating and language filters.") +
+          value("fa-bookmark", "Organise", "Save titles and sort them into Plan to watch, Watching and Completed.") +
+          value("fa-tv", "Anywhere", "Built for phones, tablets and desktops, with your list synced to your account.") +
+          value("fa-shield", "Private by design", "No ads from us, no selling data. Your account data is protected with row-level security.") +
+        "</div>" +
+        '<div class="prose">' +
+          "<h2>Our story</h2><p>" + SITE.name + " started as a personal project by " + esc(SITE.founder) + " to make finding something good to watch quicker and more enjoyable. It grew into a full catalogue with watchlists, a detailed title page for every film and show, and an explorer for when you know the mood but not the title.</p>" +
+          "<h2>How it works</h2><p>Titles, artwork, cast and ratings come from The Movie Database (TMDB). Playback is provided by independent third-party video players embedded on title pages. " + SITE.name + " does not host, upload or store any video files.</p>" +
+          "<h2>Credits</h2><p>This product uses the TMDB API but is not endorsed or certified by TMDB. Film and series metadata and images are provided by <a href=\"https://www.themoviedb.org/\" target=\"_blank\" rel=\"noopener\">TMDB</a>.</p>" +
+          "<h2>Get in touch</h2><p>Feedback, feature ideas or a problem to report? Visit the <a href=\"#contact\">contact page</a>.</p>" +
+        "</div>"
+    }),
+    contact: () => ({
+      title: "Contact", eyebrow: "Contact", h1: "Get in touch",
+      sub: "Questions, feedback, broken titles or account help - we read every message.",
+      body:
+        '<div class="contact-card"><div><b>Email us</b><span>' + mail("Flickerz Nest - Support") + '</span></div>' +
+          '<a class="btn btn-primary btn-sm" href="mailto:' + esc(SITE.contact) + "?subject=" + encodeURIComponent("Flickerz Nest - Support") + '"><i class="fa-solid fa-envelope"></i> Send email</a></div>' +
+        '<div class="prose">' +
+          "<h2>Help us help you</h2><ul>" +
+            "<li><b>A title will not play:</b> include the title name, whether it is a film or series (and the season/episode), and which sources you tried.</li>" +
+            "<li><b>Account help:</b> write from the email address you signed up with.</li>" +
+            "<li><b>Suspended account:</b> include your account email and any reason shown to you.</li>" +
+            "<li><b>Copyright concerns:</b> please follow the steps on our <a href=\"#dmca\">DMCA page</a>.</li>" +
+          "</ul>" +
+        "</div>"
+    }),
+    privacy: () => ({
+      title: "Privacy policy", eyebrow: "Legal", h1: "Privacy policy",
+      sub: "What we collect, why we collect it and the choices you have.",
+      body: '<div class="prose">' +
+        "<h2>Information we collect</h2><ul>" +
+          "<li><b>Account details:</b> your email address and display name when you create an account.</li>" +
+          "<li><b>Your library:</b> titles you save to My List and the status you give them.</li>" +
+          "<li><b>Watch history:</b> when you are signed in, the titles (and episodes) you open, so we can show Continue Watching and keep the service safe.</li>" +
+          "<li><b>Preferences on your device:</b> things like your Explore filters are stored in your browser's local storage and never leave your device.</li>" +
+        "</ul>" +
+        "<h2>How we use it</h2><p>To run your account, sync your list across devices, show your viewing progress, and protect the service from abuse. We do not sell your personal information and we do not show our own advertising.</p>" +
+        "<h2>Services we rely on</h2><ul>" +
+          "<li><b>Supabase</b> provides sign-in and the database that stores your account and list.</li>" +
+          "<li><b>TMDB</b> supplies film and series information and images. Your browser requests these directly from TMDB.</li>" +
+          "<li><b>Third-party video players</b> embedded on title pages are operated by other companies. They may use cookies, analytics or ads under their own privacy policies.</li>" +
+        "</ul>" +
+        "<h2>Security</h2><p>Account data is protected by row-level security, which means each member can only read and change their own list and history.</p>" +
+        "<h2>Your choices</h2><p>You can remove titles from your list at any time. To delete your account and its data, email " + mail("Flickerz Nest - Delete my account") + " from your account email.</p>" +
+        "<h2>Changes</h2><p>If this policy changes, the updated version will be posted on this page.</p>" +
+      "</div>"
+    }),
+    terms: () => ({
+      title: "Terms of use", eyebrow: "Legal", h1: "Terms of use",
+      sub: "The rules for using " + SITE.name + ".",
+      body: '<div class="prose">' +
+        "<h2>Using the service</h2><p>" + SITE.name + " helps you discover films and series and organise what you want to watch. By using the site you agree to these terms.</p>" +
+        "<h2>Accounts</h2><p>You are responsible for keeping your password safe and for activity on your account. Give accurate information when you sign up.</p>" +
+        "<h2>Acceptable use</h2><ul>" +
+          "<li>Do not attempt to break, overload or gain unauthorised access to the service.</li>" +
+          "<li>Do not use automated tools to scrape the site.</li>" +
+          "<li>Do not use the service for anything unlawful.</li>" +
+        "</ul>" +
+        "<h2>Suspension</h2><p>We may suspend or close accounts that break these terms. Suspended accounts are signed out and cannot sign in until access is restored.</p>" +
+        "<h2>Third-party content</h2><p>Metadata comes from TMDB and video playback comes from independent third-party players. " + SITE.name + " does not host video files and is not responsible for content, availability, advertising or policies of third-party services.</p>" +
+        "<h2>No warranty</h2><p>The service is provided as is, without warranties of any kind. Titles may be unavailable or change at any time.</p>" +
+        "<h2>Limitation of liability</h2><p>To the extent permitted by law, " + SITE.name + " is not liable for indirect or consequential losses arising from use of the service.</p>" +
+        "<h2>Contact</h2><p>Questions about these terms: " + mail("Flickerz Nest - Terms") + ".</p>" +
+      "</div>"
+    }),
+    dmca: () => ({
+      title: "DMCA", eyebrow: "Legal", h1: "Copyright and DMCA",
+      sub: "How to report content you believe infringes your copyright.",
+      body: '<div class="prose">' +
+        "<h2>Our position</h2><p>" + SITE.name + " does not host, upload or store video files. Film and series information comes from TMDB, and playback is provided by independent third-party players. We respect the rights of copyright owners and act promptly on valid notices.</p>" +
+        "<h2>Sending a notice</h2><p>Email " + mail("DMCA notice") + " with:</p><ul>" +
+          "<li>Your name, address, phone number and email.</li>" +
+          "<li>A description of the copyrighted work.</li>" +
+          "<li>The exact page address(es) on " + SITE.name + " where the material appears.</li>" +
+          "<li>A statement that you have a good-faith belief the use is not authorised by the owner, its agent or the law.</li>" +
+          "<li>A statement, under penalty of perjury, that the information is accurate and that you are the owner or authorised to act for the owner.</li>" +
+          "<li>Your physical or electronic signature.</li>" +
+        "</ul>" +
+        "<h2>What happens next</h2><p>We will remove or disable links and embeds we control that are identified in a valid notice. Because files are hosted elsewhere, you may also need to contact the hosting provider of the video player.</p>" +
+        "<h2>Counter-notice</h2><p>If you believe material was removed by mistake, send a counter-notice to the same address with your contact details, the removed material, and a statement under penalty of perjury that it was removed in error.</p>" +
+      "</div>"
+    })
+  };
+
+  function openInfo(slug) {
+    const make = INFO_PAGES[slug];
+    if (!make) return;
+    const p = make();
+    showView("infoPage");
+    setNavActive([]);
+    $("infoPage").innerHTML =
+      '<nav class="info-tabs" aria-label="Site information">' +
+        INFO_TABS.map((t) => '<a href="#' + t[0] + '"' + (t[0] === slug ? ' class="on" aria-current="page"' : "") + ">" + esc(t[1]) + "</a>").join("") +
+      "</nav>" +
+      '<div class="page-head"><div><p class="eyebrow">' + esc(p.eyebrow) + "</p><h1>" + esc(p.h1) + '</h1><p class="sub">' + esc(p.sub) + "</p></div></div>" +
+      p.body;
+    document.title = p.title + " | " + SITE.name;
+  }
+  window.addEventListener("hashchange", () => {
+    const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
+    if (!INFO_PAGES[raw]) document.title = BASE_TITLE;
+  });
+
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:
        1. hash   :  #admin  #/admin  #owner
@@ -2020,10 +2974,18 @@
       return;
     }
     const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
+    if (raw !== state.curRoute) { state.prevRoute = state.curRoute || ""; state.curRoute = raw; }
     const title = /^title\/(custom|movie|tv)\/([a-z0-9-]+)/.exec(raw);
     if (title) { loadTitlePage(title[1], title[2], null); return; }
     if (raw === "search") { openSearch(); return; }
-    closeTitlePage();                       // any other hash = back to home
+    const ex = /^explore(?:\/(movie|tv))?$/.exec(raw);
+    if (ex) { openExplore(ex[1] || ""); return; }
+    if (raw === "mylist" || raw === "my-list") { openMyList(); return; }
+    if (INFO_PAGES[raw]) { openInfo(raw); return; }
+    showHome();                              // any other hash = home
+    if (raw.indexOf("row-") === 0) {
+      requestAnimationFrame(() => { const el = document.getElementById(raw); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    }
   }
 
   /* ---------- events ---------- */
@@ -2035,6 +2997,34 @@
     if (jump) { selectTab(jump.dataset.tabJump); return; }
     const tab = ev.target.closest("[data-tab]");
     if (tab) { selectTab(tab.dataset.tab); return; }
+    // ---- v2: explore, my list, moderation ----
+    const exType = ev.target.closest("[data-ex-type]");
+    if (exType) { exSetType(exType.dataset.exType); return; }
+    const exGenre = ev.target.closest("[data-ex-genre]");
+    if (exGenre) { EX.genre = exGenre.dataset.exGenre; saveEx(); paintGenres(); runExplore(true); return; }
+    if (ev.target.closest('[data-act="ex-reset"]')) { exReset(); return; }
+    if (ev.target.closest("#exMore")) { runExplore(false); return; }
+    const mlStatus = ev.target.closest("[data-ml-status]");
+    if (mlStatus) { ML.status = mlStatus.dataset.mlStatus; renderMyListGrid(); return; }
+    const mlType = ev.target.closest("[data-ml-type]");
+    if (mlType) { ML.type = mlType.dataset.mlType; renderMyListGrid(); return; }
+    const mlRemove = ev.target.closest("[data-ml-remove]");
+    if (mlRemove) { const w = state.watch.find((x) => keyOf(x) === mlRemove.dataset.mlRemove); if (w) await toggleSave(w); return; }
+    if (ev.target.closest("[data-ml-reset]")) { ML.status = "all"; ML.type = "all"; ML.q = ""; buildMyList(); renderMyListGrid(); return; }
+    if (ev.target.closest("#mlClear")) { await clearCompleted(); return; }
+    const hist = ev.target.closest("[data-history]");
+    if (hist) { state.actFilter = hist.dataset.history; selectTab("activity"); return; }
+    const blk = ev.target.closest("[data-block-id]");
+    if (blk) { await setBlocked(blk.dataset.blockId, blk.dataset.block === "1"); return; }
+    if (ev.target.closest("#actRefresh")) { await loadActivity(); return; }
+    if (ev.target.closest("#tabSearch")) { openSearch(); return; }
+    const navLink = ev.target.closest("a[data-nav]");
+    if (navLink && navLink.getAttribute("href") === location.hash) {
+      ev.preventDefault();
+      route();
+      if (navLink.dataset.nav === "home") window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const sv = ev.target.closest("[data-server]");
     if (sv && !sv.disabled) { setServer(Number(sv.dataset.server)); return; }
     const sc = ev.target.closest("[data-scroll]");
@@ -2057,7 +3047,7 @@
     if (rl) { await roleChange(rl.dataset.roleId, rl.dataset.next); return; }
     const season = ev.target.closest("[data-season]");
     if (season) {
-      if (state.detail) { closeModal("playerModal"); $("seasonIn").value = season.dataset.season || "1"; $("episodeIn").value = "1"; play(state.detail); }
+      if (state.detail) { closeModal("playerModal"); play(state.detail, { season: season.dataset.season || "1", episode: 1 }); }
       return;
     }
     if (ev.target.closest("[data-play-now]")) { const b = ev.target.closest("[data-play-now]"); if (!b.disabled) play(state.detail); return; }
@@ -2066,9 +3056,13 @@
     const act = ev.target.closest("[data-act]")?.dataset.act;
     if (act === "auth") openAuth();
     if (act === "back" || act === "back-home") {
-      // Always return to the home view rather than leaving the site.
+      // Return to the page the user came from (Explore, My List...) without
+      // ever leaving the site.
+      const prev = act === "back" ? state.prevRoute : "";
+      if (prev && !/^title\//.test(prev) && prev !== "search") { location.hash = "#" + prev; return; }
       history.replaceState(null, "", location.pathname + location.search + "#top");
-      closeTitlePage();
+      state.curRoute = "top";
+      showHome();
       return;
     }
     if (act === "retry") { const d = state.detail; closeTitlePage(); if (d) openDetail(d); else route(); return; }
@@ -2131,12 +3125,9 @@
     ownerTapTimer = setTimeout(() => { ownerTaps = 0; }, 900);
     if (ownerTaps >= 3) { ownerTaps = 0; clearTimeout(ownerTapTimer); if (!isAdmin()) openOwnerGate(true); }
   });
-  $("cfgForm").addEventListener("submit", saveConfig);
-  $("cfgRevert").addEventListener("click", () => {
-    try { localStorage.removeItem(STORE_KEY); } catch {}
-    state.store = {}; computeConfig(); fillCfgForm(); loadOverview();
-    $("cfgStatus").textContent = "Reverted to the built-in credentials."; $("cfgStatus").className = "status ok";
-  });
+  // Key editing was removed. Drop any key overrides saved by older versions.
+  try { localStorage.removeItem(STORE_KEY); } catch {}
+  state.store = {};
   $("adminLock").addEventListener("click", lockOwner);
   $("menuLock").addEventListener("click", lockOwner);
   $("sbSignIn").addEventListener("click", () => {
