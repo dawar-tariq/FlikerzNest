@@ -327,6 +327,22 @@
   .ep{display:flex;align-items:center;gap:8px}
   .ep label{display:flex;align-items:center;gap:6px}
   .ep input{width:56px;height:32px;padding:4px 8px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:#12141a}
+  /* season + episode picker */
+  .ep-picker{padding:0 clamp(16px,3vw,38px) 4px}
+  .ep-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0}
+  .ep-head>label{color:#c7cad2;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .ep-head .fsel{width:auto;min-width:150px;min-height:38px}
+  .ep-note{flex:1;min-width:120px;color:#8b909c;font-size:11.5px}
+  .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px;max-height:250px;overflow-y:auto;padding-bottom:10px;scrollbar-width:thin}
+  .ep-card{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.028);color:#e8eaee;cursor:pointer;text-align:left;min-width:0;transition:border-color .18s,background .18s}
+  .ep-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.07)}
+  .ep-card.on{border-color:var(--red);background:rgba(229,9,20,.16)}
+  .ep-card img,.ep-still{flex:0 0 auto;width:66px;height:38px;border-radius:6px;object-fit:cover;background:#22262f}
+  .ep-still{display:grid;place-items:center;color:#7f8592;font-size:12px}
+  .ep-card b{display:block;overflow:hidden;font-size:11.5px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+  .ep-card small{display:block;margin-top:3px;color:#8b909c;font-size:10px}
+  .ep-loading{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:18px 6px;color:#9aa0ad;font-size:12.5px}
+  .ep-loading .spin{width:22px;height:22px;border-width:2px}
 
   /* admin */
   .tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
@@ -704,6 +720,9 @@
     .foot-brand-col{grid-column:1/-1}
   }
   @media (max-width:620px){
+    .ep-picker{padding:0 14px}
+    .ep-head .fsel{min-width:120px;flex:1}
+    .ep-grid{grid-template-columns:1fr;max-height:230px}
     .icon-btn{width:36px;height:36px;font-size:16px}
     .nav-search{width:36px;height:36px;padding:0;justify-content:center}
     .row-head h2{font-size:18px}
@@ -721,6 +740,87 @@
   .dot-history{background:#b39bff}
   .hist-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px}
   .act-row .mgr{flex:0 0 auto}
+  /* =================== v6: TV / remote-control mode =================== */
+  /* Every control must be reachable and visible without hover or touch. */
+  :focus-visible{outline:3px solid #ffd479;outline-offset:3px}
+  button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffd479;outline-offset:3px}
+  .tile:focus-within .poster{border-color:#fff;box-shadow:0 0 0 3px #ffd479,0 22px 44px rgba(0,0,0,.55)}
+  .ep-card:focus-visible,.ml-card:focus-within,.hit:focus-visible{border-color:#ffd479;box-shadow:0 0 0 3px rgba(255,212,121,.35)}
+  body.tv{font-size:17px}
+  body.tv .nav-links{display:flex!important;gap:26px;font-size:16px}
+  body.tv .tabbar{display:none!important}
+  body.tv .topbar{height:92px;padding-inline:56px}
+  body.tv .topbar.scrolled{height:84px}
+  body.tv .brand{font-size:27px}
+  body.tv .brand-mark{width:42px;height:42px;font-size:21px;border-radius:13px 13px 13px 4px}
+  body.tv .nav-search{width:280px;height:52px;font-size:16px}
+  body.tv .nav-search span{display:inline}
+  body.tv .icon-btn{width:52px;height:52px;font-size:21px}
+  body.tv .avatar{width:46px;height:46px;font-size:15px}
+  body.tv .menu{width:320px;top:84px;padding:12px}
+  body.tv .menu-item{min-height:54px;font-size:16px}
+  body.tv .menu-head strong{font-size:16px}
+  body.tv .menu-head span{font-size:13px}
+  body.tv .hero{height:86vh;min-height:640px}
+  body.tv .hero-title{font-size:clamp(42px,4.4vw,68px)}
+  body.tv .hero-copy{max-width:720px;font-size:19px;line-height:1.65}
+  body.tv .hero-logo{font-size:clamp(38px,3.6vw,56px);margin-bottom:28px}
+  body.tv .chips{gap:11px}
+  body.tv .chip{padding:9px 16px;font-size:15px;border-radius:10px}
+  body.tv .btn{min-height:62px;padding:0 30px;font-size:19px;gap:13px;border-radius:12px}
+  body.tv .btn-sm{min-height:48px;font-size:16px}
+  body.tv .page-head h1{font-size:clamp(38px,4vw,58px)}
+  body.tv .page-head .sub,body.tv .foot-tag,body.tv .prose p,body.tv .prose li{font-size:17px}
+  body.tv .row-head h2{font-size:clamp(26px,2.4vw,36px)}
+  body.tv .row-head p{font-size:16px}
+  body.tv .row-nav{display:flex!important;gap:12px}
+  body.tv .arrow{width:58px;height:58px;font-size:20px}
+  body.tv .strip{gap:26px;padding-bottom:18px}
+  body.tv .tile,body.tv .skeleton{flex-basis:clamp(190px,16vw,260px)}
+  /* on a TV there is no hover: posters and their controls are always visible */
+  body.tv .save,body.tv .info-btn{opacity:1;transform:none;width:46px;height:46px;font-size:20px;top:14px}
+  body.tv .save{right:14px}
+  body.tv .info-btn{top:70px;right:14px}
+  body.tv .score{top:14px;left:14px;padding:6px 12px;font-size:16px}
+  body.tv .poster-info{opacity:1;transform:none;padding:16px}
+  body.tv .poster-info strong{font-size:16px}
+  body.tv .poster-info span{font-size:13px}
+  body.tv .poster-play i{width:70px;height:70px;font-size:26px}
+  body.tv .tile-name{margin-top:14px;font-size:17px}
+  body.tv .tile-sub{font-size:14px}
+  body.tv .view-page{padding:120px 56px 90px}
+  body.tv .fsel{min-height:54px;font-size:17px}
+  body.tv .chip-row{gap:12px}
+  body.tv .filters{padding:22px;gap:18px}
+  body.tv .fgrid{gap:28px 22px}
+  body.tv .ml-grid{gap:22px}
+  body.tv .ml-card{padding:16px}
+  body.tv .ml-poster{flex-basis:112px}
+  body.tv .ml-body>b{font-size:18px}
+  body.tv .ml-sub,body.tv .act-row small,body.tv .act-when{font-size:15px}
+  body.tv .mini{min-height:46px;padding:0 18px;font-size:14px}
+  body.tv .player-head{padding:18px 44px}
+  body.tv .player-head h2{font-size:22px}
+  body.tv .seg button{min-height:58px;padding:0 22px;font-size:17px}
+  body.tv .srv-num{width:26px;height:26px;font-size:14px}
+  body.tv .ep-picker{padding:0 44px}
+  body.tv .ep-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));max-height:340px;gap:14px}
+  body.tv .ep-card{padding:12px;gap:16px}
+  body.tv .ep-card img,body.tv .ep-still{width:110px;height:62px}
+  body.tv .ep-card b{font-size:16px}
+  body.tv .ep-card small{font-size:13px}
+  body.tv .card{max-width:900px}
+  body.tv .dialog-search,.body.tv .search-top input{font-size:20px}
+  body.tv .foot{padding:56px}
+  body.tv .foot-col a{font-size:17px;padding:9px 0}
+  body.tv .prose h2{font-size:24px}
+  body.tv .value b{font-size:19px}
+  body.tv .value span{font-size:16px}
+  body.tv .toasts{bottom:32px;right:32px}
+  body.tv .toast{font-size:17px;padding:18px 22px}
+  body.tv .lockbox p,body.tv .hint,body.tv .note,body.tv .status{font-size:16px}
+  /* focus ring must be visible on dark surfaces */
+  body.tv .modal-backdrop:focus-within .card{box-shadow:0 0 0 3px rgba(255,212,121,.25),0 35px 120px rgba(0,0,0,.6)}
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
@@ -752,6 +852,7 @@
     <div class="menu-head"><strong id="menuName">Your Nest</strong><span id="menuEmail">Sign in to sync your list</span></div>
     <button class="menu-item" type="button" id="menuAuth"><i class="fa-regular fa-circle-user"></i><span>Sign in / Create account</span></button>
     <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
+    <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span>TV mode</span></button>
     <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
     <button class="menu-item danger" type="button" id="menuOut" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
   </div>
@@ -911,6 +1012,16 @@
         <label>Season <input id="seasonIn" type="number" min="1" max="99" value="1"></label>
         <label>Episode <input id="episodeIn" type="number" min="1" max="999" value="1"></label>
       </div>
+    </div>
+    <!-- season + episode picker for series -->
+    <div class="ep-picker" id="epPicker" hidden>
+      <div class="ep-head">
+        <label for="seasonSelect">Season</label>
+        <select class="fsel" id="seasonSelect"></select>
+        <span class="ep-note" id="epCount"></span>
+        <button class="mini" type="button" id="epManual"><i class="fa-solid fa-pen"></i> Manual entry</button>
+      </div>
+      <div class="ep-grid" id="epGrid"></div>
     </div>
   </div>
 </div>
@@ -1212,6 +1323,8 @@
     const m = $(id); if (!m) return;
     m.hidden = false;
     syncLock();
+    // Remote and keyboard users need the dialog focused as soon as it opens.
+    if (state.tv || state.kbNav) setTimeout(() => focusFirstIn(m), 50);
   }
   function closeModal(id) {
     const m = $(id); if (!m || m.hidden) return;
@@ -1707,9 +1820,7 @@
     if (item.is_custom) return httpsUrl(item.custom_stream_url);
     const id = Number(item.id);
     if (!Number.isSafeInteger(id) || id < 1) return "";
-    const s = Math.max(1, parseInt($("seasonIn").value, 10) || 1);
-    const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
-    return streamSource(server, item.media_type, id, s, e);
+    return streamSource(server, item.media_type, id, state.season || 1, state.episode || 1);
   }
   /* Multiple independent providers, because public embeds go down often.
      Trying a different host fixes most "movie will not load" reports. */
@@ -1830,22 +1941,30 @@
     state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
-    $("epControls").hidden = item.is_custom || item.media_type !== "tv";
+    // Series: show the real season and episode picker. Playback only starts
+    // once a specific episode is chosen (or a resume point supplies one).
+    const isSeries = !item.is_custom && item.media_type === "tv";
     // Resume series at the last episode this member played.
-    if (item.media_type === "tv" && !opts.season) {
+    if (isSeries && !opts.season) {
       const last = lastPlayed(item);
       if (last && last.season) {
         opts = { season: last.season, episode: last.episode || 1 };
         toast("Resuming S" + last.season + " E" + (last.episode || 1) + ".", "");
       }
     }
-    $("seasonIn").value = String(Math.max(1, parseInt(opts.season, 10) || 1));
-    $("episodeIn").value = String(Math.max(1, parseInt(opts.episode, 10) || 1));
+    state.season = Math.max(1, parseInt(opts.season, 10) || 1);
+    state.episode = Math.max(1, parseInt(opts.episode, 10) || 1);
+    const startEpisode = Boolean(opts.episode);
+    $("seasonIn").value = String(state.season);
+    $("episodeIn").value = String(state.episode);
+    $("epControls").hidden = true;
+    $("epPicker").hidden = !isSeries;
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
     $("frame").src = "about:blank";
     setNote("load", "Preparing your stream", "Checking for the best available source.");
     openModal("playerModal");
-    recordWatch(item);
+    if (isSeries) loadEpisodePicker(item, state.season);
+    if (startEpisode) recordWatch(item);
     markWatching(item);
     if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
       try {
@@ -1854,7 +1973,11 @@
       } catch { /* fall back to VidSrc */ }
     }
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = false; });
-    if (state.playing === item) setServer(1);
+    if (state.playing !== item) return;
+    if (isSeries && !startEpisode) {
+      setNote("info", "Choose a season and episode", "Pick an episode below and streaming starts right away.");
+      $("playerNote").textContent = "Select an episode to start watching.";
+    } else setServer(1);
   }
 
   /* ---------- watchlist ---------- */
@@ -2730,8 +2853,8 @@
     const id = Number(item.id);
     if (!Number.isSafeInteger(id) || id < 1) return;
     const tv = item.media_type === "tv";
-    const s = tv ? Math.max(1, parseInt($("seasonIn").value, 10) || 1) : null;
-    const e = tv ? Math.max(1, parseInt($("episodeIn").value, 10) || 1) : null;
+    const s = tv ? state.season || 1 : null;
+    const e = tv ? state.episode || 1 : null;
     const k = keyOf(item) + ":" + s + ":" + e;
     if (Date.now() - (recentPlays.get(k) || 0) < 5 * 60 * 1000) return;   // no duplicate spam
     recentPlays.set(k, Date.now());
@@ -2871,7 +2994,7 @@
     if (t.id === "mlSearch") { ML.q = t.value; renderMyListGrid(); }
     else if (t.id === "actSearch") renderActivity();
   });
-  ["seasonIn", "episodeIn"].forEach((id) => $(id).addEventListener("change", () => { if (state.playing) recordWatch(state.playing); }));
+
   // Safety net for suspensions if Realtime is unavailable.
   setInterval(() => { if (state.user && document.visibilityState === "visible") checkBlocked(); }, 60000);
 
@@ -3001,7 +3124,12 @@
   /* =====================================================================
      v4 - Reliable owner sign-in, database diagnostics, member watch history
      ===================================================================== */
-  Object.assign(state, { myHistory: [], sbAuthError: "", pendingPlay: null, authReady: false, sessionReady: null });
+  Object.assign(state, { myHistory: [], sbAuthError: "", pendingPlay: null, authReady: false, sessionReady: null, tv: false, kbNav: false });
+
+  // Arrow keys pressed before TV mode is known: treat as keyboard/remote use.
+  document.addEventListener("keydown", (ev) => {
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Enter"].indexOf(ev.key) !== -1) state.kbNav = true;
+  }, { once: false, capture: true });
 
   /* Opens sign-in for a guest who pressed Play, and remembers the title so it
      starts automatically after they sign in (see applyUser). */
@@ -3189,6 +3317,226 @@
     if (ev.target.closest("#histClear")) await clearHistory();
   });
 
+  /* =====================================================================
+     v5 - Real season / episode picker for series
+     ===================================================================== */
+  const seasonCache = new Map();
+  const seriesOf = (item) => Boolean(item && !item.is_custom && item.media_type === "tv");
+
+  function manualEpisodes(msg) {
+    const grid = $("epGrid");
+    if (grid) grid.innerHTML = '<div class="ep-loading"><i class="fa-solid fa-circle-info"></i><span>' +
+      esc(msg || "Episode list could not be loaded. Use manual entry below.") + "</span></div>";
+    const c = $("epCount"); if (c) c.textContent = "manual entry";
+    $("epControls").hidden = false;
+  }
+
+  // Season list + episode grid, straight from TMDB. Nothing to type by hand.
+  async function loadEpisodePicker(item, season) {
+    const sel = $("seasonSelect"), grid = $("epGrid");
+    if (!seriesOf(item)) return;
+    if (!state.cfg.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
+    grid.innerHTML = '<div class="ep-loading"><div class="spin"></div><span>Loading seasons...</span></div>';
+    const id = Number(item.id);
+    let seasons = [];
+    try {
+      let full = detailCache.get("tv:" + id);
+      if (!full || !Array.isArray(full.seasons) || !full.seasons.length) {
+        full = await tmdb("/tv/" + id, { language: "en-US" });
+        detailCache.set("tv:" + id, full);
+      }
+      seasons = (full.seasons || []).filter((s) => Number(s.season_number) > 0);
+    } catch { /* fall back below */ }
+    if (state.playing !== item) return;
+    if (!seasons.length) {
+      seasons = Array.from({ length: Math.max(1, season) }, (_, i) => ({ season_number: i + 1, name: "Season " + (i + 1) }));
+    }
+    const nums = seasons.map((s) => Number(s.season_number));
+    if (nums.indexOf(Number(season)) === -1) season = nums[0];
+    state.season = season;
+    sel.innerHTML = seasons.map((s) =>
+      '<option value="' + esc(s.season_number) + '"' + (Number(s.season_number) === Number(season) ? " selected" : "") + ">" +
+      esc(s.name || ("Season " + s.season_number)) + "</option>").join("");
+    $("epControls").hidden = true;
+    await loadEpisodeList(item, season);
+  }
+
+  async function loadEpisodeList(item, season) {
+    const grid = $("epGrid"), count = $("epCount");
+    if (!seriesOf(item)) return;
+    if (!state.cfg.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
+    grid.innerHTML = '<div class="ep-loading"><div class="spin"></div><span>Loading episodes...</span></div>';
+    const id = Number(item.id), key = id + ":" + season;
+    try {
+      let data = seasonCache.get(key);
+      if (!data) {
+        data = await tmdb("/tv/" + id + "/season/" + season, { language: "en-US" });
+        seasonCache.set(key, data);
+      }
+      if (state.playing !== item) return;
+      const eps = (data.episodes || []).filter((e) => Number(e.episode_number) > 0);
+      if (!eps.length) throw new Error("empty season");
+      count.textContent = eps.length + " episode" + (eps.length === 1 ? "" : "s") + " in this season";
+      grid.innerHTML = eps.map((e) => {
+        const still = img(e.still_path, "w300");
+        const on = Number(state.episode) === Number(e.episode_number);
+        return '<button class="ep-card' + (on ? " on" : "") + '" type="button" data-ep="' + esc(e.episode_number) + '" aria-pressed="' + on + '">' +
+          (still ? '<img src="' + esc(still) + '" alt="" loading="lazy" data-err>' : '<span class="ep-still"><i class="fa-solid fa-play"></i></span>') +
+          "<span><b>E" + esc(e.episode_number) + " | " + esc(e.name || ("Episode " + e.episode_number)) + "</b>" +
+          (e.air_date ? "<small>" + esc(String(e.air_date).slice(0, 10)) + "</small>" : "") + "</span></button>";
+      }).join("");
+      wireImages(grid);
+    } catch {
+      if (state.playing === item) manualEpisodes("Episodes for season " + season + " are unavailable. Use manual entry below.");
+    }
+  }
+
+  function pickEpisode(n) {
+    const e = Math.max(1, parseInt(n, 10) || 1);
+    state.episode = e;
+    $("episodeIn").value = String(e);
+    document.querySelectorAll("[data-ep]").forEach((b) => {
+      const on = Number(b.dataset.ep) === e;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+    if (state.playing) {
+      setServer(state.server);
+      recordWatch(state.playing);
+      markWatching(state.playing);
+    }
+  }
+
+  // ---- picker events ----
+  document.addEventListener("click", async (ev) => {
+    const ep = ev.target.closest("[data-ep]");
+    if (ep) { pickEpisode(ep.dataset.ep); return; }
+    if (ev.target.closest("#epManual")) {
+      ev.preventDefault();
+      const box = $("epControls");
+      box.hidden = !box.hidden;
+      if (!box.hidden) { $("seasonIn").value = String(state.season); $("episodeIn").value = String(state.episode); }
+      return;
+    }
+    const seasonCard = ev.target.closest("[data-season]");
+    if (seasonCard) {
+      ev.preventDefault();
+      if (state.detail) play(state.detail, { season: Number(seasonCard.dataset.season) || 1 });
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    const t = ev.target;
+    if (!t || !t.id) return;
+    if (t.id === "seasonSelect") {
+      state.season = Math.max(1, parseInt(t.value, 10) || 1);
+      state.episode = 1;
+      $("episodeIn").value = "1";
+      if (state.playing) loadEpisodeList(state.playing, state.season);
+      return;
+    }
+    if (t.id === "seasonIn") {
+      state.season = Math.max(1, parseInt(t.value, 10) || 1);
+      t.value = String(state.season);
+      if (state.playing) { setServer(state.server); recordWatch(state.playing); }
+      return;
+    }
+    if (t.id === "episodeIn") {
+      state.episode = Math.max(1, parseInt(t.value, 10) || 1);
+      t.value = String(state.episode);
+      if (state.playing) { setServer(state.server); recordWatch(state.playing); }
+    }
+  });
+
+  /* =====================================================================
+     v6 - TV / remote-control support: focus navigation, TV mode
+     ===================================================================== */
+  const TV_KEY = "flickerz.tvmode.v1";
+  const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+  function detectTv() {
+    const ua = navigator.userAgent || "";
+    if (/SMART-?TV|SmartTV|Tizen|Web0S|NetCast|Viera|HbbTV|Android TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|CrKey|AppleTV|LG_Web|NetTV|SkyQ|Freebox|Vestel/i.test(ua)) return true;
+    // No touch, no fine pointer, but a big screen: almost certainly a TV.
+    try {
+      return window.innerWidth >= 900 && matchMedia("(hover: none)").matches && !("ontouchstart" in window);
+    } catch { return false; }
+  }
+  function applyTvMode(on, persist) {
+    state.tv = Boolean(on);
+    document.body.classList.toggle("tv", state.tv);
+    const label = $("menuTv") && $("menuTv").querySelector("span");
+    if (label) label.textContent = state.tv ? "Turn off TV mode" : "Turn on TV mode";
+    if (persist) {
+      try { localStorage.setItem(TV_KEY, state.tv ? "1" : "0"); } catch {}
+    }
+  }
+  function initTvMode() {
+    let stored = null;
+    try { stored = localStorage.getItem(TV_KEY); } catch {}
+    applyTvMode(stored === "1" ? true : stored === "0" ? false : detectTv(), false);
+  }
+
+  function focusables(root) {
+    return Array.from((root || document).querySelectorAll(FOCUSABLE)).filter((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== "hidden" && !el.closest("[hidden]");
+    });
+  }
+  // Arrow keys / D-pad move focus the way a TV remote expects.
+  function moveFocus(dir) {
+    const items = focusables();
+    if (!items.length) return;
+    const cur = document.activeElement;
+    if (!cur || items.indexOf(cur) === -1) { (items[0]).focus(); scrollFocusIntoView(items[0]); return; }
+    const cr = cur.getBoundingClientRect();
+    const cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+    let best = null, bestScore = Infinity;
+    items.forEach((el) => {
+      if (el === cur) return;
+      const r = el.getBoundingClientRect();
+      const dx = (r.left + r.width / 2) - cx, dy = (r.top + r.height / 2) - cy;
+      let forward = 0, sideways = 0;
+      if (dir === "left")  { forward = -dx; sideways = Math.abs(dy); }
+      if (dir === "right") { forward =  dx; sideways = Math.abs(dy); }
+      if (dir === "up")    { forward = -dy; sideways = Math.abs(dx); }
+      if (dir === "down")  { forward =  dy; sideways = Math.abs(dx); }
+      if (forward <= 6) return;
+      const score = forward + sideways * 2.2;
+      if (score < bestScore) { bestScore = score; best = el; }
+    });
+    if (best) { best.focus({ preventScroll: true }); scrollFocusIntoView(best); }
+  }
+  function scrollFocusIntoView(el) {
+    try { el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); } catch {}
+  }
+  function focusFirstIn(el) {
+    const list = focusables(el);
+    if (list.length) { list[0].focus({ preventScroll: true }); scrollFocusIntoView(list[0]); }
+  }
+
+  document.addEventListener("keydown", (ev) => {
+    const t = ev.target;
+    const editable = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+    if (editable) return;                                   // never steal caret keys
+    const map = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+    const dir = map[ev.key];
+    if (!dir) return;
+    // Inside a horizontal carousel Left/Right should scroll the strip, not jump.
+    const strip = t && t.closest && t.closest(".strip");
+    if (strip && (dir === "left" || dir === "right")) {
+      ev.preventDefault();
+      strip.scrollBy({ left: dir === "right" ? strip.clientWidth * .8 : -strip.clientWidth * .8, behavior: "smooth" });
+      return;
+    }
+    ev.preventDefault();
+    moveFocus(dir);
+  }, true);
+  document.addEventListener("focusin", (ev) => {
+    if (ev.target && ev.target.scrollIntoView) scrollFocusIntoView(ev.target);
+  });
+
+
+
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:
        1. hash   :  #admin  #/admin  #owner
@@ -3285,11 +3633,7 @@
     if (dc) { await delRow("custom_content", "id", dc.dataset.delContent, async () => { await Promise.all([loadCustom(), loadContentAdmin(), loadOverview()]); renderRows(); }); return; }
     const rl = ev.target.closest("[data-role-id]");
     if (rl) { await roleChange(rl.dataset.roleId, rl.dataset.next); return; }
-    const season = ev.target.closest("[data-season]");
-    if (season) {
-      if (state.detail) { closeModal("playerModal"); play(state.detail, { season: season.dataset.season || "1", episode: 1 }); }
-      return;
-    }
+    // (season + episode picking is handled by the episode picker below)
     if (ev.target.closest("[data-play-now]")) { const b = ev.target.closest("[data-play-now]"); if (!b.disabled) play(state.detail); return; }
     const savePage = ev.target.closest("[data-save-page]");
     if (savePage) { await toggleSave(state.detail); return; }
@@ -3340,6 +3684,11 @@
   $("footAdmin").addEventListener("click", (e) => { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); });
   $("menuAdmin").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
   $("menuAuth").addEventListener("click", openAuth);
+  $("menuTv").addEventListener("click", () => {
+    applyTvMode(!state.tv, true);
+    closeMenu();
+    toast(state.tv ? "TV mode on. Use the arrow keys and OK button to move around." : "TV mode off.", "ok");
+  });
   $("menuOut").addEventListener("click", signOut);
   $("profileBtn").addEventListener("click", () => {
     const willOpen = $("profileMenu").hidden;
@@ -3390,8 +3739,7 @@
     loadCatalog();
   });
   $("searchBox").addEventListener("input", (e) => doSearch(e.target.value));
-  $("seasonIn").addEventListener("change", () => setServer(state.server));
-  $("episodeIn").addEventListener("change", () => setServer(state.server));
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeMenu(); const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden); if (m) closeModal(m.id); }
     if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
@@ -3424,7 +3772,13 @@
 
   (async function boot() {
     $("footYear").textContent = "Flickerz Nest " + new Date().getFullYear();
+    initTvMode();
     state.env = detectEnv();
+    // Show the remote hint once when running on a TV.
+    if (state.tv) {
+      setTimeout(() => toast("TV detected - use the arrow keys / D-pad and OK to browse.", "ok"), 900);
+      setTimeout(() => focusFirstIn(document.querySelector(".nav-links") || document.body), 400);
+    }
     $("envBar").hidden = !state.env.sandboxed;
     safe(() => renderHero(state.hero), "the hero banner");
     safe(() => renderRows(), "the catalog");
