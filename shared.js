@@ -47,10 +47,17 @@
     // Some Android TV browsers expose only a generic Android UA.
     // Require a large viewport and no "Mobile" token so phones are not
     // accidentally switched into TV mode.
+    const viewportHeight = Number(window.innerHeight || 0);
+    const screenSize = Math.max(
+      Number(window.screen?.width || 0),
+      Number(window.screen?.height || 0)
+    );
+
     const genericAndroidTv =
       /Android/i.test(ua) &&
-      !/Mobile/i.test(ua) &&
-      viewport >= 1200;
+      viewport >= 800 &&
+      viewportHeight >= 450 &&
+      screenSize >= 900;
 
     return knownTv || genericAndroidTv;
   }
@@ -63,7 +70,9 @@
   function initTvMode() {
     let stored = null;
     try { stored = localStorage.getItem(TV_KEY); } catch {}
-    applyTvMode(stored === "1" ? true : stored === "0" ? false : detectTv(), false);
+    const detected = detectTv();
+    // A real TV must win over a stale "TV mode off" preference.
+    applyTvMode(detected || stored === "1", false);
   }
 
   /* ---------------- toast ---------------- */
