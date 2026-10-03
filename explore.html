@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<title>Explore | Flickerz Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+  .seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:12px;background:#12141a}
+  .seg button{min-height:42px;padding:0 18px;border:0;border-radius:9px;background:none;cursor:pointer;font-size:14px;font-weight:600;color:#a6aab5}
+  .seg button.active{background:#2b303c;color:#fff}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}
+  .meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin:18px 2px 16px;color:var(--muted);font-size:12.5px}
+  .meta b{color:#fff}
+  .more{display:grid;place-items:center;gap:12px;margin-top:30px}
+  .skel{aspect-ratio:2/3;border-radius:12px;background:linear-gradient(100deg,#191c24 30%,#242833 50%,#191c24 70%);background-size:220% 100%;animation:sh 1.3s infinite linear}
+  @keyframes sh{from{background-position:120% 0}to{background-position:-120% 0}}
+  .empty{grid-column:1/-1;padding:34px;border:1px dashed var(--line-2);border-radius:14px;color:#aeb2bb;text-align:center;font-size:14px}
+  .search-wrap{margin-bottom:22px}
+  body.tv .seg button{min-height:58px;font-size:18px}
+  body.tv .filters{padding:24px;gap:20px}
+</style>
+</head>
+<body>
+<header class="fz-header" id="siteHeader" data-active="explore"></header>
+<main class="fz-wrap">
+  <div class="search-wrap"><div class="fz-field"><span>Search</span><input id="q" type="search" placeholder="Search a title and press Enter"></div></div>
+  <div class="head">
+    <div>
+      <p style="margin:0;color:#ff8b93;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase">Discover</p>
+      <h1 class="fz-title" style="margin:6px 0 8px">Explore</h1>
+      <p class="fz-sub" style="margin:0">Browse the full TMDB catalogue. Mix genre, year, rating and language to find exactly what you are in the mood for.</p>
+    </div>
+    <div class="seg" id="typeSeg">
+      <button type="button" data-type="movie"><i class="ph ph-film-strip"></i> Movies</button>
+      <button type="button" data-type="tv"><i class="ph ph-television-simple"></i> TV Shows</button>
+    </div>
+  </div>
+
+  <div class="chips" id="genres"></div>
+  <div class="filters">
+    <label class="fz-field"><span>Sort by</span><select id="sort"></select></label>
+    <label class="fz-field"><span>From year</span><select id="from"></select></label>
+    <label class="fz-field"><span>To year</span><select id="to"></select></label>
+    <label class="fz-field"><span>Min rating</span><select id="rating">
+      <option value="">Any</option><option value="5">5+</option><option value="6">6+</option><option value="7">7+</option><option value="8">8+</option>
+    </select></label>
+    <label class="fz-field"><span>Language</span><select id="lang"></select></label>
+    <div class="fz-field"><span>&nbsp;</span><button class="fz-btn glass" type="button" id="reset"><i class="ph ph-arrow-counter-clockwise"></i> Reset</button></div>
+  </div>
+
+  <div class="meta"><span id="count"></span><span id="active"></span></div>
+  <div class="fz-grid" id="grid"></div>
+  <div class="more"><button class="fz-btn glass" type="button" id="more" hidden><i class="ph ph-plus"></i> Load more</button><div id="sentinel" style="height:2px;width:100%"></div></div>
+</main>
+<footer class="fz-foot" id="siteFooter"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const esc = FZ.esc;
+  const KEY = "flickerz.explore.v2";
+  const SORTS = {
+    movie: [["popularity.desc", "Most popular"], ["vote_average.desc", "Top rated"], ["primary_release_date.desc", "Newest"],
+      ["primary_release_date.asc", "Oldest"], ["revenue.desc", "Highest grossing"]],
+    tv: [["popularity.desc", "Most popular"], ["vote_average.desc", "Top rated"], ["first_air_date.desc", "Newest"], ["first_air_date.asc", "Oldest"]]
+  };
+  const LANGS = [["", "Any language"], ["en", "English"], ["hi", "Hindi"], ["ur", "Urdu"], ["pa", "Punjabi"], ["ta", "Tamil"], ["te", "Telugu"],
+    ["ml", "Malayalam"], ["ko", "Korean"], ["ja", "Japanese"], ["zh", "Chinese"], ["es", "Spanish"], ["fr", "French"], ["de", "German"], ["tr", "Turkish"], ["ar", "Arabic"]];
+  const saved = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } })();
+  const q0 = new URLSearchParams(location.search);
+  const S = {
+    type: q0.get("type") === "tv" ? "tv" : (saved.type === "tv" ? "tv" : "movie"),
+    genre: saved.genre || "", from: saved.from || "", to: saved.to || "",
+    rating: saved.rating || "", lang: saved.lang || "",
+    sort: saved.sort || "popularity.desc", q: q0.get("q") || "",
+    page: 0, pages: 1, total: 0, items: [], loading: false, seq: 0, genres: null
+  };
+  if (!SORTS[S.type].some((o) => o[0] === S.sort)) S.sort = "popularity.desc";
+  const store = () => { try { localStorage.setItem(KEY, JSON.stringify({ type: S.type, genre: S.genre, from: S.from, to: S.to, rating: S.rating, lang: S.lang, sort: S.sort })); } catch {} };
+  const opts = (list, sel) => list.map((o) => '<option value="' + esc(o[0]) + '"' + (String(sel) === String(o[0]) ? " selected" : "") + ">" + esc(o[1]) + "</option>").join("");
+  const yearList = () => { let a = [["", "Any"]]; for (let y = new Date().getFullYear() + 1; y >= 1950; y--) a.push([String(y), String(y)]); return a; };
+
+  function paintControls() {
+    $("sort").innerHTML = opts(SORTS[S.type], S.sort);
+    $("from").innerHTML = opts(yearList(), S.from);
+    $("to").innerHTML = opts(yearList(), S.to);
+    $("rating").value = S.rating;
+    $("lang").innerHTML = opts(LANGS, S.lang);
+    $("q").value = S.q;
+    document.querySelectorAll("[data-type]").forEach((b) => b.classList.toggle("active", b.dataset.type === S.type));
+    paintGenres();
+    $("active").textContent = activeText();
+  }
+  function paintGenres() {
+    const list = (S.genres && S.genres[S.type]) || [];
+    $("genres").innerHTML = '<button class="fz-chip' + (!S.genre ? " on" : "") + '" data-genre="">All genres</button>' +
+      list.map((g) => '<button class="fz-chip' + (String(S.genre) === String(g.id) ? " on" : "") + '" data-genre="' + esc(g.id) + '">' + esc(g.name) + "</button>").join("");
+  }
+  function activeText() {
+    const g = ((S.genres && S.genres[S.type]) || []).find((x) => String(x.id) === String(S.genre));
+    const p = [];
+    if (S.q) p.push('"' + S.q + '"');
+    if (g) p.push(g.name);
+    if (S.from || S.to) p.push((S.from || "Any") + " - " + (S.to || "Now"));
+    if (S.rating) p.push(S.rating + "+ rating");
+    const l = LANGS.find((x) => x[0] && x[0] === S.lang);
+    if (l) p.push(l[1]);
+    return p.length ? "Filters: " + p.join(" | ") : "No filters applied";
+  }
+  async function loadGenres() {
+    if (!FZ.OWNER.tmdbKey) return;
+    S.genres = S.genres || {};
+    for (const type of ["movie", "tv"]) {
+      if (S.genres[type]) continue;
+      try {
+        const url = new URL(FZ.TMDB + "/genre/" + type + "/list");
+        url.searchParams.set("language", "en-US");
+        url.searchParams.set("api_key", FZ.OWNER.tmdbKey);
+        const d = await (await fetch(url)).json();
+        S.genres[type] = d.genres || [];
+      } catch {}
+    }
+    paintGenres();
+    $("active").textContent = activeText();
+  }
+  function paintGrid(skeleton) {
+    const g = $("grid");
+    if (skeleton) g.innerHTML = Array.from({ length: 12 }, () => '<div class="skel"></div>').join("");
+    else if (!S.items.length) g.innerHTML = '<div class="empty">No titles match these filters. Try a wider year range or a lower rating.<br><br><button class="fz-btn glass" type="button" id="reset2">Reset filters</button></div>';
+    else g.innerHTML = S.items.map((i) => FZ.tile(i)).join("");
+    $("count").textContent = !skeleton && S.items.length ? (S.total || S.items.length).toLocaleString() + " titles" : "";
+    $("active").textContent = activeText();
+    const b = $("more");
+    b.hidden = !S.items.length || S.page >= S.pages;
+    b.disabled = S.loading;
+    b.innerHTML = S.loading ? '<i class="ph ph-circle-notch"></i> Loading...' : '<i class="ph ph-plus"></i> Load more';
+  }
+  async function run(reset) {
+    if (reset) { S.seq++; S.page = 0; S.pages = 1; S.total = 0; S.items = []; S.loading = false; paintGrid(true); }
+    if (S.loading || S.page >= S.pages) return;
+    const seq = S.seq, next = S.page + 1, type = S.type;
+    S.loading = true;
+    paintGrid(false);
+    try {
+      const url = new URL(FZ.TMDB + (S.q ? "/search/" + type : "/discover/" + type));
+      const p = url.searchParams;
+      p.set("language", "en-US"); p.set("include_adult", "false"); p.set("page", String(next));
+      if (S.q) {
+        p.set("query", S.q);
+      } else {
+        p.set("sort_by", S.sort);
+        const dk = type === "movie" ? "primary_release_date" : "first_air_date";
+        if (S.genre) p.set("with_genres", S.genre);
+        if (S.from) p.set(dk + ".gte", S.from + "-01-01");
+        if (S.to) p.set(dk + ".lte", S.to + "-12-31");
+        if (S.rating) p.set("vote_average.gte", S.rating);
+        if (S.rating || S.sort === "vote_average.desc") p.set("vote_count.gte", "150");
+        if (S.lang) p.set("with_original_language", S.lang);
+      }
+      p.set("api_key", FZ.OWNER.tmdbKey);
+      const d = await (await fetch(url)).json();
+      if (seq !== S.seq) return;
+      const seen = new Set(S.items.map((i) => type + ":" + i.id));
+      (d.results || []).filter((i) => i.id && (i.poster_path || i.backdrop_path) && (i.title || i.name))
+        .map((i) => ({ ...i, title: i.title || i.name, media_type: type }))
+        .forEach((i) => { const k = type + ":" + i.id; if (!seen.has(k)) { seen.add(k); S.items.push(i); } });
+      S.page = Number(d.page) || next;
+      S.pages = Math.min(Number(d.total_pages) || 1, 500);
+      S.total = Number(d.total_results) || S.items.length;
+    } catch (e) {
+      if (seq !== S.seq) return;
+      S.pages = S.page;
+      FZ.toast("Explore could not load titles.", "error");
+    }
+    S.loading = false;
+    paintGrid(false);
+  }
+  function apply(k, v) {
+    S[k] = v;
+    store();
+    if (k === "type") { S.genre = ""; S.sort = "popularity.desc"; S.genres = S.genres; paintControls(); }
+    run(true);
+  }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-type]");
+    if (t) { apply("type", t.dataset.type); return; }
+    const g = e.target.closest("[data-genre]");
+    if (g) { S.genre = g.dataset.genre; store(); paintGenres(); $("active").textContent = activeText(); run(true); return; }
+    if (e.target.closest("#reset") || e.target.closest("#reset2")) {
+      Object.assign(S, { genre: "", from: "", to: "", rating: "", lang: "", sort: "popularity.desc", q: "" });
+      store(); paintControls(); run(true); return;
+    }
+    if (e.target.closest("#more")) run(false);
+  });
+  document.addEventListener("change", (e) => {
+    const id = e.target.id;
+    if (["sort", "from", "to", "rating", "lang"].indexOf(id) === -1) return;
+    S[id] = e.target.value;
+    if (S.from && S.to && Number(S.from) > Number(S.to)) { const t = S.from; S.from = S.to; S.to = t; paintControls(); }
+    store();
+    run(true);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.target.id === "q" && e.key === "Enter") { e.preventDefault(); S.q = e.target.value.trim(); run(true); }
+  });
+
+  FZ.ready_(async () => {
+    paintControls();
+    await loadGenres();
+    run(true);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((en) => {
+        if (en.some((x) => x.isIntersecting) && !S.loading && S.items.length && S.page < S.pages) run(false);
+      }, { rootMargin: "700px 0px" }).observe($("sentinel"));
+    }
+  });
+})();
+</script>
+</body>
+</html>

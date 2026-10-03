@@ -732,6 +732,16 @@
     .foot-bottom{flex-direction:column;align-items:flex-start}
     .prose p,.prose li{font-size:13.5px}
   }
+  /* v7: TV pairing + full screen */
+  /* The TV-code entry is for TVs only - phones and desktops sign in normally. */
+  body:not(.tv) #useTvCode{display:none}
+  body:not(.tv) #menuLinkTv{display:none}
+  .tvcode{margin:18px 0 6px;padding:22px;border:1px solid var(--line-2);border-radius:16px;background:rgba(255,255,255,.05);
+    font-size:clamp(38px,9vw,62px);font-weight:800;letter-spacing:.32em;text-align:center;color:#fff}
+  .tvcode small{display:block;margin-top:12px;font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  .code-input{width:100%;min-height:56px;padding:12px 16px;border:1px solid var(--line-2);border-radius:12px;background:#0e1015;
+    font-size:26px;font-weight:800;letter-spacing:.28em;text-align:center;text-transform:uppercase}
+  .tv-panel{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
   /* v5: sign-in required to watch */
   .when-guest{display:none}
   body.guest .when-guest{display:inline}
@@ -833,11 +843,11 @@
 <header class="topbar" id="topbar">
   <a class="brand" href="#top" aria-label="Flickerz Nest home"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></a>
   <nav class="nav-links" aria-label="Main">
-    <a class="active" href="#top" data-nav="home">Home</a>
-    <a href="#explore" data-nav="explore">Explore</a>
-    <a href="#explore/movie" data-nav="explore-movie">Movies</a>
-    <a href="#explore/tv" data-nav="explore-tv">TV Shows</a>
-    <a href="#mylist" data-nav="mylist">My List</a>
+    <a class="active" href="index.html" data-nav="home">Home</a>
+    <a href="explore.html" data-nav="explore">Explore</a>
+    <a href="explore.html?type=movie" data-nav="movies">Movies</a>
+    <a href="explore.html?type=tv" data-nav="tv">TV Shows</a>
+    <a href="mylist.html" data-nav="mylist">My List</a>
   </nav>
   <div class="nav-actions">
     <button class="nav-search" type="button" id="navSearch" aria-label="Search titles">
@@ -852,6 +862,7 @@
     <div class="menu-head"><strong id="menuName">Your Nest</strong><span id="menuEmail">Sign in to sync your list</span></div>
     <button class="menu-item" type="button" id="menuAuth"><i class="fa-regular fa-circle-user"></i><span>Sign in / Create account</span></button>
     <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
+    <button class="menu-item" type="button" id="menuLinkTv"><i class="fa-solid fa-tv"></i><span>Link a TV</span></button>
     <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span>TV mode</span></button>
     <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
     <button class="menu-item danger" type="button" id="menuOut" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
@@ -902,22 +913,22 @@
     </div>
     <nav class="foot-col" aria-label="Browse">
       <h4>Browse</h4>
-      <a href="#top">Home</a>
-      <a href="#explore">Explore</a>
-      <a href="#explore/movie">Movies</a>
-      <a href="#explore/tv">TV Shows</a>
-      <a href="#mylist">My List</a>
+      <a href="index.html">Home</a>
+      <a href="explore.html">Explore</a>
+      <a href="explore.html?type=movie">Movies</a>
+      <a href="explore.html?type=tv">TV Shows</a>
+      <a href="mylist.html">My List</a>
     </nav>
     <nav class="foot-col" aria-label="Company">
       <h4>Company</h4>
-      <a href="#about">About us</a>
-      <a href="#contact">Contact</a>
-      <a href="#dmca">DMCA</a>
+      <a href="about.html?page=about">About us</a>
+      <a href="about.html?page=contact">Contact</a>
+      <a href="about.html?page=dmca">DMCA</a>
     </nav>
     <nav class="foot-col" aria-label="Legal">
       <h4>Legal</h4>
-      <a href="#privacy">Privacy policy</a>
-      <a href="#terms">Terms of use</a>
+      <a href="about.html?page=privacy">Privacy policy</a>
+      <a href="about.html?page=terms">Terms of use</a>
     </nav>
   </div>
   <div class="foot-bottom">
@@ -947,6 +958,19 @@
       <p>The site owner has paused this account, so you have been signed out and playback is disabled on this device.</p>
       <p class="hint" id="blockedReason"></p>
       <button class="btn btn-glass" type="button" data-close="blockedModal">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Link a TV (pairing code shown on phone / desktop) -->
+<div class="backdrop" id="linkTvModal" role="dialog" aria-modal="true" aria-labelledby="linkTvTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="linkTvTitle">Link a TV</h2><p>Type this code on your TV</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <div class="tvcode" id="tvCodeDisplay">--------<small>code appears here</small></div>
+      <p class="hint">On your TV open Flickerz Nest, choose <b>Use TV code</b> on the sign-in box, and enter this code. It works for 3 minutes and can be used once.</p>
+      <p class="status" id="linkTvStatus" role="status"></p>
+      <div class="actions"><button class="btn btn-primary btn-sm" type="button" id="tvCodeNew"><i class="fa-solid fa-rotate"></i> Generate new code</button></div>
     </div>
   </div>
 </div>
@@ -999,6 +1023,7 @@
           <button type="button" data-server="3" aria-pressed="false"><span class="srv-num">3</span><span class="srv-name">VidLink</span></button>
           <button type="button" data-server="4" aria-pressed="false"><span class="srv-num">4</span><span class="srv-name">2Embed</span></button>
         </div>
+        <button class="mini pop-btn" type="button" id="fsBtn" title="Full screen"><i class="fa-solid fa-expand"></i><span>Full screen</span></button>
         <button class="mini pop-btn" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i><span>New tab</span></button>
       </div>
     </div>
@@ -1038,7 +1063,14 @@
         <p class="status" id="authStatus" role="status"></p>
         <button class="btn btn-primary" type="submit" id="authGo">Sign in</button>
       </form>
-      <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
+        <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
+        <button class="link-btn" type="button" id="useTvCode">Watching on a TV? <span>Enter a TV code</span></button>
+        <div class="tv-panel" id="tvCodePanel" hidden>
+          <div class="field"><label for="tvCodeIn">TV code</label><input class="code-input" id="tvCodeIn" type="text" inputmode="text" autocomplete="one-time-code" maxlength="10" placeholder="A1B2C3D4"></div>
+          <p class="hint">On your phone or computer, open <b>Account &rarr; Link a TV</b> and enter the code shown there.</p>
+          <p class="status" id="tvCodeStatus" role="status"></p>
+          <button class="btn btn-primary btn-sm" type="button" id="tvCodeGo" style="width:100%"><i class="fa-solid fa-tv"></i> Connect this TV</button>
+        </div>
       <p class="hint" style="margin-top:12px">Member accounts are handled by Supabase Auth, so your watchlist follows you on every device.</p>
     </div>
   </div>
@@ -3456,10 +3488,9 @@
   function detectTv() {
     const ua = navigator.userAgent || "";
     if (/SMART-?TV|SmartTV|Tizen|Web0S|NetCast|Viera|HbbTV|Android TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|CrKey|AppleTV|LG_Web|NetTV|SkyQ|Freebox|Vestel/i.test(ua)) return true;
-    // No touch, no fine pointer, but a big screen: almost certainly a TV.
-    try {
-      return window.innerWidth >= 900 && matchMedia("(hover: none)").matches && !("ontouchstart" in window);
-    } catch { return false; }
+    // Only the device model counts as a TV. Size/touch heuristics wrongly flagged
+    // some phones and desktops, which showed them the TV code box.
+    return false;
   }
   function applyTvMode(on, persist) {
     state.tv = Boolean(on);
@@ -3536,6 +3567,159 @@
   });
 
 
+
+  /* =====================================================================
+     v7 - TV pairing codes, full screen, standalone admin page
+     ===================================================================== */
+
+  // The control room is its own page now: it opens full screen on a TV and
+  // keeps the same data and permissions as before.
+  function openAdmin() { closeMenu(); location.href = "admin.html"; }
+  function openOwnerGate() { location.href = "admin.html"; }
+  function openAuth() {
+    closeMenu();
+    setMode("signin");
+    openModal("authModal");
+    if (state.tv) showTvPanel();
+    setTimeout(() => (state.tv ? $("tvCodeIn") : $("emailIn")).focus(), 30);
+  }
+  function showTvPanel() {
+    $("tvCodePanel").hidden = false;
+    $("useTvCode").hidden = true;
+  }
+
+  /* Pairing: the signed-in device mints a one-time code together with its
+     session; the TV types the code, becomes that account, and the code dies. */
+  async function makeTvCode() {
+    const st = $("linkTvStatus");
+    if (!state.sb || !state.user) {
+      st.textContent = "Sign in on this device first, then link your TV.";
+      st.className = "status error";
+      return;
+    }
+    let ses = null;
+    try { ses = (await state.sb.auth.getSession()).data?.session; } catch {}
+    if (!ses) { st.textContent = "Your session expired. Sign in again."; st.className = "status error"; return; }
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    let res;
+    try {
+      res = await state.sb.from("tv_codes").insert({
+        code: code,
+        user_id: state.user.id,
+        access_token: ses.access_token,
+        refresh_token: ses.refresh_token
+      });
+    } catch (e) { res = { error: e }; }
+    if (res.error) {
+      const m = res.error.message || "";
+      st.textContent = /tv_codes|relation|schema cache|column/i.test(m)
+        ? "TV pairing is not set up yet. Run STEP 15 of schema.sql in the Supabase SQL Editor."
+        : m;
+      st.className = "status error";
+      return;
+    }
+    $("tvCodeDisplay").innerHTML = esc(code) + "<small>valid for 3 minutes</small>";
+    st.textContent = "Code ready. Enter it on your TV.";
+    st.className = "status ok";
+  }
+
+  async function claimTvCode() {
+    const st = $("tvCodeStatus");
+    const code = $("tvCodeIn").value.trim().toUpperCase();
+    if (code.length < 4) { st.textContent = "Enter the code shown on your phone or computer."; st.className = "status error"; return; }
+    if (!state.sb) { st.textContent = "TV pairing needs Supabase. Check your connection."; st.className = "status error"; return; }
+    st.textContent = "Checking code...";
+    st.className = "status";
+    let res;
+    try { res = await state.sb.from("tv_codes").select("code,access_token,refresh_token,expires_at").eq("code", code).maybeSingle(); }
+    catch (e) { res = { error: e }; }
+    const row = res.data;
+    if (res.error || !row) {
+      st.textContent = /tv_codes|relation|schema cache/i.test((res.error && res.error.message) || "")
+        ? "TV pairing is not set up yet on this site (run STEP 15 of schema.sql)."
+        : "That code is not valid. Generate a new one on your phone.";
+      st.className = "status error";
+      return;
+    }
+    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) {
+      st.textContent = "That code has expired. Generate a new one on your phone.";
+      st.className = "status error";
+      return;
+    }
+    st.textContent = "Connecting this TV...";
+    let out;
+    try { out = await state.sb.auth.setSession({ access_token: row.access_token, refresh_token: row.refresh_token }); }
+    catch (e) { out = { error: e }; }
+    if (out.error || !out.data?.user) {
+      st.textContent = (out.error && out.error.message) || "Could not connect this TV.";
+      st.className = "status error";
+      return;
+    }
+    try { await state.sb.from("tv_codes").delete().eq("code", code); } catch {}
+    st.textContent = "";
+    $("authModal").hidden = true;
+    syncLock();
+    await applyUser(out.data.user);
+    toast("TV connected as " + (out.data.user.email || "your account") + ". Press play on any title.", "ok");
+  }
+
+  /* Full screen: the most reliable way to get the whole screen on a TV. */
+  function toggleFullscreen() {
+    const target = $("playerModal") || document.documentElement;
+    const doc = document;
+    const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen;
+    const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen;
+    try {
+      if (doc.fullscreenElement || doc.webkitFullscreenElement) { (exit || function () {}).call(doc); }
+      else if (req) req.call(target);
+      else toast("This browser does not support full screen.", "error");
+    } catch {
+      toast("Full screen was blocked. Use the New tab button instead.", "error");
+    }
+  }
+  function syncFsIcon() {
+    const i = $("fsBtn") && $("fsBtn").querySelector("i");
+    if (i) i.className = (document.fullscreenElement || document.webkitFullscreenElement) ? "fa-solid fa-compress" : "fa-solid fa-expand";
+  }
+  document.addEventListener("fullscreenchange", syncFsIcon);
+  document.addEventListener("webkitfullscreenchange", syncFsIcon);
+
+  /* The player lives on its own page so it can use the whole screen anywhere,
+     including TVs. Sign-in is enforced on that page before anything plays. */
+  function play(item, opts) {
+    if (!item) return;
+    const o = opts || {};
+    closeModal("searchModal");
+    const q = new URLSearchParams({
+      m: item.is_custom ? "custom" : (item.media_type || "movie"),
+      t: String(item.id)
+    });
+    q.set("name", titleOf(item));
+    if (o.season) q.set("s", String(o.season));
+    if (o.episode) q.set("e", String(o.episode));
+    if (item.is_custom && item.custom_stream_url) q.set("u", item.custom_stream_url);
+    location.href = "player.html?" + q.toString();
+  }
+
+  $("useTvCode").addEventListener("click", () => { showTvPanel(); $("tvCodeIn").focus(); });
+  $("tvCodeGo").addEventListener("click", claimTvCode);
+  $("tvCodeIn").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); claimTvCode(); }
+    else if (e.key === "Escape") $("tvCodeIn").value = "";
+  });
+  $("menuLinkTv").addEventListener("click", () => {
+    closeMenu();
+    $("linkTvStatus").textContent = "";
+    $("tvCodeDisplay").innerHTML = '--------<small>code appears here</small>';
+    openModal("linkTvModal");
+    makeTvCode();
+  });
+  $("tvCodeNew").addEventListener("click", makeTvCode);
+  $("fsBtn").addEventListener("click", toggleFullscreen);
+  // On a TV, open the code entry instead of the email form.
+  if (state.tv) showTvPanel();
 
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:

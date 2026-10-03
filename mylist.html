@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<title>My List | Flickerz Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  .tabs{display:flex;gap:8px;overflow-x:auto;margin:0 0 18px;padding-bottom:4px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border:1px solid var(--line);
+    border-radius:999px;background:rgba(255,255,255,.04);cursor:pointer;font-size:13.5px;font-weight:600}
+  .tab b{min-width:24px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px}
+  .tab.on{border-color:#f7f8fa;background:#f7f8fa;color:#0c0d11}
+  .tab.on b{background:#0c0d11;color:#fff}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.plan{background:#6ea8ff}.dot.watching{background:var(--gold)}.dot.completed{background:var(--green)}
+  .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:10px;align-items:center;margin-bottom:22px}
+  .seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:11px;background:#12141a}
+  .seg button{min-height:40px;padding:0 15px;border:0;border-radius:8px;background:none;cursor:pointer;font-size:13px;font-weight:600;color:#a6aab5}
+  .seg button.active{background:#2b303c;color:#fff}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+  .card{display:flex;gap:13px;padding:11px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.03)}
+  .card.plan{box-shadow:inset 3px 0 0 #6ea8ff}
+  .card.watching{box-shadow:inset 3px 0 0 var(--gold)}
+  .card.completed{box-shadow:inset 3px 0 0 var(--green)}
+  .card-poster{flex:0 0 86px;aspect-ratio:2/3;overflow:hidden;border:0;border-radius:11px;background:#1c2029;cursor:pointer;padding:0}
+  .card-poster img{width:100%;height:100%;object-fit:cover}
+  .card-body{display:flex;flex:1;flex-direction:column;gap:8px;min-width:0}
+  .card-body>b{display:-webkit-box;overflow:hidden;font-size:14px;line-height:1.4;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .card-sub{color:#8b909c;font-size:11.5px}
+  .card select{min-height:38px;font-size:12.5px}
+  .card-actions{display:flex;gap:7px;margin-top:auto}
+  .mini{min-height:36px;padding:0 11px;border:1px solid var(--line-2);border-radius:9px;background:none;cursor:pointer;font-size:11.5px;font-weight:600}
+  .mini:hover{border-color:#ff7d85;color:#ff969c}
+  .mini.danger{border-color:rgba(255,99,109,.45);color:#ff8a92}
+  .act{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .act img,.act-ph{flex:0 0 auto;width:40px;height:58px;border-radius:8px;object-fit:cover;background:#232733}
+  .act>div{flex:1;min-width:0}
+  .act b{display:block;overflow:hidden;font-size:14px;text-overflow:ellipsis;white-space:nowrap}
+  .act small{display:block;margin-top:4px;color:#8b909c;font-size:11.5px}
+  .act .when{color:#9aa0ad;font-size:11.5px;white-space:nowrap}
+  .empty{grid-column:1/-1;padding:34px;border:1px dashed var(--line-2);border-radius:14px;color:#aeb2bb;text-align:center;font-size:14px}
+  .gate{max-width:520px;margin:6vh auto;padding:28px;text-align:center}
+  .toolbar .fz-field input{min-height:44px}
+  @media (max-width:620px){
+    .toolbar{grid-template-columns:1fr 1fr}
+    .toolbar>div:first-child,.toolbar .seg{grid-column:1/-1}
+    .cards{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header class="fz-header" id="siteHeader" data-active="mylist"></header>
+<main class="fz-wrap">
+  <div id="gate" hidden>
+    <div class="fz-card gate">
+      <h1 class="fz-title">Your library</h1>
+      <p class="fz-sub" style="margin-inline:auto">Sign in to see your saved titles, statuses and watch history. It syncs to every device you use.</p>
+      <a class="fz-btn primary" href="index.html#signin"><i class="ph ph-sign-in"></i> Sign in</a>
+    </div>
+  </div>
+
+  <div id="list" hidden>
+    <div class="head" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px">
+      <div>
+        <p style="margin:0;color:#ff8b93;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase">Your library</p>
+        <h1 class="fz-title" style="margin:6px 0 8px">My List</h1>
+        <p class="fz-sub" style="margin:0">Track what you plan to watch, what you are watching and what you have finished.</p>
+      </div>
+      <a class="fz-btn glass" href="explore.html"><i class="ph ph-compass"></i> Find more to add</a>
+    </div>
+
+    <div class="fz-stats" id="stats"></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="toolbar">
+      <div class="fz-field"><input id="q" type="search" placeholder="Search your list"></div>
+      <div class="seg" id="typeSeg">
+        <button type="button" data-type="all" class="active">All</button>
+        <button type="button" data-type="movie">Movies</button>
+        <button type="button" data-type="tv">Series</button>
+      </div>
+      <select id="sort" style="min-height:44px">
+        <option value="added-desc">Recently added</option>
+        <option value="added-asc">Oldest first</option>
+        <option value="title-asc">Title A-Z</option>
+        <option value="title-desc">Title Z-A</option>
+      </select>
+      <button class="fz-btn glass" type="button" id="clearDone"><i class="ph ph-broom"></i> Clear completed</button>
+    </div>
+    <div class="cards" id="grid"></div>
+  </div>
+</main>
+<footer class="fz-foot" id="siteFooter"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const esc = FZ.esc, img = FZ.img, titleOf = FZ.titleOf;
+  const STATUS = { plan: "Plan to watch", watching: "Watching", completed: "Completed" };
+  const S = { tab: "all", type: "all", sort: "added-desc", q: "", list: [], history: [] };
+
+  const stat = (n, l) => '<div class="fz-stat"><b>' + esc(n) + "</b><span>" + esc(l) + "</span></div>";
+  const ago = FZ.timeAgo;
+
+  function card(w) {
+    const p = img(w.poster_path, "w342");
+    const st = STATUS[w.status] ? w.status : "plan";
+    const k = (w.media_type || "movie") + ":" + w.id;
+    return '<article class="card ' + st + '">' +
+      '<a class="card-poster" href="' + FZ.playUrl(w) + '">' + (p ? '<img src="' + esc(p) + '" alt="">' : "") + "</a>" +
+      '<div class="card-body"><b>' + esc(titleOf(w)) + "</b>" +
+      '<span class="card-sub">' + (w.media_type === "tv" ? "Series" : "Film") + " | added " + esc(ago(w.added_at)) + "</span>" +
+      '<select data-set="' + esc(k) + '" aria-label="Status">' + Object.keys(STATUS).map((s) =>
+        '<option value="' + s + '"' + (s === st ? " selected" : "") + ">" + STATUS[s] + "</option>").join("") + "</select>" +
+      '<div class="card-actions">' +
+      '<a class="mini" href="' + FZ.playUrl(w) + '"><i class="ph ph-play"></i> Play</a>' +
+      '<button class="mini danger" type="button" data-remove="' + esc(k) + '" aria-label="Remove"><i class="ph ph-trash"></i></button>' +
+      "</div></div></article>";
+  }
+
+  function render() {
+    const all = S.list;
+    const c = { all: all.length, plan: 0, watching: 0, completed: 0, history: S.history.length };
+    all.forEach((w) => { c[STATUS[w.status] ? w.status : "plan"]++; });
+    const movies = all.filter((w) => w.media_type === "movie").length;
+    $("stats").innerHTML = stat(c.all, "Saved") + stat(movies, "Movies") + stat(c.all - movies, "Series") +
+      stat(c.watching, "Watching") + stat(c.completed, "Completed") + stat(c.history, "Plays logged");
+    const tabBtn = (k, l) => '<button class="tab' + (S.tab === k ? " on" : "") + '" data-tab="' + k + '">' +
+      (k === "all" || k === "history" ? "" : '<i class="dot ' + k + '"></i>') + esc(l) + "<b>" + c[k] + "</b></button>";
+    $("tabs").innerHTML = tabBtn("all", "All") + tabBtn("plan", STATUS.plan) + tabBtn("watching", STATUS.watching) +
+      tabBtn("completed", STATUS.completed) + tabBtn("history", "History");
+    document.querySelectorAll("[data-type]").forEach((b) => b.classList.toggle("active", b.dataset.type === S.type));
+    $("clearDone").hidden = S.tab === "history" || !c.completed;
+    const grid = $("grid");
+    if (S.tab === "history") return renderHistory(grid);
+    const q = S.q.trim().toLowerCase();
+    const by = {
+      "added-desc": (a, b) => new Date(b.added_at) - new Date(a.added_at),
+      "added-asc": (a, b) => new Date(a.added_at) - new Date(b.added_at),
+      "title-asc": (a, b) => titleOf(a).localeCompare(titleOf(b)),
+      "title-desc": (a, b) => titleOf(b).localeCompare(titleOf(a))
+    };
+    const rows = all.filter((w) =>
+      (S.tab === "all" || (STATUS[w.status] ? w.status : "plan") === S.tab) &&
+      (S.type === "all" || w.media_type === S.type) &&
+      (!q || titleOf(w).toLowerCase().indexOf(q) !== -1)
+    ).slice().sort(by[S.sort] || by["added-desc"]);
+    if (!all.length) grid.innerHTML = '<div class="empty">Your list is empty. Save a title from Explore and it appears here.<br><br><a class="fz-btn glass" href="explore.html">Explore titles</a></div>';
+    else if (!rows.length) grid.innerHTML = '<div class="empty">Nothing matches these filters.<br><br><button class="fz-btn glass" type="button" data-reset="1">Clear filters</button></div>';
+    else grid.innerHTML = rows.map(card).join("");
+  }
+
+  function renderHistory(grid) {
+    const q = S.q.trim().toLowerCase();
+    const rows = S.history.filter((h) => (S.type === "all" || h.media_type === S.type) &&
+      (!q || String(h.title || "").toLowerCase().indexOf(q) !== -1));
+    if (!rows.length) {
+      grid.innerHTML = '<div class="empty">Nothing watched yet. Titles you play while signed in appear here, and you can resume where you left off.<br><br><a class="fz-btn glass" href="explore.html">Find something to watch</a></div>';
+      return;
+    }
+    grid.innerHTML = '<div style="grid-column:1/-1"><div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">' +
+      "<span style=\"color:#9aa0ad;font-size:12.5px\">" + rows.length + " play" + (rows.length === 1 ? "" : "s") + " - series resume at your last episode</span>" +
+      '<button class="mini danger" type="button" id="clearHist"><i class="ph ph-trash"></i> Clear history</button></div>' +
+      rows.slice(0, 200).map((h) => {
+        const p = img(h.poster_path, "w92");
+        const ep = h.media_type === "tv" && h.season ? " - S" + h.season + " E" + (h.episode || 1) : "";
+        const url = FZ.playUrl({ id: h.tmdb_id, media_type: h.media_type, title: h.title, poster_path: h.poster_path },
+          h.media_type === "tv" ? { season: h.season, episode: h.episode } : {});
+        return '<div class="act">' + (p ? '<img src="' + esc(p) + '" alt="">' : '<span class="act-ph"></span>') +
+          "<div><b>" + esc(h.title) + esc(ep) + "</b><small>" + (h.media_type === "tv" ? "Series" : "Film") + " | " + esc(ago(h.watched_at)) + "</small></div>" +
+          '<span class="when">' + esc(ago(h.watched_at)) + "</span>" +
+          '<a class="mini" href="' + url + '"><i class="ph ph-play"></i> ' + (ep ? "Resume" : "Play") + "</a>" +
+          '<button class="mini danger" type="button" data-hist="' + esc(h.id) + '"><i class="ph ph-x"></i></button></div>';
+      }).join("") + "</div>";
+  }
+
+  async function load() {
+    if (!FZ.user || !FZ.sb) { $("gate").hidden = false; $("list").hidden = true; return; }
+    $("gate").hidden = true;
+    $("list").hidden = false;
+    const base = "id,user_id,tmdb_id,title,poster_path,media_type,added_at";
+    let r = await FZ.sb.from("watchlists").select(base + ",status").eq("user_id", FZ.user.id).order("added_at", { ascending: false });
+    if (r.error && /status|column/i.test(r.error.message || "")) r = await FZ.sb.from("watchlists").select(base).eq("user_id", FZ.user.id).order("added_at", { ascending: false });
+    S.list = (r.data || []).map((x) => ({ ...x, id: x.tmdb_id, status: STATUS[x.status] ? x.status : "plan" }));
+    const h = await FZ.sb.from("watch_history")
+      .select("id,tmdb_id,media_type,title,poster_path,season,episode,watched_at")
+      .eq("user_id", FZ.user.id).order("watched_at", { ascending: false }).limit(300);
+    S.history = h.data || [];
+    render();
+  }
+
+  async function setStatus(k, status) {
+    const w = S.list.find((x) => (x.media_type + ":" + x.id) === k);
+    if (!w || w.status === status) return;
+    const prev = w.status;
+    w.status = status;
+    render();
+    const { error } = await FZ.sb.from("watchlists").update({ status })
+      .eq("user_id", FZ.user.id).eq("tmdb_id", Number(w.id)).eq("media_type", w.media_type);
+    if (error) {
+      w.status = prev;
+      render();
+      if (!/status|column/i.test(error.message || "")) FZ.toast(error.message, "error");
+      else FZ.toast("Statuses need STEP 12 of schema.sql.", "error");
+    }
+  }
+
+  document.addEventListener("click", async (e) => {
+    const tab = e.target.closest("[data-tab]");
+    if (tab) { S.tab = tab.dataset.tab; render(); return; }
+    const type = e.target.closest("[data-type]");
+    if (type) { S.type = type.dataset.type; render(); return; }
+    const rm = e.target.closest("[data-remove]");
+    if (rm) {
+      const w = S.list.find((x) => (x.media_type + ":" + x.id) === rm.dataset.remove);
+      if (!w) return;
+      const { error } = await FZ.sb.from("watchlists").delete()
+        .eq("user_id", FZ.user.id).eq("tmdb_id", Number(w.id)).eq("media_type", w.media_type);
+      if (error) { FZ.toast(error.message, "error"); return; }
+      S.list = S.list.filter((x) => x !== w);
+      render();
+      FZ.toast("Removed from your list.", "ok");
+      return;
+    }
+    const hist = e.target.closest("[data-hist]");
+    if (hist) {
+      const id = hist.dataset.hist;
+      const { error } = await FZ.sb.from("watch_history").delete().eq("id", id).eq("user_id", FZ.user.id);
+      if (!error) { S.history = S.history.filter((h) => String(h.id) !== String(id)); render(); }
+      return;
+    }
+    if (e.target.closest("#clearHist")) {
+      if (!confirm("Clear your entire watch history?")) return;
+      const { error } = await FZ.sb.from("watch_history").delete().eq("user_id", FZ.user.id);
+      if (!error) { S.history = []; render(); FZ.toast("Watch history cleared.", "ok"); }
+      return;
+    }
+    if (e.target.closest("#clearDone")) {
+      const n = S.list.filter((w) => w.status === "completed").length;
+      if (!n || !confirm("Remove " + n + " completed title(s) from your list?")) return;
+      const { error } = await FZ.sb.from("watchlists").delete().eq("user_id", FZ.user.id).eq("status", "completed");
+      if (error) { FZ.toast(error.message, "error"); return; }
+      S.list = S.list.filter((w) => w.status !== "completed");
+      render();
+      FZ.toast("Completed titles cleared.", "ok");
+      return;
+    }
+    if (e.target.closest("[data-reset]")) { S.tab = "all"; S.type = "all"; S.q = ""; $("q").value = ""; render(); }
+  });
+  document.addEventListener("change", (e) => {
+    const s = e.target.closest("[data-set]");
+    if (s) setStatus(s.dataset.set, s.value);
+    if (e.target.id === "sort") { S.sort = e.target.value; render(); }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "q") { S.q = e.target.value; render(); }
+  });
+
+  FZ.ready_(load);
+})();
+</script>
+</body>
+</html>

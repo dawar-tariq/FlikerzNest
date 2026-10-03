@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<title>About | Flickerz Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  .tabs{display:flex;gap:8px;overflow-x:auto;margin:0 0 26px;padding-bottom:4px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs a{flex:0 0 auto;padding:10px 16px;border:1px solid var(--line);border-radius:999px;font-size:13.5px;font-weight:600;color:#cfd2d9}
+  .tabs a.on{border-color:#f7f8fa;background:#f7f8fa;color:#0c0d11}
+  .prose{max-width:840px}
+  .prose h2{margin:32px 0 10px;font-size:20px;letter-spacing:-.02em}
+  .prose p,.prose li{color:#c4c8d0;font-size:15px;line-height:1.9}
+  .prose ul{margin:10px 0;padding-left:22px}
+  .prose a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+  .values{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:26px 0}
+  .value{padding:20px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.03)}
+  .value i{font-size:26px;color:var(--red-2)}
+  .value b{display:block;margin:12px 0 6px;font-size:15.5px}
+  .value span{display:block;color:#9aa0ad;font-size:13px;line-height:1.7}
+  .contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.03)}
+  body.tv .prose p,body.tv .prose li,body.tv .value span{font-size:18px}
+  body.tv .prose h2{font-size:26px}
+</style>
+</head>
+<body>
+<header class="fz-header" id="siteHeader" data-active=""></header>
+<main class="fz-wrap">
+  <nav class="tabs" id="tabs" aria-label="Site information"></nav>
+  <h1 class="fz-title" id="pageTitle"></h1>
+  <p class="fz-sub" id="pageSub"></p>
+  <div class="prose" id="pageBody"></div>
+</main>
+<footer class="fz-foot" id="siteFooter"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js"></script>
+<script>
+(() => {
+  "use strict";
+  const esc = FZ.esc;
+  const MAIL = FZ.OWNER.email;
+  const mail = (s) => '<a href="mailto:' + esc(MAIL) + "?subject=" + encodeURIComponent(s) + '">' + esc(MAIL) + "</a>";
+  const val = (icon, t, s) => '<div class="value"><i class="ph ' + icon + '"></i><b>' + esc(t) + "</b><span>" + esc(s) + "</span></div>";
+
+  const TABS = [["about", "About us"], ["contact", "Contact"], ["privacy", "Privacy"], ["terms", "Terms"], ["dmca", "DMCA"]];
+  const PAGES = {
+    about: {
+      title: "Stories worth staying in for",
+      sub: "Flickerz Nest is a calm, fast place to discover films and series and keep track of what to watch next.",
+      body: () => '<div class="values">' +
+        val("ph-compass", "Discover", "Trending picks, top-rated classics and a full explorer with genre, year, rating and language filters.") +
+        val("ph-bookmark-simple", "Organise", "Save titles and sort them into Plan to watch, Watching and Completed.") +
+        val("ph-television-simple", "Anywhere", "Built for phones, tablets, desktops and TVs, with your list synced to your account.") +
+        val("ph-shield-check", "Private by design", "No ads from us and no selling of data. Account data is protected with row-level security.") +
+        "</div>" +
+        "<h2>Our story</h2><p>Flickerz Nest began as a personal project by Dawar Tariq to make finding something good to watch quicker and more enjoyable. It grew into a full catalogue with watchlists, a dedicated player page, a detailed page for every title, and an explorer for when you know the mood but not the title.</p>" +
+        "<h2>How it works</h2><p>Titles, artwork, cast and ratings come from The Movie Database (TMDB). Playback comes from independent third-party video players. Flickerz Nest does not host, upload or store any video files.</p>" +
+        "<h2>Credits</h2><p>This product uses the TMDB API but is not endorsed or certified by TMDB. Film and series metadata and images are provided by <a href=\"https://www.themoviedb.org/\" target=\"_blank\" rel=\"noopener\">TMDB</a>.</p>" +
+        "<h2>Get in touch</h2><p>Feedback, feature ideas or a problem to report? Visit the <a href=\"about.html?page=contact\">contact page</a>.</p>"
+    },
+    contact: {
+      title: "Get in touch",
+      sub: "Questions, feedback, broken titles or account help - every message is read.",
+      body: () => '<div class="contact"><div><b style="font-size:15px">Email us</b><span style="display:block;margin-top:5px;color:#9aa0ad;font-size:13px">' + mail("Flickerz Nest - Support") + '</span></div>' +
+        '<a class="fz-btn primary" href="mailto:' + esc(MAIL) + "?subject=" + encodeURIComponent("Flickerz Nest - Support") + '"><i class="ph ph-envelope-simple"></i> Send email</a></div>' +
+        "<h2>Help us help you</h2><ul>" +
+        "<li><b>A title will not play:</b> the title name, film or series (plus season/episode), and which sources you tried.</li>" +
+        "<li><b>Account help:</b> write from the email address you signed up with.</li>" +
+        "<li><b>TV code problems:</b> say which device generated the code and what message the TV showed.</li>" +
+        "<li><b>Suspended account:</b> include your account email and any reason shown to you.</li>" +
+        "<li><b>Copyright concerns:</b> follow the steps on our <a href=\"about.html?page=dmca\">DMCA page</a>.</li></ul>"
+    },
+    privacy: {
+      title: "Privacy policy",
+      sub: "What we collect, why we collect it, and the choices you have.",
+      body: () => "<h2>Information we collect</h2><ul>" +
+        "<li><b>Account details:</b> your email address and display name when you create an account.</li>" +
+        "<li><b>Your library:</b> titles you save to My List and the status you give them.</li>" +
+        "<li><b>Watch history:</b> when you are signed in, the titles and episodes you open, so we can show Continue Watching and protect the service.</li>" +
+        "<li><b>Device preferences:</b> such as Explore filters or TV mode, stored in your browser and never sent to us.</li></ul>" +
+        "<h2>How we use it</h2><p>To run your account, sync your list across devices, show your viewing progress and protect the service from abuse. We do not sell personal information and we run no advertising.</p>" +
+        "<h2>Services we rely on</h2><ul>" +
+        "<li><b>Supabase</b> provides sign-in and the database that stores your account, list and history.</li>" +
+        "<li><b>TMDB</b> supplies film and series information and images, requested directly by your browser.</li>" +
+        "<li><b>Third-party video players</b> embedded on title pages are operated by other companies and follow their own policies.</li></ul>" +
+        "<h2>TV pairing codes</h2><p>When you link a TV, a one-time code is created together with a short-lived copy of your session so the TV can sign in as you. The code expires after three minutes, can be used once, and is deleted as soon as it is used.</p>" +
+        "<h2>Your choices</h2><p>You can remove titles from your list at any time, and clear your watch history from My List. To delete your account entirely, email " + mail("Flickerz Nest - Delete my account") + " from your account email.</p>"
+    },
+    terms: {
+      title: "Terms of use",
+      sub: "The rules for using Flickerz Nest.",
+      body: () => "<h2>Using the service</h2><p>Flickerz Nest helps you discover films and series and organise what to watch. By using the site you agree to these terms.</p>" +
+        "<h2>Accounts</h2><p>You are responsible for keeping your password and TV pairing codes safe, and for all activity on your account.</p>" +
+        "<h2>Acceptable use</h2><ul>" +
+        "<li>Do not attempt to break, overload or gain unauthorised access to the service.</li>" +
+        "<li>Do not use automated tools to scrape the site.</li>" +
+        "<li>Do not use the service for anything unlawful.</li></ul>" +
+        "<h2>Suspension</h2><p>We may suspend or close accounts that break these terms. Suspended accounts are signed out immediately and cannot sign in again until access is restored.</p>" +
+        "<h2>Third-party content</h2><p>Metadata comes from TMDB and playback comes from independent third-party players. Flickerz Nest does not host video files and is not responsible for the content, availability, advertising or policies of third-party services.</p>" +
+        "<h2>No warranty</h2><p>The service is provided as is, without warranties of any kind. Titles may be unavailable or change at any time.</p>" +
+        "<h2>Contact</h2><p>Questions about these terms: " + mail("Flickerz Nest - Terms") + ".</p>"
+    },
+    dmca: {
+      title: "Copyright and DMCA",
+      sub: "How to report content you believe infringes your copyright.",
+      body: () => "<h2>Our position</h2><p>Flickerz Nest does not host, upload or store video files. Film and series information comes from TMDB, and playback comes from independent third-party players. We respect the rights of copyright owners and act promptly on valid notices.</p>" +
+        "<h2>Sending a notice</h2><p>Email " + mail("DMCA notice") + " with:</p><ul>" +
+        "<li>Your name, address, phone number and email.</li>" +
+        "<li>A description of the copyrighted work.</li>" +
+        "<li>The exact page address(es) on Flickerz Nest where the material appears.</li>" +
+        "<li>A statement that you have a good-faith belief the use is not authorised by the owner, its agent or the law.</li>" +
+        "<li>A statement, under penalty of perjury, that the information is accurate and that you are the owner or authorised to act for the owner.</li>" +
+        "<li>Your physical or electronic signature.</li></ul>" +
+        "<h2>What happens next</h2><p>We remove or disable links and embeds we control that are identified in a valid notice. Because files are hosted elsewhere, you may also need to contact the hosting provider of the video player.</p>" +
+        "<h2>Counter-notice</h2><p>If you believe material was removed by mistake, send a counter-notice to the same address with your contact details, the removed material, and a statement under penalty of perjury that it was removed in error.</p>"
+    }
+  };
+
+  const slug = (new URLSearchParams(location.search).get("page") || "about").toLowerCase();
+  const page = PAGES[slug] ? slug : "about";
+  const p = PAGES[page];
+  document.title = p.title + " | Flickerz Nest";
+  document.getElementById("tabs").innerHTML = TABS.map((t) =>
+    '<a href="about.html?page=' + t[0] + '"' + (t[0] === page ? ' class="on" aria-current="page"' : "") + ">" + esc(t[1]) + "</a>").join("");
+  document.getElementById("pageTitle").textContent = p.title;
+  document.getElementById("pageSub").textContent = p.sub;
+  document.getElementById("pageBody").innerHTML = p.body();
+})();
+</script>
+</body>
+</html>

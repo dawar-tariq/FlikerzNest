@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<meta name="robots" content="noindex,nofollow">
+<title>Player | Flickerz Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  .p-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:14px clamp(14px,3vw,40px);border-bottom:1px solid var(--line)}
+  .p-head h1{flex:1;min-width:200px;margin:2px 0 0;font-size:clamp(18px,2.4vw,26px);letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .p-kicker{color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  .p-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+  .seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:12px;background:#12141a}
+  .seg button{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 15px;border:0;border-radius:9px;
+    background:none;color:#a6aab5;cursor:pointer;font-size:13.5px;font-weight:600}
+  .seg button:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .seg button.active{background:#2b303c;color:#fff}
+  .seg .n{width:20px;height:20px;display:grid;place-items:center;border-radius:6px;background:rgba(255,255,255,.12);font-size:11px;font-weight:800}
+  .seg button.active .n{background:var(--red);color:#fff}
+  .stage{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .stage iframe{width:100%;height:100%;border:0;display:block}
+  .stage-note{position:absolute;inset:0;z-index:3;display:grid;place-content:center;justify-items:center;gap:13px;
+    padding:24px;text-align:center;background:radial-gradient(circle at 50% 40%,#12141b,#07080c 75%);color:#a7acb8;font-size:14px;line-height:1.7}
+  .stage-note b{color:#fff;font-size:17px}
+  .stage-note.hide{display:none}
+  .spin{width:38px;height:38px;border:3px solid rgba(255,255,255,.13);border-top-color:var(--red-2);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .p-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:13px clamp(14px,3vw,40px);color:#8e929c;font-size:12.5px}
+  .ep-picker{padding:6px clamp(14px,3vw,40px) 22px}
+  .ep-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 0}
+  .ep-head>label{color:#c7cad2;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;max-height:340px;overflow-y:auto;padding-bottom:10px}
+  .ep-card{display:flex;align-items:center;gap:12px;padding:9px;border:1px solid var(--line);border-radius:12px;
+    background:rgba(255,255,255,.03);cursor:pointer;text-align:left;min-width:0}
+  .ep-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.07)}
+  .ep-card.on{border-color:var(--red);background:rgba(229,9,20,.16)}
+  .ep-card img,.ep-ph{flex:0 0 auto;width:82px;height:47px;border-radius:7px;object-fit:cover;background:#22262f}
+  .ep-ph{display:grid;place-items:center;color:#7f8592}
+  .ep-card b{display:block;overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+  .ep-card small{display:block;margin-top:3px;color:#8b909c;font-size:11px}
+  .ep-empty{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:16px;color:#9aa0ad;font-size:13px}
+  .gate{max-width:560px;margin:6vh auto;padding:28px}
+  .gate form{display:grid;gap:15px;margin-top:18px}
+  .tv-code{width:100%;min-height:60px;padding:12px 16px;border:1px solid var(--line-2);border-radius:12px;background:#0e1015;
+    font-size:28px;font-weight:800;letter-spacing:.3em;text-align:center;text-transform:uppercase}
+  .tv-panel{margin-top:16px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+  body.tv .ep-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+  body.tv .ep-card b{font-size:16px}
+  body.tv .seg button{min-height:58px;font-size:17px;padding:0 22px}
+  body.tv .p-head h1{font-size:26px}
+  body.tv .p-foot{font-size:15px}
+  @media (max-width:620px){
+    .p-head{padding:12px 14px}
+    .p-tools{width:100%}
+    .seg{width:100%}
+    .seg button{flex:1;flex-direction:column;gap:3px;min-height:54px;padding:6px 2px;font-size:11px}
+    .ep-grid{grid-template-columns:1fr;max-height:300px}
+  }
+</style>
+</head>
+<body>
+<header class="fz-header" id="siteHeader" data-active=""></header>
+
+<main id="gateView" hidden>
+  <div class="fz-wrap">
+    <div class="fz-card gate">
+      <h1 class="fz-title">Sign in to watch</h1>
+      <p class="fz-sub" id="gateTitle">Watching is for members. Sign in and this title starts straight away.</p>
+      <form id="gateForm">
+        <div class="fz-field"><span>Email</span><input id="gateEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="fz-field"><span>Password</span><input id="gatePass" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></div>
+        <p class="fz-status" id="gateStatus" role="status"></p>
+        <button class="fz-btn primary" type="submit" id="gateGo"><i class="ph ph-sign-in"></i> Sign in &amp; play</button>
+      </form>
+      <button class="fz-btn glass" type="button" id="showTvCode" style="width:100%;margin-top:12px"><i class="ph ph-television"></i> I am using a TV code</button>
+      <div class="tv-panel" id="tvPanel" hidden>
+        <div class="fz-field"><span>TV code</span><input class="tv-code" id="tvCodeIn" type="text" autocomplete="one-time-code" maxlength="10" placeholder="A1B2C3D4"></div>
+        <p class="fz-hint">On your phone or computer open <b>Account &rarr; Link a TV</b> and type the code it shows.</p>
+        <p class="fz-status" id="tvStatus" role="status"></p>
+        <button class="fz-btn primary" type="button" id="tvGo" style="width:100%"><i class="ph ph-check"></i> Connect and play</button>
+      </div>
+      <p class="fz-hint">No account yet? Enter your email and a password - a free account is created and playback starts.</p>
+    </div>
+  </div>
+</main>
+
+<main id="playerView" hidden>
+  <div class="p-head">
+    <div style="min-width:0">
+      <p class="p-kicker" id="pKicker">Now playing</p>
+      <h1 id="pTitle">Loading...</h1>
+    </div>
+    <div class="p-tools">
+      <div class="seg" role="group" aria-label="Stream source">
+        <button type="button" class="active" data-server="1" aria-pressed="true"><span class="n">1</span> VidSrc</button>
+        <button type="button" data-server="2" aria-pressed="false"><span class="n">2</span> VidSrc.to</button>
+        <button type="button" data-server="3" aria-pressed="false"><span class="n">3</span> VidLink</button>
+        <button type="button" data-server="4" aria-pressed="false"><span class="n">4</span> 2Embed</button>
+      </div>
+      <button class="fz-btn glass sm" type="button" id="fsBtn"><i class="ph ph-corners-out"></i> Full screen</button>
+      <button class="fz-btn glass sm" type="button" id="popBtn"><i class="ph ph-arrow-square-out"></i> New tab</button>
+      <a class="fz-btn glass sm" href="index.html"><i class="ph ph-arrow-left"></i> Back</a>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="stage-note" id="stageNote"><div class="spin"></div><b>Preparing your stream</b><span>This usually takes a few seconds.</span></div>
+    <iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
+  </div>
+
+  <div class="p-foot">
+    <span id="pNote">Choose a source. If playback does not start, switch source.</span>
+  </div>
+
+  <section class="ep-picker" id="epPicker" hidden>
+    <div class="ep-head">
+      <label for="seasonSelect">Season</label>
+      <select class="fz-field" id="seasonSelect" style="min-width:180px"></select>
+      <span style="flex:1;color:#8b909c;font-size:12.5px" id="epCount"></span>
+      <button class="fz-btn glass sm" type="button" id="epManual"><i class="ph ph-pencil-simple"></i> Manual entry</button>
+    </div>
+    <div class="ep-grid" id="epGrid"></div>
+    <div class="fz-field" id="epManualBox" hidden style="max-width:320px;margin-top:10px">
+      <span>Manual season / episode</span>
+      <div style="display:flex;gap:10px">
+        <input id="seasonIn" type="number" min="1" max="99" value="1" aria-label="Season">
+        <input id="episodeIn" type="number" min="1" max="999" value="1" aria-label="Episode">
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="fz-foot" id="siteFooter"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js"></script>
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const esc = FZ.esc, img = FZ.img, titleOf = FZ.titleOf;
+
+  const q = new URLSearchParams(location.search);
+  const P = {
+    m: ["movie", "tv", "custom"].indexOf(q.get("m")) !== -1 ? q.get("m") : "movie",
+    id: q.get("t") || "",
+    season: Math.max(1, parseInt(q.get("s"), 10) || 1),
+    episode: Math.max(1, parseInt(q.get("e"), 10) || 1),
+    u: FZ.httpsUrl(q.get("u") || "")
+  };
+  const isSeries = P.m === "tv";
+  const S = { server: 1, override: P.u, season: P.season, episode: P.episode, title: q.get("name") || "", token: 0, timer: null };
+
+  const SOURCES = {
+    1: (m, id, s, e) => m === "tv" ? "https://vidsrc.net/embed/tv/" + id + "/" + s + "/" + e : "https://vidsrc.net/embed/movie/" + id,
+    2: (m, id, s, e) => m === "tv" ? "https://vidsrc.to/embed/tv/" + id + "/" + s + "/" + e : "https://vidsrc.to/embed/movie/" + id,
+    3: (m, id, s, e) => m === "tv" ? "https://vidlink.pro/tv/" + id + "/" + s + "/" + e : "https://vidlink.pro/movie/" + id,
+    4: (m, id, s, e) => m === "tv" ? "https://2embed.cc/embed/tv/" + id + "/" + s + "/" + e : "https://2embed.cc/embed/movie/" + id
+  };
+  const buildUrl = (n) => {
+    if (P.m === "custom") return P.u;
+    const id = Number(P.id);
+    if (!Number.isSafeInteger(id) || id < 1) return "";
+    return (SOURCES[n] || SOURCES[1])(P.m, id, S.season, S.episode);
+  };
+
+  function note(mode, title, body, actions) {
+    const n = $("stageNote");
+    n.classList.remove("hide");
+    n.innerHTML = mode === "load"
+      ? '<div class="spin"></div><b>' + esc(title) + "</b><span>" + esc(body) + "</span>"
+      : '<i class="ph ' + (mode === "fail" ? "ph-warning-circle" : "ph-info") + '" style="font-size:28px;color:var(--red-2)"></i>' +
+        "<b>" + esc(title) + "</b><span>" + esc(body) + "</span>" + (actions || "");
+  }
+  const hideNote = () => $("stageNote").classList.add("hide");
+
+  function setServer(n) {
+    S.server = n;
+    document.querySelectorAll("[data-server]").forEach((b) => {
+      const on = Number(b.dataset.server) === n;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+    const custom = S.override && P.m !== "custom";
+    const url = custom && n === 1 ? S.override : buildUrl(n);
+    if (!url) {
+      $("frame").src = "about:blank";
+      note("fail", "No stream available", "There is no source for this title yet.");
+      return;
+    }
+    note("load", "Connecting to source " + n, "Streaming should begin in a moment.");
+    $("pNote").textContent = (custom && n === 1) ? "Playing your custom stream override." : "Source " + n + " | " + (S.title || "this title");
+    const frame = $("frame");
+    const token = ++S.token;
+    frame.src = url;
+    frame.onload = () => { if (token === S.token) hideNote(); };
+    if (S.timer) clearTimeout(S.timer);
+    S.timer = setTimeout(() => {
+      if (token !== S.token || $("playerView").hidden) return;
+      const next = n >= 4 ? 1 : n + 1;
+      note("fail", "Source " + n + " is taking longer than usual",
+        "If the video is behind this message choose Show video. Otherwise try another source.",
+        '<button class="fz-btn glass sm" type="button" id="showVideo">Show video</button>' +
+        '<button class="fz-btn glass sm" type="button" data-server="' + next + '">Try source ' + next + "</button>" +
+        '<button class="fz-btn glass sm" type="button" id="popBtn2">New tab</button>');
+    }, 9000);
+  }
+
+  /* ---- episode picker ---- */
+  const seasonCache = new Map();
+  function manualEpisodes(msg) {
+    $("epGrid").innerHTML = '<div class="ep-empty"><i class="ph ph-info"></i><span>' + esc(msg || "Use manual entry below.") + "</span></div>";
+    $("epManualBox").hidden = false;
+  }
+  async function loadSeasons() {
+    if (!isSeries || P.m === "custom") return;
+    if (!FZ.OWNER.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
+    $("epGrid").innerHTML = '<div class="ep-empty"><div class="spin"></div><span>Loading seasons...</span></div>';
+    let seasons = [];
+    try {
+      const url = new URL(FZ.TMDB + "/tv/" + Number(P.id));
+      url.searchParams.set("language", "en-US");
+      url.searchParams.set("api_key", FZ.OWNER.tmdbKey);
+      const r = await fetch(url);
+      const d = await r.json();
+      seasons = (d.seasons || []).filter((s) => Number(s.season_number) > 0);
+      if (d.name) { S.title = d.name; $("pTitle").textContent = d.name; document.title = d.name + " | Flickerz Nest"; }
+    } catch { /* fall back */ }
+    if (!seasons.length) seasons = Array.from({ length: S.season }, (_, i) => ({ season_number: i + 1, name: "Season " + (i + 1) }));
+    const nums = seasons.map((s) => Number(s.season_number));
+    if (nums.indexOf(S.season) === -1) S.season = nums[0];
+    $("seasonSelect").innerHTML = seasons.map((s) =>
+      '<option value="' + esc(s.season_number) + '"' + (Number(s.season_number) === S.season ? " selected" : "") + ">" +
+      esc(s.name || ("Season " + s.season_number)) + "</option>").join("");
+    await loadEpisodes();
+  }
+  async function loadEpisodes() {
+    if (!isSeries || P.m === "custom") return;
+    if (!FZ.OWNER.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
+    const grid = $("epGrid");
+    grid.innerHTML = '<div class="ep-empty"><div class="spin"></div><span>Loading episodes...</span></div>';
+    const key = P.id + ":" + S.season;
+    try {
+      let d = seasonCache.get(key);
+      if (!d) {
+        const url = new URL(FZ.TMDB + "/tv/" + Number(P.id) + "/season/" + S.season);
+        url.searchParams.set("language", "en-US");
+        url.searchParams.set("api_key", FZ.OWNER.tmdbKey);
+        const r = await fetch(url);
+        d = await r.json();
+        seasonCache.set(key, d);
+      }
+      const eps = (d.episodes || []).filter((e) => Number(e.episode_number) > 0);
+      if (!eps.length) throw new Error("empty");
+      $("epCount").textContent = eps.length + " episodes in this season";
+      grid.innerHTML = eps.map((e) => {
+        const still = img(e.still_path, "w300");
+        const on = Number(S.episode) === Number(e.episode_number);
+        return '<button class="ep-card' + (on ? " on" : "") + '" type="button" data-ep="' + esc(e.episode_number) + '">' +
+          (still ? '<img src="' + esc(still) + '" alt="" loading="lazy">' : '<span class="ep-ph"><i class="ph ph-play"></i></span>') +
+          "<span><b>E" + esc(e.episode_number) + " | " + esc(e.name || ("Episode " + e.episode_number)) + "</b>" +
+          (e.air_date ? "<small>" + esc(String(e.air_date).slice(0, 10)) + "</small>" : "") + "</span></button>";
+      }).join("");
+    } catch {
+      manualEpisodes("Episodes for season " + S.season + " are unavailable.");
+    }
+  }
+  function pickEpisode(n) {
+    S.episode = Math.max(1, parseInt(n, 10) || 1);
+    $("episodeIn").value = String(S.episode);
+    document.querySelectorAll("[data-ep]").forEach((b) => b.classList.toggle("on", Number(b.dataset.ep) === S.episode));
+    setServer(S.server);
+    recordWatch();
+  }
+
+  /* ---- history ---- */
+  const recent = new Map();
+  async function recordWatch() {
+    if (!FZ.user || !FZ.sb || P.m === "custom") return;
+    const id = Number(P.id);
+    if (!Number.isSafeInteger(id) || id < 1) return;
+    const k = id + ":" + S.season + ":" + S.episode;
+    if (Date.now() - (recent.get(k) || 0) < 5 * 60 * 1000) return;
+    recent.set(k, Date.now());
+    const { error } = await FZ.sb.from("watch_history").insert({
+      user_id: FZ.user.id, tmdb_id: id, media_type: isSeries ? "tv" : "movie",
+      title: S.title || "Title " + id, poster_path: null,
+      season: isSeries ? S.season : null, episode: isSeries ? S.episode : null
+    });
+    if (error && /watch_history|relation|schema cache/i.test(error.message || "")) return;
+  }
+
+  /* ---- gate ---- */
+  function showGate() {
+    $("gateView").hidden = false;
+    $("playerView").hidden = true;
+    $("gateTitle").textContent = S.title
+      ? 'Sign in to watch "' + S.title + '". Playback starts immediately after.'
+      : "Watching is for members. Sign in and this title starts straight away.";
+    if (FZ.tv) { $("tvPanel").hidden = false; $("showTvCode").hidden = true; }
+  }
+  function start() {
+    $("gateView").hidden = true;
+    $("playerView").hidden = false;
+    $("pTitle").textContent = S.title || (isSeries ? "Series" : "Film");
+    $("pKicker").textContent = P.m === "custom" ? "From the Nest" : (isSeries ? "Series" : "Film");
+    $("epPicker").hidden = !isSeries;
+    setServer(1);
+    if (isSeries) loadSeasons();
+    recordWatch();
+    // mark as watching in the member's list
+    if (FZ.user && FZ.sb && P.m !== "custom") {
+      FZ.sb.from("watchlists").update({ status: "watching" })
+        .eq("user_id", FZ.user.id).eq("tmdb_id", Number(P.id)).eq("media_type", P.m)
+        .then(({ error }) => {
+          if (error && /status|column/i.test(error.message || "")) return;
+        });
+    }
+  }
+
+  $("gateForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const st = $("gateStatus");
+    const email = $("gateEmail").value.trim(), pass = $("gatePass").value;
+    st.textContent = "Signing in...";
+    st.className = "fz-status";
+    const res = await FZ.signIn(email, pass);
+    if (res.error) {
+      const m = res.error.message || "";
+      if (/invalid login/i.test(m)) {
+        // first time here: create the free account and carry on
+        const up = await FZ.sb.auth.signUp({ email, password: pass, options: { data: { display_name: email.split("@")[0] } } });
+        if (up.error) { st.textContent = up.error.message; st.className = "fz-status error"; return; }
+        if (!up.data?.session) { st.textContent = "Account created. Confirm your email if asked, then sign in."; st.className = "fz-status ok"; return; }
+        await FZ.setUser(up.data.user);
+      } else { st.textContent = m; st.className = "fz-status error"; return; }
+    }
+    st.textContent = "";
+    FZ.paintHeader();
+    start();
+  });
+
+  $("showTvCode").addEventListener("click", () => {
+    $("tvPanel").hidden = false;
+    $("showTvCode").hidden = true;
+    $("tvCodeIn").focus();
+  });
+  $("tvGo").addEventListener("click", async () => {
+    const st = $("tvStatus");
+    st.textContent = "Checking code...";
+    st.className = "fz-status";
+    const r = await FZ.claimTvCode($("tvCodeIn").value);
+    if (r.error) { st.textContent = r.error.message; st.className = "fz-status error"; return; }
+    st.textContent = "";
+    FZ.toast("TV connected. Starting playback.", "ok");
+    start();
+  });
+  $("tvCodeIn").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); $("tvGo").click(); }
+    else if (e.key === "Escape") $("tvCodeIn").value = "";
+  });
+
+  document.addEventListener("click", (ev) => {
+    const srv = ev.target.closest("[data-server]");
+    if (srv) { setServer(Number(srv.dataset.server)); return; }
+    const ep = ev.target.closest("[data-ep]");
+    if (ep) { pickEpisode(ep.dataset.ep); return; }
+    if (ev.target.closest("#showVideo")) { hideNote(); $("pNote").textContent = "Playing. Use New tab if the picture stays black."; return; }
+    const pop = ev.target.closest("#popBtn") || ev.target.closest("#popBtn2");
+    if (pop) {
+      const url = (S.override && P.m !== "custom" && S.server === 1) ? S.override : buildUrl(S.server);
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (ev.target.closest("#fsBtn")) { FZ.fullscreen($("stage")); return; }
+    if (ev.target.closest("#epManual")) {
+      $("epManualBox").hidden = !$("epManualBox").hidden;
+      $("seasonIn").value = String(S.season);
+      $("episodeIn").value = String(S.episode);
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    const t = ev.target;
+    if (t.id === "seasonSelect") { S.season = Math.max(1, parseInt(t.value, 10) || 1); S.episode = 1; $("episodeIn").value = "1"; loadEpisodes(); }
+    if (t.id === "seasonIn") { S.season = Math.max(1, parseInt(t.value, 10) || 1); t.value = String(S.season); setServer(S.server); recordWatch(); }
+    if (t.id === "episodeIn") { S.episode = Math.max(1, parseInt(t.value, 10) || 1); t.value = String(S.episode); setServer(S.server); recordWatch(); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.fullscreenElement) document.exitFullscreen();
+  });
+
+  FZ.ready_(async () => {
+    // custom stream override lookup (same as before)
+    if (P.m !== "custom" && FZ.sb) {
+      try {
+        const { data } = await FZ.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(P.id)).maybeSingle();
+        if (data?.stream_url) S.override = FZ.httpsUrl(data.stream_url);
+      } catch {}
+    }
+    if (FZ.user) start(); else showGate();
+  });
+})();
+</script>
+</body>
+</html>

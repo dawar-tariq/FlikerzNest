@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0c10">
+<meta name="robots" content="noindex,nofollow">
+<title>Control room | Flickerz Nest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+  :root{color-scheme:dark;--ink:#08090d;--card:#14161d;--text:#f3f4f7;--muted:#9aa0ad;--red:#e50914;
+    --red-2:#ff2e3d;--gold:#ffcf70;--green:#5ed9a4;--line:rgba(255,255,255,.1);--line-2:rgba(255,255,255,.18);
+    font-family:"Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-width:320px;background:var(--ink);color:var(--text)}
+  body{font-size:16px;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+  button,input,select,textarea{font:inherit;color:inherit}
+  a{color:inherit;text-decoration:none}
+  [hidden]{display:none!important}
+  :focus-visible{outline:3px solid #ffd479;outline-offset:3px;border-radius:8px}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#2c303b;border-radius:20px;border:2px solid var(--ink)}
+  .bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:18px clamp(16px,4vw,44px);
+    border-bottom:1px solid var(--line);background:rgba(10,11,15,.95);backdrop-filter:blur(16px)}
+  .brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:800;letter-spacing:-.05em}
+  .mark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px 11px 11px 3px;background:var(--red);font-size:17px}
+  .brand em{font-style:normal;color:var(--red-2)}
+  .spacer{flex:1}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:0 20px;
+    border:1px solid transparent;border-radius:11px;cursor:pointer;font-size:15px;font-weight:700;transition:all .18s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:var(--red);color:#fff}
+  .btn-primary:hover{background:var(--red-2)}
+  .btn-glass{border-color:var(--line-2);background:rgba(255,255,255,.05)}
+  .btn-glass:hover{background:rgba(255,255,255,.12)}
+  .btn-gold{border-color:rgba(255,207,112,.4);background:rgba(255,207,112,.12);color:var(--gold)}
+  .btn-sm{min-height:42px;padding:0 15px;font-size:13.5px}
+  .wrap{width:min(100%,1400px);margin:0 auto;padding:26px clamp(16px,4vw,44px)}
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:16px clamp(16px,4vw,44px) 0;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{position:relative;flex:0 0 auto;padding:13px 18px;border:1px solid var(--line);border-radius:12px;
+    background:rgba(255,255,255,.03);color:#c9cdd5;cursor:pointer;font-size:15px;font-weight:600}
+  .tab.active{border-color:transparent;background:#f7f8fa;color:#0c0d11}
+  h1{margin:6px 0 8px;font-size:clamp(28px,3.4vw,42px);letter-spacing:-.045em}
+  h3{margin:22px 0 8px;font-size:19px;letter-spacing:-.02em}
+  .sub{margin:0 0 22px;color:var(--muted);font-size:15px;line-height:1.7;max-width:820px}
+  .hint{margin:8px 0;color:#878b96;font-size:13px;line-height:1.7}
+  .note{margin:14px 0;padding:14px 16px;border:1px solid rgba(255,207,112,.28);border-radius:12px;
+    background:rgba(255,207,112,.07);color:#ffd98c;font-size:14px;line-height:1.7}
+  .status{min-height:20px;margin:10px 0;font-size:14px}
+  .status.error{color:#ff868e}
+  .status.ok{color:#74d9a4}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:20px 0 28px}
+  .stat{position:relative;overflow:hidden;padding:18px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.035)}
+  .stat b{display:block;font-size:32px;font-weight:800;letter-spacing:-.035em}
+  .stat b.sm{font-size:17px;line-height:1.35}
+  .stat span{display:block;margin-top:5px;color:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .list{border-top:1px solid var(--line)}
+  .lrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;min-height:66px;padding:13px 3px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .lrow>div{min-width:0;flex:1}
+  .lrow strong{display:block;font-size:14.5px}
+  .lrow small{display:block;margin-top:4px;color:#8b909c;font-size:12.5px;line-height:1.6;white-space:normal}
+  .mini{flex:0 0 auto;min-height:42px;padding:0 14px;border:1px solid var(--line-2);border-radius:9px;background:none;cursor:pointer;font-size:13px;font-weight:600}
+  .mini:hover{border-color:#ff7d85;color:#ff969c}
+  .mini.up{border-color:rgba(229,9,20,.5);color:#ff8f97}
+  .mini.good{border-color:rgba(94,217,164,.5);color:var(--green)}
+  .mini.danger{border-color:rgba(255,99,109,.5);color:#ff8a92}
+  .mgr{display:flex;flex-wrap:wrap;gap:8px}
+  .role{padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.1);color:#c2c6cf;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .role.admin{background:rgba(229,9,20,.22);color:#ff929a}
+  .role.owner{background:rgba(255,207,112,.2);color:var(--gold)}
+  .role.blocked{background:rgba(255,99,109,.2);color:#ff8a92}
+  .role.ok{background:rgba(94,217,164,.18);color:var(--green)}
+  .scroll-x{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+  table{width:100%;border-collapse:collapse;white-space:nowrap}
+  th{padding:14px 16px;border-bottom:1px solid var(--line-2);color:#9aa0ad;text-align:left;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  td{padding:15px 16px;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px}
+  tr:hover td{background:rgba(255,255,255,.03)}
+  .wl{margin-bottom:18px;padding:18px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.03)}
+  .wl-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .wl-head b{font-size:16px}
+  .wl-head small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px}
+  .wl-items{display:flex;flex-wrap:wrap;gap:10px}
+  .wl-item{display:flex;align-items:center;gap:10px;padding:7px 12px 7px 7px;border:1px solid var(--line);border-radius:11px;background:rgba(10,11,15,.5);font-size:13px}
+  .wl-item img{width:32px;height:46px;border-radius:6px;object-fit:cover;background:#232733}
+  .wl-item b{display:block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-item span{color:#8b909c;font-size:11.5px}
+  .act-row{display:flex;align-items:center;gap:13px;padding:11px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .act-row img,.act-ph{flex:0 0 auto;width:42px;height:60px;border-radius:8px;object-fit:cover;background:#232733}
+  .act-row>div{flex:1;min-width:0}
+  .act-row b{display:block;overflow:hidden;font-size:14.5px;text-overflow:ellipsis;white-space:nowrap}
+  .act-row small{display:block;margin-top:4px;color:#8b909c;font-size:12px}
+  .act-when{color:#9aa0ad;font-size:12px;white-space:nowrap}
+  .form{display:grid;gap:15px;max-width:560px}
+  .field{display:grid;gap:8px}
+  .field>span{color:#c9cdd5;font-size:13px;font-weight:700}
+  .field input,.field textarea,.field select{width:100%;min-height:52px;padding:13px 15px;border:1px solid var(--line-2);border-radius:11px;background:#0e1015;font-size:15px}
+  .field textarea{min-height:110px;resize:vertical}
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:34px}
+  .gate{max-width:520px;margin:8vh auto;padding:32px;border:1px solid var(--line);border-radius:20px;background:var(--card)}
+  .gate h1{font-size:30px}
+  .toasts{position:fixed;right:22px;bottom:22px;display:grid;gap:10px;width:min(380px,calc(100vw - 32px))}
+  .toast{padding:15px 18px;border:1px solid var(--line-2);border-radius:12px;background:rgba(28,31,40,.98);font-size:14px}
+  .toast.ok{border-color:rgba(94,217,164,.45)}
+  .toast.error{border-color:rgba(255,99,109,.5)}
+  @media (max-width:700px){.bar{flex-wrap:wrap}.tabs{padding-inline:14px}.tab{font-size:14px;padding:11px 14px}.wrap{padding:20px 14px}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="mark">F</span><b>Flickerz <em>Nest</em></b></div>
+  <span class="role owner">control room</span>
+  <div class="spacer"></div>
+  <button class="btn btn-glass btn-sm" id="fsBtn" type="button"><i class="ph ph-corners-out"></i> Full screen</button>
+  <a class="btn btn-glass btn-sm" href="index.html"><i class="ph ph-arrow-left"></i> Back to site</a>
+  <button class="btn btn-primary btn-sm" id="lockBtn" type="button" hidden><i class="ph ph-lock-simple"></i> Lock</button>
+</header>
+
+<div id="gateView">
+  <div class="gate">
+    <h1>Owner access</h1>
+    <p class="sub">This page is the full control room. Sign in with the owner account to manage members, watchlists, watch activity and streams.</p>
+    <form class="form" id="gateForm">
+      <div class="field"><span>Owner email</span><input id="gateEmail" type="email" autocomplete="off" required placeholder="owner@example.com"></div>
+      <div class="field"><span>Password</span><input id="gatePass" type="password" autocomplete="off" required placeholder="Your password"></div>
+      <p class="status" id="gateStatus" role="status"></p>
+      <button class="btn btn-gold" type="submit"><i class="ph ph-unlock"></i> Unlock control room</button>
+    </form>
+    <p class="hint">Tip: on a TV remote, use the arrow keys and OK. Full screen is in the top right.</p>
+  </div>
+</div>
+
+<div id="appView" hidden>
+  <nav class="tabs" role="tablist" id="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="members">Members</button>
+    <button class="tab" data-tab="lists">Watchlists</button>
+    <button class="tab" data-tab="activity">Watch activity</button>
+    <button class="tab" data-tab="streams">Stream overrides</button>
+    <button class="tab" data-tab="content">Content manager</button>
+    <button class="tab" data-tab="platform">Platform</button>
+  </nav>
+
+  <main class="wrap">
+    <section id="pane-overview">
+      <h1>Overview</h1>
+      <p class="sub">Live figures from your database, and what this session is allowed to read.</p>
+      <div class="stats" id="ovStats"></div>
+      <h3>Database access</h3>
+      <p class="hint">If a table shows an error, the message tells you exactly what to fix.</p>
+      <div class="list" id="ovDb"></div>
+    </section>
+
+    <section id="pane-members" hidden>
+      <h1>Members</h1>
+      <p class="sub">Every registered account. Promote to admin, or suspend a member - they are signed out immediately and cannot sign back in.</p>
+      <div class="stats" id="memberStats"></div>
+      <div class="scroll-x" id="memberWrap"></div>
+      <p class="status" id="memberStatus" role="status"></p>
+    </section>
+
+    <section id="pane-lists" hidden>
+      <h1>Watchlists</h1>
+      <p class="sub">Everything members have saved, grouped by account, with each title's status.</p>
+      <div class="stats" id="listStats"></div>
+      <div class="actions mgr" style="margin-bottom:18px"><button class="btn btn-glass btn-sm" id="listRefresh"><i class="ph ph-arrows-clockwise"></i> Refresh</button></div>
+      <div id="listBody"></div>
+    </section>
+
+    <section id="pane-activity" hidden>
+      <h1>Watch activity</h1>
+      <p class="sub">Every title members have opened, newest first, with the season and episode for series.</p>
+      <div class="stats" id="actStats"></div>
+      <div class="split" style="margin-bottom:18px">
+        <div class="field"><span>Member</span><select id="actUser"><option value="">All members</option></select></div>
+        <div class="field"><span>Title contains</span><input id="actSearch" type="search" placeholder="Filter by title"></div>
+      </div>
+      <div class="actions mgr" style="margin-bottom:18px"><button class="btn btn-glass btn-sm" id="actRefresh"><i class="ph ph-arrows-clockwise"></i> Refresh</button></div>
+      <div id="actBody"></div>
+    </section>
+
+    <section id="pane-streams" hidden>
+      <h1>Stream overrides</h1>
+      <p class="sub">Point any TMDB id at your own https embed URL. It is used instead of the default players.</p>
+      <div class="split">
+        <form class="form" id="streamForm">
+          <div class="field"><span>TMDB ID</span><input id="stId" type="number" min="1" required placeholder="e.g. 693134"></div>
+          <div class="field"><span>Stream URL</span><input id="stUrl" type="url" required placeholder="https://your-player.example/embed/..."></div>
+          <p class="status" id="stStatus" role="status"></p>
+          <button class="btn btn-primary" type="submit"><i class="ph ph-floppy-disk"></i> Save override</button>
+        </form>
+        <div><h3>Saved</h3><div class="list" id="streamList"></div></div>
+      </div>
+    </section>
+
+    <section id="pane-content" hidden>
+      <h1>Content manager</h1>
+      <p class="sub">Custom films and announcements that appear in the "From the Nest" row on the site.</p>
+      <div class="split">
+        <form class="form" id="contentForm">
+          <div class="field"><span>Title</span><input id="ctTitle" type="text" maxlength="180" required placeholder="Nest original or announcement"></div>
+          <div class="field"><span>Description</span><textarea id="ctDesc" maxlength="2000" placeholder="Short description"></textarea></div>
+          <div class="field"><span>Banner image URL</span><input id="ctBanner" type="url" placeholder="https://..."></div>
+          <div class="field"><span>Stream URL (optional)</span><input id="ctStream" type="url" placeholder="https://..."></div>
+          <p class="status" id="ctStatus" role="status"></p>
+          <button class="btn btn-primary" type="submit"><i class="ph ph-paper-plane-tilt"></i> Publish</button>
+        </form>
+        <div><h3>Published</h3><div class="list" id="contentList"></div></div>
+      </div>
+    </section>
+
+    <section id="pane-platform" hidden>
+      <h1>Platform</h1>
+      <p class="sub">Read-only configuration. Keys are built into the site and cannot be changed from a browser.</p>
+      <div class="list" id="platformList"></div>
+      <div class="note">To rotate a key, edit the OWNER block at the top of <b>index.html</b> and this file, then redeploy.</div>
+    </section>
+  </main>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  "use strict";
+  const OWNER = {
+    email: "wanidawar03@gmail.com",
+    password: "dawar@123",
+    tmdbKey: "cc306d0684189df48d37b51bc9e06e04",
+    supabaseUrl: "https://ctbrfynxmgcyvsrdihfg.supabase.co",
+    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA"
+  };
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const httpsUrl = (v) => { try { const u = new URL(String(v || "").trim()); return u.protocol === "https:" ? u.href : ""; } catch { return ""; } };
+  const IMG = "https://image.tmdb.org/t/p/";
+  const img = (p, size = "w92") => (!p ? "" : String(p).startsWith("/") ? IMG + size + p : httpsUrl(p));
+  const when = (d) => (d ? new Date(d).toLocaleString() : "-");
+  const day = (d) => (d ? new Date(d).toLocaleDateString() : "-");
+  const ago = (d) => {
+    const t = new Date(d).getTime(); if (!t) return "-";
+    const s = Math.max(1, Math.round((Date.now() - t) / 1000));
+    if (s < 60) return "just now";
+    const m = Math.round(s / 60); if (m < 60) return m + "m ago";
+    const h = Math.round(m / 60); if (h < 24) return h + "h ago";
+    const dd = Math.round(h / 24); return dd < 30 ? dd + "d ago" : day(d);
+  };
+  const isOwnerEmail = (e) => String(e || "").trim().toLowerCase() === OWNER.email.toLowerCase();
+  const stat = (n, l, small) => '<div class="stat"><b class="' + (small ? "sm" : "") + '">' + esc(n) + "</b><span>" + esc(l) + "</span></div>";
+  const lrow = (left, right) => '<div class="lrow"><div>' + left + "</div>" + (right || "") + "</div>";
+  const none = (t) => lrow("<small>" + esc(t) + "</small>", "");
+
+  function toast(msg, kind = "") {
+    const el = document.createElement("div");
+    el.className = ("toast " + kind).trim();
+    el.textContent = msg;
+    $("toasts").appendChild(el);
+    setTimeout(() => el.remove(), 4200);
+  }
+
+  const state = { sb: null, user: null, profile: null, members: [], lists: [], history: [], tab: "overview" };
+
+  /* ---------------- boot + auth ---------------- */
+  if (window.supabase?.createClient) {
+    try {
+      state.sb = window.supabase.createClient(OWNER.supabaseUrl, OWNER.supabaseAnonKey,
+        { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    } catch (e) { console.error(e); }
+  }
+  async function refreshUser() {
+    if (!state.sb) return null;
+    const { data } = await state.sb.auth.getSession();
+    return data?.session?.user || null;
+  }
+  async function isAdminNow() {
+    if (!state.user) return false;
+    if (isOwnerEmail(state.user.email)) return true;
+    if (!state.profile) return false;
+    return state.profile.role === "admin" && !state.profile.is_blocked;
+  }
+  async function loadProfile() {
+    if (!state.user) { state.profile = null; return; }
+    const { data, error } = await state.sb.from("profiles")
+      .select("id,email,display_name,role,created_at,is_blocked,blocked_reason").eq("id", state.user.id).maybeSingle();
+    state.profile = (!error && data) ? data
+      : { id: state.user.id, email: state.user.email, display_name: "", role: isOwnerEmail(state.user.email) ? "admin" : "user", is_blocked: false };
+    if (error && /is_blocked|column/i.test(error.message || "")) state.profile.is_blocked = false;
+  }
+
+  async function enter() {
+    const ok = await isAdminNow();
+    if (!ok) {
+      $("gateView").hidden = false;
+      $("appView").hidden = true;
+      $("lockBtn").hidden = true;
+      return false;
+    }
+    $("gateView").hidden = true;
+    $("appView").hidden = false;
+    $("lockBtn").hidden = false;
+    await Promise.all([loadMembers(), loadLists(), loadActivity(), loadStreams(), loadContent()]);
+    selectTab("overview");
+    return true;
+  }
+
+  $("gateForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const email = $("gateEmail").value.trim(), pass = $("gatePass").value;
+    const st = $("gateStatus");
+    if (!isOwnerEmail(email) && pass !== OWNER.password) {
+      st.textContent = "Use the owner account, or an account with admin rights.";
+      st.className = "status error";
+      return;
+    }
+    st.textContent = "Signing in...";
+    st.className = "status";
+    let res;
+    try {
+      if (state.sb) res = await state.sb.auth.signInWithPassword({ email, password: pass });
+      else res = { error: new Error("Supabase is not configured.") };
+    } catch (e) { res = { error: e }; }
+    if (res.error || !res.data?.user) {
+      st.textContent = res.error?.message || "Sign-in failed.";
+      st.className = "status error";
+      return;
+    }
+    state.user = res.data.user;
+    await loadProfile();
+    st.textContent = "";
+    await enter();
+  });
+
+  $("lockBtn").addEventListener("click", async () => {
+    if (state.sb) await state.sb.auth.signOut();
+    state.user = null; state.profile = null;
+    await enter();
+    toast("Control room locked.", "ok");
+  });
+
+  /* ---------------- full screen (TV friendly) ---------------- */
+  $("fsBtn").addEventListener("click", () => {
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) { (exit || function () {}).call(document); }
+      else (req || function () {}).call(el);
+    } catch { toast("This browser does not allow full screen.", "error"); }
+  });
+
+  /* ---------------- tabs ---------------- */
+  const TABS = ["overview", "members", "lists", "activity", "streams", "content", "platform"];
+  function selectTab(name) {
+    state.tab = name;
+    TABS.forEach((t) => {
+      const btn = document.querySelector('[data-tab="' + t + '"]');
+      if (btn) btn.classList.toggle("active", t === name);
+      $("pane-" + t).hidden = t !== name;
+    });
+    if (name === "overview") loadOverview();
+    if (name === "platform") loadPlatform();
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener("click", (ev) => {
+    const tab = ev.target.closest("[data-tab]");
+    if (tab) { selectTab(tab.dataset.tab); return; }
+    const role = ev.target.closest("[data-role]");
+    if (role) { setRole(role.dataset.role, role.dataset.next); return; }
+    const block = ev.target.closest("[data-block]");
+    if (block) { setBlocked(block.dataset.block, block.dataset.blockTo === "1"); return; }
+    const ds = ev.target.closest("[data-del-stream]");
+    if (ds) { del("custom_streams", "tmdb_id", Number(ds.dataset.delStream), loadStreams); return; }
+    const dc = ev.target.closest("[data-del-content]");
+    if (dc) { del("custom_content", "id", dc.dataset.delContent, loadContent); return; }
+  });
+  document.addEventListener("change", (ev) => { if (ev.target.id === "actUser") renderActivity(); });
+  document.addEventListener("input", (ev) => { if (ev.target.id === "actSearch") renderActivity(); });
+
+  /* ---------------- overview ---------------- */
+  async function loadOverview() {
+    if (!state.sb || !(await isAdminNow())) return;
+    const [p, w, h, s, c] = await Promise.all([
+      state.sb.from("profiles").select("id,role", { count: "exact", head: false }).limit(1000),
+      state.sb.from("watchlists").select("id", { count: "exact", head: false }).limit(2000),
+      state.sb.from("watch_history").select("id,watched_at", { count: "exact", head: false }).limit(2000),
+      state.sb.from("custom_streams").select("id", { count: "exact", head: false }).limit(500),
+      state.sb.from("custom_content").select("id", { count: "exact", head: false }).limit(500)
+    ]);
+    const people = p.data || [];
+    const dayAgo = Date.now() - 864e5;
+    const today = (h.data || []).filter((x) => new Date(x.watched_at).getTime() > dayAgo).length;
+    $("ovStats").innerHTML =
+      stat(people.length, "Members") + stat(people.filter((x) => x.role === "admin").length, "Admins") +
+      stat(people.filter((x) => x.is_blocked).length, "Suspended") + stat((w.data || []).length, "Saved titles") +
+      stat((h.data || []).length, "Plays") + stat(today, "Plays today") +
+      stat((s.data || []).length, "Stream overrides") + stat((c.data || []).length, "Published");
+    const tables = [["profiles", "Members"], ["watchlists", "Watchlists"], ["watch_history", "Watch history"],
+      ["custom_streams", "Stream overrides"], ["custom_content", "Custom content"]];
+    const rows = await Promise.all(tables.map(async (t) => {
+      try {
+        const r = await state.sb.from(t[0]).select("*", { count: "exact", head: true });
+        return { label: t[1], error: r.error ? r.error.message : "", count: r.count };
+      } catch (e) { return { label: t[1], error: e.message || "failed", count: 0 }; }
+    }));
+    $("ovDb").innerHTML = rows.map((r) => lrow(
+      "<strong>" + esc(r.label) + "</strong><small>" + esc(r.error ? r.error : (r.count || 0) + " rows visible to you") + "</small>",
+      '<span class="role ' + (r.error ? "blocked" : "ok") + '">' + (r.error ? "error" : "ok") + "</span>")).join("");
+  }
+
+  /* ---------------- members ---------------- */
+  async function loadMembers() {
+    if (!state.sb || !(await isAdminNow())) return;
+    const cols = "id,email,display_name,role,created_at";
+    let res = await state.sb.from("profiles").select(cols + ",is_blocked,blocked_reason").order("created_at", { ascending: false }).limit(500);
+    if (res.error) res = await state.sb.from("profiles").select(cols).order("created_at", { ascending: false }).limit(500);
+    state.members = res.data || [];
+    renderMembers();
+  }
+  function renderMembers() {
+    const people = state.members;
+    $("memberStats").innerHTML =
+      stat(people.length, "Members") +
+      stat(people.filter((u) => u.role === "admin").length, "Admins") +
+      stat(people.filter((u) => u.is_blocked).length, "Suspended") +
+      stat(state.lists.length, "Saved titles");
+    if (!people.length) { $("memberWrap").innerHTML = '<p class="hint" style="padding:18px">No members yet.</p>'; return; }
+    $("memberWrap").innerHTML = "<table><thead><tr><th>Member</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Saved</th><th>Plays</th><th>Manage</th></tr></thead><tbody>" +
+      people.map((u) => {
+        const self = state.user && u.id === state.user.id;
+        const owner = isOwnerEmail(u.email);
+        const saved = state.lists.filter((r) => r.user_id === u.id).length;
+        const plays = state.history.filter((h) => h.user_id === u.id).length;
+        const next = u.role === "admin" ? "user" : "admin";
+        const roleTag = owner ? '<span class="role owner">owner</span>' : '<span class="role ' + (u.role === "admin" ? "admin" : "") + '">' + esc(u.role) + "</span>";
+        const statusTag = u.is_blocked ? '<span class="role blocked">suspended</span>' : '<span class="role ok">active</span>';
+        const btns = [];
+        if (!owner) btns.push('<button class="mini ' + (next === "admin" ? "up" : "") + '" type="button" data-role="' + esc(u.id) + '" data-next="' + next + '">' + (next === "admin" ? "Make admin" : "Make user") + "</button>");
+        if (!owner && !self) btns.push(u.is_blocked
+          ? '<button class="mini good" type="button" data-block="' + esc(u.id) + '" data-block-to="0"><i class="ph ph-lock-simple-open"></i> Restore</button>'
+          : '<button class="mini danger" type="button" data-block="' + esc(u.id) + '" data-block-to="1"><i class="ph ph-prohibit"></i> Suspend</button>');
+        return "<tr><td>" + esc(u.display_name || "-") + (self ? " (you)" : "") + "</td><td>" + esc(u.email || "-") + "</td><td>" + roleTag + "</td><td>" + statusTag + "</td>" +
+          "<td>" + esc(day(u.created_at)) + "</td><td>" + saved + "</td><td>" + plays + '</td><td><div class="mgr">' + (btns.join("") || '<span class="hint">owner</span>') + "</div></td></tr>";
+      }).join("") + "</tbody></table>";
+  }
+  async function setRole(id, next) {
+    if (!(await isAdminNow())) return;
+    if (!confirm("Set this member's role to " + next + "?")) return;
+    const { error } = await state.sb.from("profiles").update({ role: next }).eq("id", id);
+    if (error) { toast(error.message, "error"); return; }
+    toast("Role updated.", "ok");
+    await loadMembers();
+  }
+  async function setBlocked(id, block) {
+    if (!(await isAdminNow())) return;
+    const u = state.members.find((x) => x.id === id);
+    if (u && isOwnerEmail(u.email)) { toast("The owner cannot be suspended.", "error"); return; }
+    if (id === state.user.id) { toast("You cannot suspend yourself.", "error"); return; }
+    const who = u ? (u.display_name || u.email) : "member";
+    let reason = null;
+    if (block) {
+      reason = prompt("Suspend " + who + "?\nThey are signed out immediately.\nOptional reason:", "");
+      if (reason === null) return;
+      reason = reason.trim().slice(0, 300) || null;
+    } else if (!confirm("Restore access for " + who + "?")) return;
+    const patch = block ? { is_blocked: true, blocked_reason: reason } : { is_blocked: false, blocked_reason: null };
+    const { data, error } = await state.sb.from("profiles").update(patch).eq("id", id).select("id");
+    if (error || !data?.length) {
+      toast(error ? (error.message || "Failed.") : "No permission to change this member.", "error");
+      return;
+    }
+    toast(block ? who + " suspended and signed out." : who + " restored.", "ok");
+    await loadMembers();
+  }
+
+  /* ---------------- watchlists ---------------- */
+  async function loadLists() {
+    if (!state.sb || !(await isAdminNow())) return;
+    const { data, error } = await state.sb.from("watchlists")
+      .select("id,user_id,tmdb_id,title,poster_path,media_type,status,added_at")
+      .order("added_at", { ascending: false }).limit(1500);
+    if (error) { $("listBody").innerHTML = '<p class="status error">' + esc(error.message) + "</p>"; return; }
+    state.lists = data || [];
+    renderLists();
+    renderMembers();
+  }
+  function renderLists() {
+    const rows = state.lists;
+    const byUser = new Map();
+    rows.forEach((r) => { if (!byUser.has(r.user_id)) byUser.set(r.user_id, []); byUser.get(r.user_id).push(r); });
+    $("listStats").innerHTML = stat(byUser.size, "Members with lists") + stat(rows.length, "Saved titles") + stat(state.members.length, "Members");
+    if (!rows.length) { $("listBody").innerHTML = '<div class="wl"><p class="hint">No saved titles yet.</p></div>'; return; }
+    $("listBody").innerHTML = [...byUser.entries()].map(([uid, items]) => {
+      const p = state.members.find((x) => x.id === uid);
+      return '<div class="wl"><div class="wl-head"><div><b>' + esc(p ? (p.display_name || p.email) : uid.slice(0, 8)) +
+        (isOwnerEmail(p?.email) ? " (owner)" : "") + "</b><small>" + esc(p?.email || uid) + " | " + items.length + " saved</small></div>" +
+        '<span class="role ' + (p?.role === "admin" ? "admin" : "") + '">' + esc(p?.role || "user") + "</span></div><div class=\"wl-items\">" +
+        items.map((it) => {
+          const pic = img(it.poster_path, "w92");
+          return '<span class="wl-item">' + (pic ? '<img src="' + esc(pic) + '" alt="">' : "") +
+            "<div><b>" + esc(it.title) + "</b><span>" + (it.media_type === "tv" ? "Series" : "Film") +
+            " | " + esc(it.status || "plan") + " | " + esc(ago(it.added_at)) + "</span></div></span>";
+        }).join("") + "</div></div>";
+    }).join("");
+  }
+
+  /* ---------------- watch activity ---------------- */
+  async function loadActivity() {
+    if (!state.sb || !(await isAdminNow())) return;
+    $("actBody").innerHTML = '<p class="hint">Loading activity...</p>';
+    const { data, error } = await state.sb.from("watch_history")
+      .select("id,user_id,tmdb_id,media_type,title,poster_path,season,episode,watched_at")
+      .order("watched_at", { ascending: false }).limit(1500);
+    if (error) {
+      $("actBody").innerHTML = '<div class="wl"><p class="hint">' + esc(/watch_history|relation/i.test(error.message || "")
+        ? "Watch history is not set up yet. Run STEP 12 or STEP 13 of schema.sql, then refresh." : error.message) + "</p></div>";
+      return;
+    }
+    state.history = data || [];
+    if (!state.members.length) await loadMembers();
+    const sel = $("actUser");
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">All members</option>' + state.members.map((m) =>
+      '<option value="' + esc(m.id) + '"' + (m.id === cur ? " selected" : "") + ">" + esc(m.display_name || m.email || m.id) + (m.is_blocked ? " (suspended)" : "") + "</option>").join("");
+    renderActivity();
+  }
+  function renderActivity() {
+    const uid = $("actUser").value;
+    const q = $("actSearch").value.trim().toLowerCase();
+    const rows = state.history.filter((h) => (!uid || h.user_id === uid) && (!q || String(h.title || "").toLowerCase().indexOf(q) !== -1));
+    const now = Date.now();
+    const today = rows.filter((h) => now - new Date(h.watched_at).getTime() < 864e5).length;
+    const tally = {};
+    rows.forEach((h) => { tally[h.title] = (tally[h.title] || 0) + 1; });
+    const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0];
+    $("actStats").innerHTML = stat(rows.length, "Plays") + stat(new Set(rows.map((h) => h.user_id)).size, "Viewers") +
+      stat(today, "Last 24h") + stat(top ? top[0] + " (" + top[1] + ")" : "-", "Most watched", true);
+    if (!rows.length) { $("actBody").innerHTML = '<div class="wl"><p class="hint">No activity for this filter.</p></div>'; return; }
+    $("actBody").innerHTML = '<div class="list">' + rows.slice(0, 400).map((h) => {
+      const m = state.members.find((x) => x.id === h.user_id);
+      const pic = img(h.poster_path, "w92");
+      const ep = h.media_type === "tv" && h.season ? " - S" + h.season + " E" + (h.episode || 1) : "";
+      return '<div class="act-row">' + (pic ? '<img src="' + esc(pic) + '" alt="">' : '<span class="act-ph"></span>') +
+        "<div><b>" + esc(h.title) + esc(ep) + "</b><small>" + esc(m ? (m.display_name || m.email) : String(h.user_id).slice(0, 8)) +
+        (m && m.is_blocked ? ' | <span style="color:#ff8a92">suspended</span>' : "") + "</small></div>" +
+        '<span class="act-when" title="' + esc(when(h.watched_at)) + '">' + esc(ago(h.watched_at)) + "</span></div>";
+    }).join("") + "</div>";
+  }
+  $("actRefresh").addEventListener("click", loadActivity);
+  $("listRefresh").addEventListener("click", loadLists);
+
+  /* ---------------- streams + content ---------------- */
+  async function loadStreams() {
+    if (!state.sb || !(await isAdminNow())) return;
+    const { data, error } = await state.sb.from("custom_streams")
+      .select("id,tmdb_id,stream_url,created_at").order("created_at", { ascending: false });
+    $("streamList").innerHTML = error ? none(error.message)
+      : ((data || []).length ? data.map((r) => lrow("<strong>TMDB " + esc(r.tmdb_id) + "</strong><small>" + esc(r.stream_url) + "</small>",
+        '<button class="mini danger" type="button" data-del-stream="' + esc(r.tmdb_id) + '">Remove</button>')).join("") : none("No overrides yet."));
+  }
+  $("streamForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const id = Number($("stId").value), url = httpsUrl($("stUrl").value);
+    if (!Number.isSafeInteger(id) || id < 1 || !url) { $("stStatus").textContent = "Enter a positive TMDB id and an https URL."; $("stStatus").className = "status error"; return; }
+    const { error } = await state.sb.from("custom_streams").upsert({ tmdb_id: id, stream_url: url, updated_by: state.user.id }, { onConflict: "tmdb_id" });
+    if (error) { $("stStatus").textContent = error.message; $("stStatus").className = "status error"; return; }
+    $("stStatus").textContent = "Override saved."; $("stStatus").className = "status ok";
+    $("streamForm").reset(); loadStreams(); toast("Stream override saved.", "ok");
+  });
+
+  async function loadContent() {
+    if (!state.sb || !(await isAdminNow())) return;
+    const { data, error } = await state.sb.from("custom_content")
+      .select("id,title,description,created_at").order("created_at", { ascending: false });
+    $("contentList").innerHTML = error ? none(error.message)
+      : ((data || []).length ? data.map((r) => lrow("<strong>" + esc(r.title) + "</strong><small>" + esc(day(r.created_at)) + "</small>",
+        '<button class="mini danger" type="button" data-del-content="' + esc(r.id) + '">Remove</button>')).join("") : none("Nothing published yet."));
+  }
+  $("contentForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const title = $("ctTitle").value.trim();
+    const bRaw = $("ctBanner").value.trim(), sRaw = $("ctStream").value.trim();
+    const banner = bRaw ? httpsUrl(bRaw) : null, stream = sRaw ? httpsUrl(sRaw) : null;
+    if (!title || (bRaw && !banner) || (sRaw && !stream)) { $("ctStatus").textContent = "Image and stream URLs must be https."; $("ctStatus").className = "status error"; return; }
+    const { error } = await state.sb.from("custom_content").insert({ title, description: $("ctDesc").value.trim() || null, banner_url: banner, custom_stream_url: stream });
+    if (error) { $("ctStatus").textContent = error.message; $("ctStatus").className = "status error"; return; }
+    $("ctStatus").textContent = "Published."; $("ctStatus").className = "status ok";
+    $("contentForm").reset(); loadContent(); toast("Published to From the Nest.", "ok");
+  });
+
+  async function del(table, col, val, after) {
+    const { error } = await state.sb.from(table).delete().eq(col, val);
+    if (error) { toast(error.message, "error"); return; }
+    toast("Removed.", "ok");
+    await after();
+  }
+
+  /* ---------------- platform ---------------- */
+  function loadPlatform() {
+    $("platformList").innerHTML =
+      lrow("<strong>Owner identity</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">owner</span>') +
+      lrow("<strong>TMDB key</strong><small>" + esc(OWNER.tmdbKey.slice(0, 6)) + "... | built into the site</small>", '<span class="role ok">live</span>') +
+      lrow("<strong>Supabase URL</strong><small>" + esc(OWNER.supabaseUrl) + "</small>", '<span class="role ok">set</span>') +
+      lrow("<strong>Supabase anon key</strong><small>" + esc(OWNER.supabaseAnonKey.slice(0, 10)) + "... | protected by RLS</small>", '<span class="role ok">set</span>') +
+      lrow("<strong>Signed in as</strong><small>" + esc(state.user?.email || "not signed in") + " | role: " + esc(state.profile?.role || "-") + "</small>", "");
+  }
+
+  /* ---------------- focus nav for remote controls ---------------- */
+  const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])';
+  function focusables() {
+    return Array.from(document.querySelectorAll(FOCUSABLE)).filter((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && !el.closest("[hidden]");
+    });
+  }
+  function moveFocus(dir) {
+    const items = focusables();
+    if (!items.length) return;
+    const cur = document.activeElement;
+    if (!cur || items.indexOf(cur) === -1) { items[0].focus(); return; }
+    const cr = cur.getBoundingClientRect();
+    const cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+    let best = null, score = Infinity;
+    items.forEach((el) => {
+      if (el === cur) return;
+      const r = el.getBoundingClientRect();
+      const dx = (r.left + r.width / 2) - cx, dy = (r.top + r.height / 2) - cy;
+      let fwd = 0, side = 0;
+      if (dir === "left") { fwd = -dx; side = Math.abs(dy); }
+      if (dir === "right") { fwd = dx; side = Math.abs(dy); }
+      if (dir === "up") { fwd = -dy; side = Math.abs(dx); }
+      if (dir === "down") { fwd = dy; side = Math.abs(dx); }
+      if (fwd <= 6) return;
+      const s = fwd + side * 2.2;
+      if (s < score) { score = s; best = el; }
+    });
+    if (best) { best.focus(); best.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); }
+  }
+  document.addEventListener("keydown", (ev) => {
+    const t = ev.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+    const map = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+    if (!map[ev.key]) return;
+    ev.preventDefault();
+    moveFocus(map[ev.key]);
+  }, true);
+
+  /* ---------------- start ---------------- */
+  (async function start() {
+    state.user = await refreshUser();
+    await loadProfile();
+    if (state.user && !(await isAdminNow())) {
+      toast("This account is not an admin.", "error");
+    }
+    await enter();
+  })();
+})();
+</script>
+</body>
+</html>
