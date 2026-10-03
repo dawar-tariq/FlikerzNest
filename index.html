@@ -831,6 +831,28 @@
   body.tv .lockbox p,body.tv .hint,body.tv .note,body.tv .status{font-size:16px}
   /* focus ring must be visible on dark surfaces */
   body.tv .modal-backdrop:focus-within .card{box-shadow:0 0 0 3px rgba(255,212,121,.25),0 35px 120px rgba(0,0,0,.6)}
+  /* Cloud-TV browsers can expose a reduced CSS viewport even on a large screen. */
+  @media (min-width:801px) and (max-width:1200px){
+    body.tv .topbar{
+      height:70px;
+      padding-inline:20px;
+      gap:12px;
+    }
+    body.tv .topbar.scrolled{height:64px}
+    body.tv .brand{font-size:20px;gap:8px}
+    body.tv .brand-mark{width:34px;height:34px;font-size:17px;border-radius:10px 10px 10px 3px}
+    body.tv .nav-links{gap:12px;font-size:13px}
+    body.tv .nav-actions{gap:7px}
+    body.tv .nav-search{width:170px;height:44px;padding-inline:12px;font-size:14px}
+    body.tv .icon-btn{width:44px;height:44px;font-size:18px}
+    body.tv .avatar{width:38px;height:38px;font-size:13px}
+    body.tv .hero{height:calc(100vh - 10px);min-height:500px}
+    body.tv .hero-inner{bottom:70px}
+    body.tv .hero-title{font-size:clamp(34px,4.2vw,52px)}
+    body.tv .hero-copy{max-width:620px;font-size:16px;line-height:1.5}
+    body.tv .btn{min-height:52px;padding-inline:22px;font-size:16px}
+  }
+
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
