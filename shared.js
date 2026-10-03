@@ -36,7 +36,23 @@
   /* ---------------- TV detection (device model only) ---------------- */
   function detectTv() {
     const ua = navigator.userAgent || "";
-    return /SMART-?TV|SmartTV|Tizen|Web0S|NetCast|Viera|HbbTV|Android TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|CrKey|AppleTV|NetTV|SkyQ|Freebox|Vestel|HbbTV|Philips/i.test(ua);
+    const viewport = Math.max(
+      Number(window.screen?.width || 0),
+      Number(window.innerWidth || 0)
+    );
+
+    // Explicit smart-TV / Cloud-TV browser identifiers.
+    const knownTv = /SMART[-_ ]?TV|SmartTV|Smart TV|Tizen|WebOS|Web0S|NetCast|Viera|HbbTV|Android[ ._-]*TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|Google TV|CrKey|AppleTV|NetTV|SkyQ|Freebox|Vestel|CloudTV|Cloud TV|CloudWalker/i.test(ua);
+
+    // Some Android TV browsers expose only a generic Android UA.
+    // Require a large viewport and no "Mobile" token so phones are not
+    // accidentally switched into TV mode.
+    const genericAndroidTv =
+      /Android/i.test(ua) &&
+      !/Mobile/i.test(ua) &&
+      viewport >= 1200;
+
+    return knownTv || genericAndroidTv;
   }
   function applyTvMode(on, persist) {
     state.tv = Boolean(on);
