@@ -3509,10 +3509,26 @@
 
   function detectTv() {
     const ua = navigator.userAgent || "";
-    if (/SMART-?TV|SmartTV|Tizen|Web0S|NetCast|Viera|HbbTV|Android TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|CrKey|AppleTV|LG_Web|NetTV|SkyQ|Freebox|Vestel/i.test(ua)) return true;
-    // Only the device model counts as a TV. Size/touch heuristics wrongly flagged
-    // some phones and desktops, which showed them the TV code box.
-    return false;
+    const viewport = Math.max(
+      Number(window.innerWidth || 0),
+      Number(window.screen?.width || 0)
+    );
+    const screenSize = Math.max(
+      Number(window.screen?.width || 0),
+      Number(window.screen?.height || 0)
+    );
+
+    const knownTv = /SMART[-_ ]?TV|SmartTV|Smart TV|Tizen|WebOS|Web0S|NetCast|Viera|HbbTV|Android[ ._-]*TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|Google TV|CrKey|AppleTV|LG_Web|NetTV|SkyQ|Freebox|Vestel|CloudTV|Cloud TV|CloudWalker/i.test(ua);
+
+    // Cloud-TV browsers may identify only as generic Android.
+    // A large non-mobile Android viewport is a useful fallback.
+    const genericAndroidTv =
+      /Android/i.test(ua) &&
+      viewport >= 800 &&
+      Number(window.innerHeight || 0) >= 450 &&
+      screenSize >= 900;
+
+    return knownTv || genericAndroidTv;
   }
   function applyTvMode(on, persist) {
     state.tv = Boolean(on);
@@ -3526,7 +3542,9 @@
   function initTvMode() {
     let stored = null;
     try { stored = localStorage.getItem(TV_KEY); } catch {}
-    applyTvMode(stored === "1" ? true : stored === "0" ? false : detectTv(), false);
+    const detected = detectTv();
+    // Detected TV hardware always wins over a stale "TV mode off" value.
+    applyTvMode(detected || stored === "1", false);
   }
 
   function focusables(root) {
@@ -3891,9 +3909,25 @@
   $("menuAdmin").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
   $("menuAuth").addEventListener("click", openAuth);
   $("menuTv").addEventListener("click", () => {
-    applyTvMode(!state.tv, true);
+    const turningOn = !state.tv;
+    applyTvMode(turningOn, true);
     closeMenu();
-    toast(state.tv ? "TV mode on. Use the arrow keys and OK button to move around." : "TV mode off.", "ok");
+
+    // Entering TV mode is a user gesture, so request browser full-screen here.
+    // If this browser does not expose Fullscreen API, TV mode still works.
+    if (turningOn) {
+      const root = document.documentElement;
+      const request = root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen;
+      if (request) {
+        try {
+          const result = request.call(root);
+          if (result && typeof result.catch === "function") result.catch(() => {});
+        } catch {}
+      }
+      setTimeout(() => focusFirstIn(document.querySelector(".nav-links") || document.body), 100);
+    }
+
+    toast(state.tv ? "TV mode on. Use the arrow keys / D-pad and OK button to move around." : "TV mode off.", "ok");
   });
   $("menuOut").addEventListener("click", signOut);
   $("profileBtn").addEventListener("click", () => {
@@ -3945,6 +3979,21 @@
     loadCatalog();
   });
   $("searchBox").addEventListener("input", (e) => doSearch(e.target.value));
+
+  // Some TV remotes send "OK"/"Select" instead of Enter. Activate the
+  // currently focused control so the D-pad can actually operate the UI.
+  document.addEventListener("keydown", (e) => {
+    if (!state.tv) return;
+    const key = String(e.key || "").toLowerCase();
+    if (!["enter","numpadenter","ok","select","accept","space"].includes(key)) return;
+    const active = document.activeElement;
+    if (!active || active === document.body) return;
+    if (["INPUT","TEXTAREA","SELECT"].includes(active.tagName)) return;
+    if (active.matches("button,a,[role='button']")) {
+      e.preventDefault();
+      active.click();
+    }
+  }, true);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { closeMenu(); const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden); if (m) closeModal(m.id); }
