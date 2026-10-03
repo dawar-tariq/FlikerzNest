@@ -1310,8 +1310,11 @@
   const OWNER_SESSION_HOURS = 12;   // auto-lock the owner session after this long
   /* ========================================================================== */
 
-  const TMDB = "https://api.themoviedb.org/3";
-  const IMG = "https://image.tmdb.org/t/p/";
+  // Same-origin Vercel proxy: Cloud TV browsers can be restrictive with
+  // direct third-party TLS/CDN requests, so TMDB traffic goes through the
+  // site's own origin.
+  const TMDB = "/tmdb-api";
+  const IMG = "/tmdb-image/";
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const httpsUrl = (v) => { try { const u = new URL(String(v || "").trim()); return u.protocol === "https:" ? u.href : ""; } catch { return ""; } };
@@ -3537,7 +3540,14 @@
       Number(window.innerHeight || 0) >= 450 &&
       screenSize >= 900;
 
-    return knownTv || genericAndroidTv;
+    // Cloud TV may expose a desktop/Linux-style UA. Its large-screen
+    // viewport is therefore a stronger signal than the UA alone.
+    const largeScreenTv =
+      screenSize >= 1200 &&
+      viewport >= 800 &&
+      Number(window.innerHeight || 0) >= 450;
+
+    return knownTv || genericAndroidTv || largeScreenTv;
   }
   function applyTvMode(on, persist) {
     state.tv = Boolean(on);
