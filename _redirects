@@ -1,0 +1,9 @@
+# Netlify / Cloudflare Pages: clean URLs for every page.
+/admin     /admin.html     200
+/admin/    /admin.html     200
+/watch     /watch.html     200
+/explore   /explore.html   200
+/mylist    /mylist.html    200
+/about     /about.html     200
+/tv        /tv.html        200
+/account   /account.html   200

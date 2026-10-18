@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Player | Flickerz Nest</title>
+<!--
+  Dedicated player page.
+  Open as:  watch.html?type=movie&id=693134
+            watch.html?type=tv&id=100088&s=1&e=3
+  It loads the shared app (index.html) in player mode, which opens that title
+  in the player straight away. Sign-in rules, servers, seasons, history and
+  watchlist all work exactly as they do on the main site.
+-->
+<style>
+  html,body{margin:0;height:100%;background:#0a0b0f;color:#f3f4f7;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .boot{display:grid;place-items:center;height:100%;gap:14px;text-align:center}
+  .ring{width:46px;height:46px;border:3px solid rgba(255,255,255,.12);border-top-color:#e50914;border-radius:50%;animation:spin .9s linear infinite}
+  p{margin:0;color:#9aa0ad;font-size:14px} a{color:#fff}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+<script>
+  (function () {
+    var qs = location.search ? location.search + "&page=watch" : "?page=watch";
+    var target = "index.html" + qs + (location.hash || "");
+    try { location.replace(target); } catch (e) { location.href = target; }
+  })();
+</script>
+</head>
+<body>
+  <div class="boot"><div class="ring"></div><p>Opening the player&hellip;</p><p><a href="index.html">Go to Flickerz Nest</a></p></div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0b0c10">
 <meta name="description" content="Flickerz Nest - a premium home for films and series. Made with love by Dawar Tariq.">
 <meta name="author" content="Dawar Tariq">
@@ -327,22 +327,6 @@
   .ep{display:flex;align-items:center;gap:8px}
   .ep label{display:flex;align-items:center;gap:6px}
   .ep input{width:56px;height:32px;padding:4px 8px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:#12141a}
-  /* season + episode picker */
-  .ep-picker{padding:0 clamp(16px,3vw,38px) 4px}
-  .ep-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0}
-  .ep-head>label{color:#c7cad2;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-  .ep-head .fsel{width:auto;min-width:150px;min-height:38px}
-  .ep-note{flex:1;min-width:120px;color:#8b909c;font-size:11.5px}
-  .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px;max-height:250px;overflow-y:auto;padding-bottom:10px;scrollbar-width:thin}
-  .ep-card{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.028);color:#e8eaee;cursor:pointer;text-align:left;min-width:0;transition:border-color .18s,background .18s}
-  .ep-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.07)}
-  .ep-card.on{border-color:var(--red);background:rgba(229,9,20,.16)}
-  .ep-card img,.ep-still{flex:0 0 auto;width:66px;height:38px;border-radius:6px;object-fit:cover;background:#22262f}
-  .ep-still{display:grid;place-items:center;color:#7f8592;font-size:12px}
-  .ep-card b{display:block;overflow:hidden;font-size:11.5px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
-  .ep-card small{display:block;margin-top:3px;color:#8b909c;font-size:10px}
-  .ep-loading{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:18px 6px;color:#9aa0ad;font-size:12.5px}
-  .ep-loading .spin{width:22px;height:22px;border-width:2px}
 
   /* admin */
   .tabs{display:flex;gap:4px;padding:0 16px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
@@ -527,19 +511,9 @@
     .player-foot{align-items:flex-start;flex-direction:column}
     .stage{max-height:none}
 
-    /* ---- mobile player: true full-screen, every control reachable ---- */
+    /* ---- mobile player (layout rules live in the v10 block further down) ---- */
     .backdrop.player-backdrop{padding:0;align-items:stretch}
     .card.player-card{width:100%;height:100dvh;max-height:100dvh;border-radius:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-    .player-head{padding:12px 14px 10px;gap:10px}
-    .player-titlebar{flex:1 1 100%}
-    .player-head h2{font-size:15.5px}
-    .player-close{width:40px;height:40px}
-    .player-tools{flex:1 1 100%;flex-direction:column;align-items:stretch;gap:8px}
-    .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%}
-    .seg button{flex-direction:column;gap:3px;min-height:52px;padding:6px 2px;font-size:10px}
-    .srv-num{width:20px;height:20px;font-size:10.5px}
-    .srv-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:9.5px;font-weight:600}
-    .pop-btn{justify-content:center;width:100%;min-height:42px;font-size:12px}
     .stage-note{padding:18px;font-size:12px}
     .stage-note b{font-size:14px}
     .stage-note .mini{min-height:38px}
@@ -720,9 +694,6 @@
     .foot-brand-col{grid-column:1/-1}
   }
   @media (max-width:620px){
-    .ep-picker{padding:0 14px}
-    .ep-head .fsel{min-width:120px;flex:1}
-    .ep-grid{grid-template-columns:1fr;max-height:230px}
     .icon-btn{width:36px;height:36px;font-size:16px}
     .nav-search{width:36px;height:36px;padding:0;justify-content:center}
     .row-head h2{font-size:18px}
@@ -732,16 +703,330 @@
     .foot-bottom{flex-direction:column;align-items:flex-start}
     .prose p,.prose li{font-size:13.5px}
   }
-  /* v7: TV pairing + full screen */
-  /* The TV-code entry is for TVs only - phones and desktops sign in normally. */
-  body:not(.tv) #useTvCode{display:none}
-  body:not(.tv) #menuLinkTv{display:none}
-  .tvcode{margin:18px 0 6px;padding:22px;border:1px solid var(--line-2);border-radius:16px;background:rgba(255,255,255,.05);
-    font-size:clamp(38px,9vw,62px);font-weight:800;letter-spacing:.32em;text-align:center;color:#fff}
-  .tvcode small{display:block;margin-top:12px;font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
-  .code-input{width:100%;min-height:56px;padding:12px 16px;border:1px solid var(--line-2);border-radius:12px;background:#0e1015;
-    font-size:26px;font-weight:800;letter-spacing:.28em;text-align:center;text-transform:uppercase}
-  .tv-panel{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+  /* =================== v11: reports, progress, collections, reset =================== */
+  .pbtn-warn{border-color:rgba(255,176,32,.35);color:#ffc857}
+  .pbtn-warn:hover{background:rgba(255,176,32,.12);border-color:rgba(255,176,32,.6);color:#ffd27a}
+  .reason-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .reason{position:relative;display:block;cursor:pointer}
+  .reason input{position:absolute;opacity:0;inset:0;cursor:pointer}
+  .reason span{display:flex;align-items:center;gap:9px;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);color:#d4d7de;font-size:12.5px;font-weight:600;transition:all .16s}
+  .reason span i{font-size:15px;color:#9aa0ad}
+  .reason input:checked+span{border-color:var(--red);background:rgba(229,9,20,.12);color:#fff}
+  .reason input:checked+span i{color:var(--red-2)}
+  .reason input:focus-visible+span{outline:2px solid #fff;outline-offset:2px}
+  .tab-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;margin-left:6px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:10px;font-weight:800}
+  .rep-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .rep-row img,.rep-ph{width:44px;height:64px;border-radius:7px;object-fit:cover;background:#232733}
+  .rep-row b{display:block;font-size:13px}
+  .rep-row small{display:block;margin-top:3px;color:#8b909c;font-size:11px;line-height:1.5}
+  .rep-tag{display:inline-block;padding:2px 7px;margin-right:6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#c9ccd3}
+  .rep-tag.open{background:rgba(255,176,32,.16);color:#ffc857}
+  .rep-tag.fixed{background:rgba(94,217,164,.15);color:var(--green)}
+  .rep-tag.ignored{background:rgba(255,255,255,.06);color:#8b909c}
+  .rep-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .rep-count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;font-weight:800}
+  /* series progress */
+  .progress{height:6px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
+  .progress i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--red),#ff5a63)}
+  .tp-progress{display:flex;flex-direction:column;gap:8px;max-width:520px;margin:14px 0 2px}
+  .tp-progress-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;color:#c9ccd3}
+  .tp-progress-head b{color:#fff}
+  .season .sprog{margin-top:8px}
+  .season .sprog small{display:block;margin-top:5px;color:#8b909c;font-size:10.5px}
+  .ep-card.seen .ep-thumb::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+  .ep-card.seen .ep-info b::before{content:"\2713 ";color:var(--green)}
+  .ep-card .ep-mark{position:absolute;top:5px;right:5px;z-index:2;width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.25);border-radius:7px;background:rgba(0,0,0,.65);color:#fff;font-size:12px;cursor:pointer}
+  .ep-card .ep-mark:hover{background:var(--green);border-color:var(--green);color:#0c0d11}
+  .ep-card.seen .ep-mark{background:var(--green);border-color:var(--green);color:#0c0d11}
+  .ep-done{margin-top:10px;padding:10px 12px;border:1px solid rgba(94,217,164,.3);border-radius:10px;background:rgba(94,217,164,.08);color:#bfe9d3;font-size:12px}
+  .pbtn-next{border-color:rgba(255,255,255,.2)}
+  /* collection banner */
+  .tp-collection{display:flex;align-items:center;gap:16px;margin:0 0 20px;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);overflow:hidden;position:relative}
+  .tp-collection .cbg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.18;filter:blur(2px)}
+  .tp-collection>*:not(.cbg){position:relative}
+  .tp-collection img{width:54px;height:80px;border-radius:8px;object-fit:cover;flex:0 0 auto}
+  .tp-collection b{display:block;font-size:14px}
+  .tp-collection small{display:block;margin-top:3px;color:#9aa0ad;font-size:12px}
+  .tp-collection .btn{margin-left:auto;flex:0 0 auto}
+  @media (max-width:620px){
+    .reason-grid{grid-template-columns:1fr}
+    .rep-row{grid-template-columns:40px minmax(0,1fr)}
+    .rep-actions{grid-column:1/-1;justify-content:flex-start}
+    .tp-collection{flex-wrap:wrap}
+    .tp-collection .btn{margin-left:0;width:100%}
+    .player-actions .pbtn-warn span{display:none}
+  }
+  /* =================== v10: refined UI =================== */
+  :root{--r-sm:10px;--r-md:14px;--r-lg:20px;--ease:cubic-bezier(.2,.7,.2,1)}
+  /* calmer header */
+  .topbar{height:66px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(10,11,15,.72);backdrop-filter:blur(18px) saturate(140%)}
+  .topbar.scrolled{background:rgba(10,11,15,.94)}
+  .icon-btn,.nav-search{width:38px;height:38px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03)}
+  .icon-btn:hover,.nav-search:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+  .icon-btn.shield{display:none!important}           /* admin shortcut lives in the account menu only */
+  .nav-links a{font-size:13.5px;padding:8px 12px;border-radius:10px}
+  .nav-links a:hover{background:rgba(255,255,255,.05)}
+  .nav-links a.active{color:#fff;background:rgba(255,255,255,.07)}
+  .nav-links a::after{display:none}
+  /* hero */
+  .hero-title{font-weight:800;letter-spacing:-.035em}
+  .hero-copy{color:#c3c7d0}
+  .btn{border-radius:12px;font-weight:700;letter-spacing:.005em;transition:transform .18s var(--ease),background .18s,border-color .18s,box-shadow .18s}
+  .btn:active{transform:scale(.97)}
+  .btn-light{box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  /* rows */
+  .row-head h2{font-size:21px;font-weight:800;letter-spacing:-.025em;padding-left:0}
+  .row-head h2::before{display:none}
+  .row-head p{display:none}
+  .row-nav button{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.04)}
+  .poster{border-radius:12px;border:1px solid rgba(255,255,255,.06)}
+  .poster::after{display:none}
+  .tile:hover .poster{transform:translateY(-4px);border-color:rgba(255,255,255,.18);box-shadow:0 20px 44px rgba(0,0,0,.5)}
+  .tile-name{font-size:13.5px;font-weight:600;color:#eef0f4}
+  .tile-sub{font-size:11.5px;color:#868b97}
+  .score{background:rgba(10,11,15,.78);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(6px)}
+  .save,.info-btn{width:30px;height:30px;background:rgba(10,11,15,.72);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(6px)}
+  /* cards / dialogs */
+  .card{border-radius:var(--r-lg);border:1px solid rgba(255,255,255,.08);background:#111318;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+  .card-head{padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .card-head h2{font-size:18px;font-weight:800;letter-spacing:-.02em}
+  .card-head p{font-size:12.5px;color:#8b909c}
+  .card-body{padding:18px 20px 20px}
+  .field input,.field textarea,.fsel{border-radius:12px;border-color:rgba(255,255,255,.1);background:#0c0d12}
+  .field input:focus,.field textarea:focus,.fsel:focus{border-color:rgba(229,9,20,.6);box-shadow:0 0 0 3px rgba(229,9,20,.14)}
+  .x{border-radius:10px;background:rgba(255,255,255,.05)}
+  .x:hover{background:rgba(255,255,255,.1)}
+  .tabs{gap:4px;padding:0 14px}
+  .tab{padding:14px 12px;font-size:13px;border-radius:10px 10px 0 0}
+  .tab:hover{background:rgba(255,255,255,.04)}
+  .stat{border-radius:var(--r-md);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+  .stat b{font-size:24px;letter-spacing:-.03em}
+  table th{font-size:10.5px;letter-spacing:.1em}
+  table td{padding:12px 14px}
+  .mini{border-radius:9px;background:rgba(255,255,255,.03)}
+  .mini:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:#fff}
+  .role{border-radius:7px;font-size:10px;letter-spacing:.05em}
+  .toast{border-radius:12px;background:#15181f;border-color:rgba(255,255,255,.1);box-shadow:0 14px 40px rgba(0,0,0,.5)}
+  .menu{border-radius:var(--r-md);background:#13161c;border-color:rgba(255,255,255,.08)}
+  .menu-item{border-radius:10px;margin:0 6px;padding:11px 12px;font-size:13.5px}
+  /* pages */
+  .page-head h1{font-weight:800;letter-spacing:-.04em}
+  .filters{border-radius:var(--r-lg);background:rgba(255,255,255,.02)}
+  .chip{border-radius:10px;padding:8px 13px}
+  .ml-card{border-radius:var(--r-md)}
+  .value,.meta-cell,.contact-card,.link-tv{border-radius:var(--r-md)}
+  .foot{border-top:1px solid rgba(255,255,255,.06);background:#07080b}
+  .tabbar{background:rgba(9,10,14,.92);border-top-color:rgba(255,255,255,.06)}
+  .tabbar a,.tabbar button{font-size:10px}
+
+  /* ---------------- player: video first, one row of controls ---------------- */
+  .player-backdrop{padding:0;background:#000}
+  .card.player-card{width:100%;max-width:none;min-height:100vh;min-height:100dvh;border:0;border-radius:0;background:#050609;box-shadow:none;display:flex;flex-direction:column}
+  .player-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px clamp(12px,2.5vw,28px);background:#050609}
+  .player-titles{min-width:0}
+  .player-head .label{margin:0;padding:0;font-size:10.5px;letter-spacing:.12em;color:#8b909c}
+  .player-head h2{margin:1px 0 0;font-size:15.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pbtn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 13px;border:1px solid rgba(255,255,255,.1);border-radius:11px;background:rgba(255,255,255,.04);color:#e7e9ee;cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;text-decoration:none;transition:background .16s,border-color .16s,transform .16s var(--ease)}
+  .pbtn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff}
+  .pbtn:active{transform:scale(.96)}
+  .pbtn i{font-size:15px}
+  .pbtn-icon{width:38px;padding:0}
+  .player-close{display:none}                                /* back arrow does the job; X returns on desktop */
+  .stage{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100dvh - 180px);background:#000;flex:0 0 auto}
+  .stage iframe{display:block;width:100%;height:100%;border:0;background:#000}
+  .player-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(12px,2.5vw,28px) 6px}
+  .player-status{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8b909c;font-size:12px}
+  .player-actions{display:flex;gap:8px;flex:0 0 auto}
+  .player-sources{display:flex;align-items:center;gap:12px;padding:6px clamp(12px,2.5vw,28px) 12px}
+  .player-sources-label{flex:0 0 auto;color:#8b909c;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .player-sources .seg{display:flex;gap:6px;padding:0;border:0;background:none;overflow-x:auto;scrollbar-width:none;min-width:0}
+  .player-sources .seg::-webkit-scrollbar{display:none}
+  .player-sources .seg button{flex:0 0 auto;flex-direction:row;gap:7px;height:36px;min-height:0;padding:0 12px 0 6px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.03);color:#b4b8c2;font-size:12.5px;font-weight:600}
+  .player-sources .seg button:hover{background:rgba(255,255,255,.08);color:#fff}
+  .player-sources .seg button.active{background:#fff;border-color:#fff;color:#0c0d11}
+  .player-sources .srv-num{width:24px;height:24px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px}
+  .player-sources .seg button.active .srv-num{background:var(--red);color:#fff}
+  .player-episodes{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:0;padding:12px clamp(12px,2.5vw,28px);border-top:1px solid rgba(255,255,255,.06)}
+  .player-episodes label{display:grid;gap:6px;flex:1 1 170px;min-width:0;color:#8b909c;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .player-episodes .ep-sel{width:100%;max-width:none;min-width:0;height:40px;min-height:40px;border-radius:11px;font-size:13.5px;color:#fff;text-transform:none;letter-spacing:0;font-weight:600}
+  .ep-step{display:flex;gap:8px;flex:0 0 auto}
+  .ep-browser{padding:4px clamp(12px,2.5vw,28px) 20px;border-top:0}
+  .stage-note{border-radius:0}
+  /* desktop: give the video the full height, controls beside the title */
+  @media (min-width:1024px){
+    .player-close{display:inline-flex}
+    .player-head{padding:12px clamp(20px,3vw,40px)}
+    .player-head h2{font-size:17px}
+    .stage{max-height:calc(100dvh - 150px)}
+    .player-bar,.player-sources{padding-left:clamp(20px,3vw,40px);padding-right:clamp(20px,3vw,40px)}
+    .player-episodes,.ep-browser{padding-left:clamp(20px,3vw,40px);padding-right:clamp(20px,3vw,40px)}
+  }
+  /* phones: labels drop off the action buttons, everything stays on one row */
+  @media (max-width:620px){
+    .player-head{padding:8px 10px;gap:8px}
+    .player-head h2{font-size:14px}
+    .pbtn{height:36px;padding:0 11px}
+    .player-actions .pbtn span{display:none}
+    .player-actions .pbtn{width:36px;padding:0}
+    .player-bar{padding:8px 12px 4px}
+    .player-status{font-size:11.5px}
+    .player-sources{padding:4px 12px 10px}
+    .player-sources-label{display:none}
+    .player-episodes{padding:10px 12px}
+    .player-episodes label{flex-basis:calc(50% - 5px)}
+    .ep-step{width:100%}
+    .ep-step .pbtn{flex:1}
+    .ep-browser{padding:0 12px 16px}
+    .stage{max-height:none}
+  }
+  /* the player page (watch.html) shows nothing but the player */
+  body.watch-page .topbar,body.watch-page main,body.watch-page .foot,body.watch-page .tabbar,body.watch-page .tv-help{display:none!important}
+  body.watch-page #playerModal{position:static;display:block;padding:0;background:#000;backdrop-filter:none;animation:none}
+  /* inside a modal the footer is never visible - the body is locked - but the
+     player page is not a modal, so hide the footer there explicitly too */
+  body.locked .foot{visibility:hidden}
+
+  /* =================== v8: TV code sign-in, admin page mode =================== */
+  .tvcode-box{text-align:center;padding:10px 0 4px}
+  .tvcode{display:inline-flex;gap:10px;margin:14px 0 10px}
+  .tvcode span{display:grid;place-items:center;width:52px;height:68px;border:2px solid rgba(255,255,255,.25);border-radius:12px;background:#0e1015;font-size:34px;font-weight:800;letter-spacing:0}
+  body.tv .tvcode span{width:74px;height:96px;font-size:50px}
+  .tvcode-url{margin:6px 0 0;color:#fff;font-size:15px;word-break:break-all}
+  .tvcode-url b{color:var(--gold)}
+  .tvcode-wait{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:13px}
+  .tvcode-or{display:flex;align-items:center;gap:12px;margin:22px 0 14px;color:var(--muted);font-size:12px}
+  .tvcode-or::before,.tvcode-or::after{content:"";flex:1;height:1px;background:var(--line)}
+  .link-tv{margin-top:8px;padding:14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)}
+  .link-tv b{display:block;font-size:13px}
+  .link-tv p{margin:4px 0 10px;color:var(--muted);font-size:12px;line-height:1.5}
+  .link-tv form{display:flex;gap:8px}
+  .link-tv input{flex:1;min-width:0;min-height:42px;padding:0 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:#0e1015;color:#fff;font-size:18px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;text-align:center}
+  .menu-item.link-tv-btn{border-top:1px solid var(--line);margin-top:4px;padding-top:12px}
+  /* admin page mode: the panel fills the page instead of floating as a dialog */
+  body.admin-page{background:#0a0b0f}
+  body.admin-page .topbar,body.admin-page main,body.admin-page .foot,body.admin-page .tabbar,body.admin-page .tv-help{display:none!important}
+  body.admin-page #adminModal{position:static;display:block;padding:0;background:none;backdrop-filter:none;animation:none}
+  body.admin-page #adminModal .card{width:100%;max-width:none;min-height:100vh;max-height:none;border:0;border-radius:0;box-shadow:none}
+  body.admin-page #adminModal .card-head{position:sticky;top:0;z-index:5;background:#0a0b0f}
+  body.admin-page #adminModal [data-close="adminModal"]{display:none}
+  body.admin-page .admin-home{display:inline-flex!important}
+  .admin-home{display:none;align-items:center;gap:8px}
+  /* =================== v7: TV mode (remote / D-pad) =================== */
+  /* Base: a clear highlight on whatever element has keyboard focus. */
+  body.tv :focus{outline:none}
+  body.tv :focus-visible,body.tv .poster:focus-visible,body.tv .tv-focus{
+    outline:4px solid #fff!important;outline-offset:3px;box-shadow:0 0 0 8px rgba(255,255,255,.18),0 18px 40px rgba(0,0,0,.6)!important;
+    position:relative;z-index:5;border-radius:12px}
+  body.tv .poster:focus-visible,body.tv .poster.tv-focus{transform:scale(1.07)}
+  body.tv .chip:focus-visible,body.tv .ml-tab:focus-visible,body.tv .tab:focus-visible{outline-offset:2px}
+  body.tv{font-size:19px;cursor:none}
+  body.tv.tv-pointer{cursor:auto}
+  body.tv .shell,body.tv .view-page,body.tv .foot{padding-left:max(4vw,48px);padding-right:max(4vw,48px)}
+  body.tv .topbar{height:88px;padding:0 max(4vw,48px)}
+  body.tv .brand{font-size:26px}
+  body.tv .brand-mark{width:40px;height:40px;font-size:22px}
+  body.tv .nav-links{display:flex;gap:32px}
+  body.tv .nav-links a{padding:10px 16px;border-radius:12px;font-size:19px}
+  body.tv .icon-btn,body.tv .nav-search{width:52px;height:52px;font-size:24px}
+  body.tv .avatar{width:50px;height:50px;font-size:17px}
+  body.tv .menu{top:92px;width:320px}
+  body.tv .menu-item{padding:16px 18px;font-size:18px}
+  body.tv .hero{min-height:620px;height:72vh}
+  body.tv .hero-inner{left:max(4vw,48px);bottom:92px;width:min(860px,70vw)}
+  body.tv .hero-title{font-size:clamp(44px,5vw,72px)}
+  body.tv .hero-copy{font-size:20px;line-height:1.55;max-width:760px}
+  body.tv .eyebrow{font-size:14px}
+  body.tv .btn{min-height:60px;padding:0 30px;font-size:19px;border-radius:14px}
+  body.tv .btn-sm,body.tv .mini{min-height:48px;padding:0 20px;font-size:16px}
+  body.tv .row{margin-bottom:56px}
+  body.tv .row-head h2{font-size:30px}
+  body.tv .row-head p{font-size:16px}
+  body.tv .row-nav{display:none}
+  body.tv .strip{gap:22px;padding:14px 10px 20px;scroll-padding-left:10px}
+  body.tv .tile,body.tv .skeleton{flex-basis:230px}
+  body.tv .tile-name{font-size:18px;margin-top:12px}
+  body.tv .tile-sub{font-size:14px}
+  body.tv .save,body.tv .info-btn{width:44px;height:44px;font-size:20px;opacity:1;transform:none}
+  body.tv .info-btn{top:60px}
+  body.tv .score{font-size:14px;padding:5px 10px}
+  body.tv .tabbar{display:none}
+  body.tv{padding-bottom:0}
+  body.tv .pseg button,body.tv .chip,body.tv .ml-tab{min-height:50px;padding:0 20px;font-size:17px}
+  body.tv .fsel{min-height:52px;font-size:17px}
+  body.tv .fgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 22px}
+  body.tv .page-head h1{font-size:48px}
+  body.tv .page-head .sub{font-size:18px}
+  body.tv .prose p,body.tv .prose li{font-size:19px}
+  /* dialogs */
+  body.tv .card{border-radius:22px}
+  body.tv .card:not(.player-card){width:min(720px,92vw)}
+  body.tv .card-head h2{font-size:26px}
+  body.tv .field input,body.tv .field textarea{min-height:58px;font-size:19px}
+  body.tv .field label{font-size:16px}
+  body.tv .x{width:52px;height:52px;font-size:24px}
+  /* title page */
+  body.tv .tp-hero{min-height:70vh}
+  body.tv .tp-title{font-size:clamp(40px,4.5vw,64px)}
+  body.tv .tp-overview{font-size:19px;max-width:860px}
+  body.tv .tp-poster{width:260px}
+  /* player: controls stay reachable, the video gets most of the screen */
+  body.tv .player-head{padding:16px max(4vw,48px)}
+  body.tv .player-head h2{font-size:24px}
+  body.tv .seg button{min-height:48px;padding:0 18px;font-size:16px}
+  body.tv .srv-num{width:24px;height:24px;font-size:13px}
+  body.tv .pop-btn{min-height:48px;font-size:16px}
+  body.tv .stage{max-height:calc(100vh - 190px)}
+  body.tv .stage-note b{font-size:22px}
+  body.tv .stage-note span,body.tv .stage-note{font-size:17px}
+  body.tv .player-foot{padding:14px max(4vw,48px) 20px;font-size:16px}
+  body.tv .ep-sel{min-height:48px;height:48px;font-size:17px;min-width:200px}
+  body.tv .ep .mini{height:48px}
+  body.tv .ep-list{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  body.tv .ep-card{padding:12px}
+  body.tv .ep-thumb{flex-basis:140px}
+  body.tv .ep-info b{font-size:16px}
+  body.tv .ep-info p,body.tv .ep-info small{font-size:14px}
+  /* on-screen help + fullscreen hint */
+  .tv-help{position:fixed;z-index:60;right:24px;bottom:22px;display:none;gap:16px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:rgba(9,10,14,.9);color:#c9ccd3;font-size:14px;backdrop-filter:blur(14px)}
+  body.tv .tv-help{display:flex}
+  body.tv.locked .tv-help{display:none}
+  .tv-help kbd{display:inline-block;min-width:24px;padding:2px 7px;margin-right:4px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:rgba(255,255,255,.08);color:#fff;font:600 12px/1.4 inherit;text-align:center}
+  .tv-fs{position:fixed;z-index:60;left:50%;bottom:22px;transform:translateX(-50%);display:none;align-items:center;gap:10px;padding:12px 18px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(229,9,20,.92);color:#fff;font-size:15px;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .tv-fs.show{display:inline-flex}
+  .tv-fs button{min-height:36px;padding:0 14px;border:0;border-radius:999px;background:#fff;color:#111;font-weight:700;cursor:pointer}
+  body.tv .menu-tv{display:flex}
+  .menu-tv{display:none}
+  /* v6: real season and episode pickers */
+  .ep{flex-wrap:wrap}
+  .ep-sel{width:auto;min-width:120px;max-width:200px;min-height:34px;height:34px;padding:0 30px 0 10px;font-size:12.5px;
+    appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 256 256' fill='%23a6aab5'><path d='M213.7 101.7l-80 80a8 8 0 0 1-11.4 0l-80-80a8 8 0 0 1 11.4-11.4L128 164.7l74.3-74.4a8 8 0 0 1 11.4 11.4z'/></svg>");
+    background-repeat:no-repeat;background-position:right 10px center}
+  .ep-sel:disabled{opacity:.55}
+  .ep .mini{height:34px}
+  .ep-browser{padding:4px clamp(16px,3vw,38px) 14px;border-top:1px solid rgba(255,255,255,.06)}
+  .ep-browser-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 10px}
+  .ep-browser-head b{font-size:13px}
+  .ep-browser-head small{color:var(--muted);font-size:11.5px}
+  .ep-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .ep-card{display:flex;gap:10px;align-items:flex-start;width:100%;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);color:inherit;cursor:pointer;text-align:left;transition:border-color .18s,background .18s}
+  .ep-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.06)}
+  .ep-card.now{border-color:var(--red);background:rgba(229,9,20,.12)}
+  .ep-thumb{position:relative;flex:0 0 96px;aspect-ratio:16/9;overflow:hidden;border-radius:6px;background:#1c2029}
+  .ep-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .ep-thumb span{position:absolute;left:5px;bottom:4px;padding:1px 6px;border-radius:5px;background:rgba(0,0,0,.75);font-size:10.5px;font-weight:700}
+  .ep-card.now .ep-thumb::after{content:"";position:absolute;inset:0;background:rgba(229,9,20,.25)}
+  .ep-info{min-width:0;flex:1}
+  .ep-info b{display:block;overflow:hidden;font-size:12.5px;text-overflow:ellipsis;white-space:nowrap}
+  .ep-info small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+  .ep-info p{display:-webkit-box;overflow:hidden;margin:5px 0 0;color:#aab0bc;font-size:11px;line-height:1.5;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  @media (max-width:620px){
+    .ep{gap:6px}
+    .ep label{flex:1 1 calc(50% - 6px);min-width:0}
+    .ep-sel{width:100%;max-width:none;min-height:40px;height:40px;font-size:14px}
+    .ep .mini{height:38px;flex:1}
+    .ep-browser{padding:4px 14px 12px}
+    .ep-list{grid-template-columns:1fr}
+  }
   /* v5: sign-in required to watch */
   .when-guest{display:none}
   body.guest .when-guest{display:inline}
@@ -750,118 +1035,6 @@
   .dot-history{background:#b39bff}
   .hist-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px}
   .act-row .mgr{flex:0 0 auto}
-  /* =================== v6: TV / remote-control mode =================== */
-  /* Every control must be reachable and visible without hover or touch. */
-  :focus-visible{outline:3px solid #ffd479;outline-offset:3px}
-  button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #ffd479;outline-offset:3px}
-  .tile:focus-within .poster{border-color:#fff;box-shadow:0 0 0 3px #ffd479,0 22px 44px rgba(0,0,0,.55)}
-  .ep-card:focus-visible,.ml-card:focus-within,.hit:focus-visible{border-color:#ffd479;box-shadow:0 0 0 3px rgba(255,212,121,.35)}
-  body.tv{font-size:17px}
-  body.tv .nav-links{display:flex!important;gap:26px;font-size:16px}
-  body.tv .tabbar{display:none!important}
-  body.tv .topbar{height:92px;padding-inline:56px}
-  body.tv .topbar.scrolled{height:84px}
-  body.tv .brand{font-size:27px}
-  body.tv .brand-mark{width:42px;height:42px;font-size:21px;border-radius:13px 13px 13px 4px}
-  body.tv .nav-search{width:280px;height:52px;font-size:16px}
-  body.tv .nav-search span{display:inline}
-  body.tv .icon-btn{width:52px;height:52px;font-size:21px}
-  body.tv .avatar{width:46px;height:46px;font-size:15px}
-  body.tv .menu{width:320px;top:84px;padding:12px}
-  body.tv .menu-item{min-height:54px;font-size:16px}
-  body.tv .menu-head strong{font-size:16px}
-  body.tv .menu-head span{font-size:13px}
-  body.tv .hero{height:86vh;min-height:640px}
-  body.tv .hero-title{font-size:clamp(42px,4.4vw,68px)}
-  body.tv .hero-copy{max-width:720px;font-size:19px;line-height:1.65}
-  body.tv .hero-logo{font-size:clamp(38px,3.6vw,56px);margin-bottom:28px}
-  body.tv .chips{gap:11px}
-  body.tv .chip{padding:9px 16px;font-size:15px;border-radius:10px}
-  body.tv .btn{min-height:62px;padding:0 30px;font-size:19px;gap:13px;border-radius:12px}
-  body.tv .btn-sm{min-height:48px;font-size:16px}
-  body.tv .page-head h1{font-size:clamp(38px,4vw,58px)}
-  body.tv .page-head .sub,body.tv .foot-tag,body.tv .prose p,body.tv .prose li{font-size:17px}
-  body.tv .row-head h2{font-size:clamp(26px,2.4vw,36px)}
-  body.tv .row-head p{font-size:16px}
-  body.tv .row-nav{display:flex!important;gap:12px}
-  body.tv .arrow{width:58px;height:58px;font-size:20px}
-  body.tv .strip{gap:26px;padding-bottom:18px}
-  body.tv .tile,body.tv .skeleton{flex-basis:clamp(190px,16vw,260px)}
-  /* on a TV there is no hover: posters and their controls are always visible */
-  body.tv .save,body.tv .info-btn{opacity:1;transform:none;width:46px;height:46px;font-size:20px;top:14px}
-  body.tv .save{right:14px}
-  body.tv .info-btn{top:70px;right:14px}
-  body.tv .score{top:14px;left:14px;padding:6px 12px;font-size:16px}
-  body.tv .poster-info{opacity:1;transform:none;padding:16px}
-  body.tv .poster-info strong{font-size:16px}
-  body.tv .poster-info span{font-size:13px}
-  body.tv .poster-play i{width:70px;height:70px;font-size:26px}
-  body.tv .tile-name{margin-top:14px;font-size:17px}
-  body.tv .tile-sub{font-size:14px}
-  body.tv .view-page{padding:120px 56px 90px}
-  body.tv .fsel{min-height:54px;font-size:17px}
-  body.tv .chip-row{gap:12px}
-  body.tv .filters{padding:22px;gap:18px}
-  body.tv .fgrid{gap:28px 22px}
-  body.tv .ml-grid{gap:22px}
-  body.tv .ml-card{padding:16px}
-  body.tv .ml-poster{flex-basis:112px}
-  body.tv .ml-body>b{font-size:18px}
-  body.tv .ml-sub,body.tv .act-row small,body.tv .act-when{font-size:15px}
-  body.tv .mini{min-height:46px;padding:0 18px;font-size:14px}
-  body.tv .player-head{padding:18px 44px}
-  body.tv .player-head h2{font-size:22px}
-  body.tv .seg button{min-height:58px;padding:0 22px;font-size:17px}
-  body.tv .srv-num{width:26px;height:26px;font-size:14px}
-  body.tv .ep-picker{padding:0 44px}
-  body.tv .ep-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));max-height:340px;gap:14px}
-  body.tv .ep-card{padding:12px;gap:16px}
-  body.tv .ep-card img,body.tv .ep-still{width:110px;height:62px}
-  body.tv .ep-card b{font-size:16px}
-  body.tv .ep-card small{font-size:13px}
-  body.tv .card{max-width:900px}
-  body.tv .dialog-search,.body.tv .search-top input{font-size:20px}
-  body.tv .foot{padding:56px}
-  body.tv .foot-col a{font-size:17px;padding:9px 0}
-  body.tv .prose h2{font-size:24px}
-  body.tv .value b{font-size:19px}
-  body.tv .value span{font-size:16px}
-  body.tv .toasts{bottom:32px;right:32px}
-  body.tv .toast{font-size:17px;padding:18px 22px}
-  body.tv .lockbox p,body.tv .hint,body.tv .note,body.tv .status{font-size:16px}
-  /* focus ring must be visible on dark surfaces */
-  body.tv .modal-backdrop:focus-within .card{box-shadow:0 0 0 3px rgba(255,212,121,.25),0 35px 120px rgba(0,0,0,.6)}
-  /* Cloud-TV browsers can expose a reduced CSS viewport even on a large screen. */
-  @media (min-width:801px) and (max-width:1200px){
-    body.tv .topbar{
-      height:70px;
-      padding-inline:20px;
-      gap:12px;
-    }
-    body.tv .topbar.scrolled{height:64px}
-    body.tv .brand{font-size:20px;gap:8px}
-    body.tv .brand-mark{width:34px;height:34px;font-size:17px;border-radius:10px 10px 10px 3px}
-    body.tv .nav-links{gap:12px;font-size:13px}
-    body.tv .nav-actions{gap:7px}
-    body.tv .nav-search{width:170px;height:44px;padding-inline:12px;font-size:14px}
-    body.tv .icon-btn{width:44px;height:44px;font-size:18px}
-    body.tv .avatar{width:38px;height:38px;font-size:13px}
-    body.tv .hero{height:calc(100vh - 10px);min-height:500px}
-    body.tv .hero-inner{bottom:70px}
-    body.tv .hero-title{font-size:clamp(34px,4.2vw,52px)}
-    body.tv .hero-copy{max-width:620px;font-size:16px;line-height:1.5}
-    body.tv .btn{min-height:52px;padding-inline:22px;font-size:16px}
-  }
-
-  /* TV mode owns the entire browser viewport; keep the home hero above the fold. */
-  body.tv .hero{
-    height:100vh;
-    min-height:100vh;
-  }
-  body.tv .shell{
-    min-height:18vh;
-  }
-
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
@@ -874,11 +1047,11 @@
 <header class="topbar" id="topbar">
   <a class="brand" href="#top" aria-label="Flickerz Nest home"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></a>
   <nav class="nav-links" aria-label="Main">
-    <a class="active" href="index.html" data-nav="home">Home</a>
-    <a href="explore.html" data-nav="explore">Explore</a>
-    <a href="explore.html?type=movie" data-nav="movies">Movies</a>
-    <a href="explore.html?type=tv" data-nav="tv">TV Shows</a>
-    <a href="mylist.html" data-nav="mylist">My List</a>
+    <a class="active" href="index.html#top" data-nav="home">Home</a>
+    <a href="explore.html#explore" data-nav="explore">Explore</a>
+    <a href="explore.html#explore/movie" data-nav="explore-movie">Movies</a>
+    <a href="explore.html#explore/tv" data-nav="explore-tv">TV Shows</a>
+    <a href="mylist.html#mylist" data-nav="mylist">My List</a>
   </nav>
   <div class="nav-actions">
     <button class="nav-search" type="button" id="navSearch" aria-label="Search titles">
@@ -893,8 +1066,10 @@
     <div class="menu-head"><strong id="menuName">Your Nest</strong><span id="menuEmail">Sign in to sync your list</span></div>
     <button class="menu-item" type="button" id="menuAuth"><i class="fa-regular fa-circle-user"></i><span>Sign in / Create account</span></button>
     <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
-    <button class="menu-item" type="button" id="menuLinkTv"><i class="fa-solid fa-tv"></i><span>Link a TV</span></button>
-    <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span>TV mode</span></button>
+    <a class="menu-item" id="menuAdminPage" href="admin.html" hidden><i class="fa-solid fa-up-right-from-square"></i><span>Open full-screen admin page</span></a>
+    <a class="menu-item" id="menuAccountPage" href="account.html" hidden><i class="fa-solid fa-user"></i><span>Account page</span></a>
+    <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span id="menuTvLabel">TV mode</span></button>
+    <button class="menu-item link-tv-btn" type="button" id="menuLinkTv" hidden><i class="fa-solid fa-key"></i><span>Link a TV (enter code)</span></button>
     <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
     <button class="menu-item danger" type="button" id="menuOut" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
   </div>
@@ -944,22 +1119,23 @@
     </div>
     <nav class="foot-col" aria-label="Browse">
       <h4>Browse</h4>
-      <a href="index.html">Home</a>
-      <a href="explore.html">Explore</a>
-      <a href="explore.html?type=movie">Movies</a>
-      <a href="explore.html?type=tv">TV Shows</a>
-      <a href="mylist.html">My List</a>
+      <a href="index.html#top">Home</a>
+      <a href="explore.html#explore">Explore</a>
+      <a href="explore.html#explore/movie">Movies</a>
+      <a href="explore.html#explore/tv">TV Shows</a>
+      <a href="mylist.html#mylist">My List</a>
+      <a href="tv.html">Watch on TV</a>
     </nav>
     <nav class="foot-col" aria-label="Company">
       <h4>Company</h4>
-      <a href="about.html?page=about">About us</a>
-      <a href="about.html?page=contact">Contact</a>
-      <a href="about.html?page=dmca">DMCA</a>
+      <a href="about.html#about">About us</a>
+      <a href="about.html#contact">Contact</a>
+      <a href="about.html#dmca">DMCA</a>
     </nav>
     <nav class="foot-col" aria-label="Legal">
       <h4>Legal</h4>
-      <a href="about.html?page=privacy">Privacy policy</a>
-      <a href="about.html?page=terms">Terms of use</a>
+      <a href="about.html#privacy">Privacy policy</a>
+      <a href="about.html#terms">Terms of use</a>
     </nav>
   </div>
   <div class="foot-bottom">
@@ -974,11 +1150,82 @@
 </footer>
 
 <nav class="tabbar" aria-label="Quick navigation">
-  <a href="#top" data-nav="home" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
-  <a href="#explore" data-nav="explore"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
+  <a href="index.html#top" data-nav="home" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+  <a href="explore.html#explore" data-nav="explore"><i class="fa-solid fa-compass"></i><span>Explore</span></a>
   <button type="button" id="tabSearch"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span></button>
-  <a href="#mylist" data-nav="mylist"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
+  <a href="mylist.html#mylist" data-nav="mylist"><i class="fa-solid fa-bookmark"></i><span>My List</span></a>
 </nav>
+
+<!-- Report a broken stream -->
+<div class="backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="reportTitle"><i class="fa-solid fa-triangle-exclamation"></i> Not working?</h2><p id="reportSub">Tell us what went wrong and we will fix this title.</p></div><button class="x" type="button" data-close="reportModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <form class="stack" id="reportForm">
+        <div class="field"><label>What happened?</label>
+          <div class="reason-grid" role="radiogroup">
+            <label class="reason"><input type="radio" name="reason" value="black" checked><span><i class="fa-solid fa-tv"></i> Black screen / never loads</span></label>
+            <label class="reason"><input type="radio" name="reason" value="buffer"><span><i class="fa-solid fa-spinner"></i> Keeps buffering</span></label>
+            <label class="reason"><input type="radio" name="reason" value="wrong"><span><i class="fa-solid fa-film"></i> Wrong movie or episode</span></label>
+            <label class="reason"><input type="radio" name="reason" value="audio"><span><i class="fa-solid fa-circle-info"></i> No sound / wrong language</span></label>
+            <label class="reason"><input type="radio" name="reason" value="other"><span><i class="fa-solid fa-question"></i> Something else</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="reportNote">Anything else? (optional)</label><textarea id="reportNote" maxlength="500" rows="3" placeholder="e.g. source 2 plays but has no subtitles"></textarea></div>
+        <p class="hint" id="reportMeta"></p>
+        <p class="status" id="reportStatus" role="status"></p>
+        <div class="actions"><button class="btn btn-primary" type="submit" id="reportGo"><i class="fa-solid fa-paper-plane"></i> Send report</button><button class="btn btn-glass" type="button" data-close="reportModal">Cancel</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot password -->
+<div class="backdrop" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="forgotTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="forgotTitle">Reset your password</h2><p>We will email you a link to choose a new one.</p></div><button class="x" type="button" data-close="forgotModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <form class="stack" id="forgotForm">
+        <div class="field"><label for="forgotEmail">Email</label><input id="forgotEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <p class="status" id="forgotStatus" role="status"></p>
+        <div class="actions"><button class="btn btn-primary" type="submit" id="forgotGo"><i class="fa-solid fa-paper-plane"></i> Send reset link</button><button class="btn btn-glass" type="button" id="forgotBack">Back to sign in</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Choose a new password (opened from the email link) -->
+<div class="backdrop" id="newPassModal" role="dialog" aria-modal="true" aria-labelledby="newPassTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="newPassTitle">Choose a new password</h2><p>You are signed in through your reset link. Set a new password to finish.</p></div></div>
+    <div class="card-body">
+      <form class="stack" id="newPassForm">
+        <div class="field"><label for="newPass1">New password</label><input id="newPass1" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"></div>
+        <div class="field"><label for="newPass2">Repeat it</label><input id="newPass2" type="password" autocomplete="new-password" minlength="6" required placeholder="Same password again"></div>
+        <p class="status" id="newPassStatus" role="status"></p>
+        <div class="actions"><button class="btn btn-primary" type="submit" id="newPassGo"><i class="fa-solid fa-check"></i> Save password</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Link a TV: member enters the code shown on the TV -->
+<div class="backdrop" id="linkTvModal" role="dialog" aria-modal="true" aria-labelledby="linkTvTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="linkTvTitle"><i class="fa-solid fa-tv"></i> Link a TV</h2><p>Enter the 6-character code shown on your TV screen.</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <div class="link-tv">
+        <b>TV code</b>
+        <p>Open Flickerz Nest on the TV, choose "Sign in with a code", and type the code here. The TV signs in to your account automatically. No password needed on the TV.</p>
+        <form id="linkTvForm" autocomplete="off">
+          <input id="linkTvCode" type="text" inputmode="text" maxlength="6" placeholder="ABC123" aria-label="TV code" required>
+          <button class="btn btn-primary" type="submit" id="linkTvGo">Approve</button>
+        </form>
+        <p class="status" id="linkTvStatus" role="status" style="margin:10px 0 0"></p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Suspended account notice -->
 <div class="backdrop" id="blockedModal" role="dialog" aria-modal="true" aria-labelledby="blockedTitle" hidden>
@@ -993,17 +1240,16 @@
   </div>
 </div>
 
-<!-- Link a TV (pairing code shown on phone / desktop) -->
-<div class="backdrop" id="linkTvModal" role="dialog" aria-modal="true" aria-labelledby="linkTvTitle" hidden>
-  <div class="card">
-    <div class="card-head"><div><h2 id="linkTvTitle">Link a TV</h2><p>Type this code on your TV</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="card-body">
-      <div class="tvcode" id="tvCodeDisplay">--------<small>code appears here</small></div>
-      <p class="hint">On your TV open Flickerz Nest, choose <b>Use TV code</b> on the sign-in box, and enter this code. It works for 3 minutes and can be used once.</p>
-      <p class="status" id="linkTvStatus" role="status"></p>
-      <div class="actions"><button class="btn btn-primary btn-sm" type="button" id="tvCodeNew"><i class="fa-solid fa-rotate"></i> Generate new code</button></div>
-    </div>
-  </div>
+<div class="tv-help" id="tvHelp" aria-hidden="true">
+  <span><kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> Move</span>
+  <span><kbd>OK</kbd> Select</span>
+  <span><kbd>Back</kbd> Close</span>
+  <span><kbd>F</kbd> Full screen</span>
+</div>
+<div class="tv-fs" id="tvFs" role="status">
+  <span>Watching on a TV? Use full screen for the best view.</span>
+  <button type="button" id="tvFsGo">Go full screen</button>
+  <button type="button" id="tvFsNo" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)">Not now</button>
 </div>
 
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
@@ -1042,43 +1288,51 @@
 <!-- Player -->
 <div class="backdrop player-backdrop" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle" hidden>
   <div class="card player-card">
+    <!-- 1. Slim top bar: back, title, close -->
     <div class="player-head">
-      <div class="player-titlebar">
-        <div class="player-titles"><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
-        <button class="x player-close" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="player-tools">
-        <div class="seg" role="group" aria-label="Stream server">
-          <button type="button" class="active" data-server="1" aria-pressed="true"><span class="srv-num">1</span><span class="srv-name">VidSrc</span></button>
-          <button type="button" data-server="2" aria-pressed="false"><span class="srv-num">2</span><span class="srv-name">VidSrc.to</span></button>
-          <button type="button" data-server="3" aria-pressed="false"><span class="srv-num">3</span><span class="srv-name">VidLink</span></button>
-          <button type="button" data-server="4" aria-pressed="false"><span class="srv-num">4</span><span class="srv-name">2Embed</span></button>
-        </div>
-        <button class="mini pop-btn" type="button" id="fsBtn" title="Full screen"><i class="fa-solid fa-expand"></i><span>Full screen</span></button>
-        <button class="mini pop-btn" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i><span>New tab</span></button>
-      </div>
+      <button class="pbtn pbtn-icon" type="button" data-close="playerModal" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="player-titles"><p class="label" id="playerKicker">Now playing</p><h2 id="playerTitle">Title</h2></div>
+      <button class="pbtn pbtn-icon player-close" type="button" data-close="playerModal" aria-label="Close player"><i class="fa-solid fa-xmark"></i></button>
     </div>
+
+    <!-- 2. Video, as large as the screen allows -->
     <div class="stage">
       <div class="stage-note" id="stageNote"><div class="spin"></div><b>Preparing your stream</b><span>This usually takes a few seconds.</span></div>
       <iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
     </div>
-    <div class="player-foot">
-      <span id="playerNote">If playback does not start, switch servers.</span>
-      <div class="ep" id="epControls" hidden>
-        <label>Season <input id="seasonIn" type="number" min="1" max="99" value="1"></label>
-        <label>Episode <input id="episodeIn" type="number" min="1" max="999" value="1"></label>
+
+    <!-- 3. One control row: status on the left, actions on the right -->
+    <div class="player-bar">
+      <span class="player-status" id="playerNote">If playback does not start, switch servers.</span>
+      <div class="player-actions">
+        <button class="pbtn pbtn-warn" type="button" id="playerReport" title="Report a problem with this stream"><i class="fa-solid fa-triangle-exclamation"></i><span>Not working?</span></button>
+        <button class="pbtn" type="button" id="playerFs" title="Full screen"><i class="fa-solid fa-expand"></i><span>Full screen</span></button>
+        <button class="pbtn" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i><span>New tab</span></button>
+        <a class="pbtn" id="watchPageLink" href="watch.html" title="Open this title on its own player page"><i class="fa-solid fa-link"></i><span>Link</span></a>
       </div>
     </div>
-    <!-- season + episode picker for series -->
-    <div class="ep-picker" id="epPicker" hidden>
-      <div class="ep-head">
-        <label for="seasonSelect">Season</label>
-        <select class="fsel" id="seasonSelect"></select>
-        <span class="ep-note" id="epCount"></span>
-        <button class="mini" type="button" id="epManual"><i class="fa-solid fa-pen"></i> Manual entry</button>
+
+    <!-- 4. Sources: compact pills, scroll sideways on small screens -->
+    <div class="player-sources">
+      <span class="player-sources-label">Source</span>
+      <div class="seg" role="group" aria-label="Stream server">
+        <button type="button" class="active" data-server="1" aria-pressed="true"><span class="srv-num">1</span><span class="srv-name">VidSrc</span></button>
+        <button type="button" data-server="2" aria-pressed="false"><span class="srv-num">2</span><span class="srv-name">VidSrc.to</span></button>
+        <button type="button" data-server="3" aria-pressed="false"><span class="srv-num">3</span><span class="srv-name">VidLink</span></button>
+        <button type="button" data-server="4" aria-pressed="false"><span class="srv-num">4</span><span class="srv-name">2Embed</span></button>
       </div>
-      <div class="ep-grid" id="epGrid"></div>
     </div>
+
+    <!-- 5. Series only: season + episode pickers, then the episode list -->
+    <div class="player-episodes ep" id="epControls" hidden>
+      <label>Season <select id="seasonIn" class="fsel ep-sel" aria-label="Season"></select></label>
+      <label>Episode <select id="episodeIn" class="fsel ep-sel" aria-label="Episode"></select></label>
+      <div class="ep-step">
+        <button class="pbtn" type="button" id="epPrev" title="Previous episode"><i class="fa-solid fa-chevron-left"></i><span>Prev</span></button>
+        <button class="pbtn" type="button" id="epNext" title="Next episode"><span>Next</span><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="ep-browser" id="epBrowser" hidden></div>
   </div>
 </div>
 
@@ -1087,6 +1341,15 @@
   <div class="card">
     <div class="card-head"><div><h2 id="authTitle">Welcome back</h2><p id="authSub">Sign in to sync your watchlist.</p></div><button class="x" type="button" data-close="authModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
+      <!-- TV: sign in with a code from your phone (shown first on TVs) -->
+      <div class="tvcode-box" id="tvCodeBox" hidden>
+        <p class="eyebrow">Sign in with a code</p>
+        <div class="tvcode" id="tvCodeDigits" aria-live="polite"><span>-</span><span>-</span><span>-</span><span>-</span><span>-</span><span>-</span></div>
+        <p class="tvcode-url">On your phone or computer, sign in and open <b id="tvCodeUrl">account.html</b> (or the account menu &rarr; <b>Link a TV</b>), then enter this code.</p>
+        <div class="tvcode-wait" id="tvCodeWait"><i class="fa-solid fa-spinner fa-spin"></i> Waiting for approval...</div>
+        <div class="actions" style="justify-content:center;margin-top:14px"><button class="mini" type="button" id="tvCodeNew"><i class="fa-solid fa-rotate"></i> New code</button><button class="mini" type="button" id="tvCodeTyped">Type email and password instead</button></div>
+        <div class="tvcode-or" id="tvCodeOr" hidden>or</div>
+      </div>
       <form class="stack" id="authForm">
         <div class="field" id="nameField" hidden><label for="nameIn">Display name</label><input id="nameIn" type="text" maxlength="80" autocomplete="name" placeholder="How should we call you?"></div>
         <div class="field"><label for="emailIn">Email</label><input id="emailIn" type="email" autocomplete="email" required placeholder="you@example.com"></div>
@@ -1094,14 +1357,9 @@
         <p class="status" id="authStatus" role="status"></p>
         <button class="btn btn-primary" type="submit" id="authGo">Sign in</button>
       </form>
-        <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
-        <button class="link-btn" type="button" id="useTvCode">Watching on a TV? <span>Enter a TV code</span></button>
-        <div class="tv-panel" id="tvCodePanel" hidden>
-          <div class="field"><label for="tvCodeIn">TV code</label><input class="code-input" id="tvCodeIn" type="text" inputmode="text" autocomplete="one-time-code" maxlength="10" placeholder="A1B2C3D4"></div>
-          <p class="hint">On your phone or computer, open <b>Account &rarr; Link a TV</b> and enter the code shown there.</p>
-          <p class="status" id="tvCodeStatus" role="status"></p>
-          <button class="btn btn-primary btn-sm" type="button" id="tvCodeGo" style="width:100%"><i class="fa-solid fa-tv"></i> Connect this TV</button>
-        </div>
+      <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
+      <button class="link-btn" type="button" id="authForgot">Forgot your password? <span>Reset it</span></button>
+      <button class="link-btn" type="button" id="authUseCode" hidden><i class="fa-solid fa-tv"></i> Watching on a TV? <span>Sign in with a code</span></button>
       <p class="hint" style="margin-top:12px">Member accounts are handled by Supabase Auth, so your watchlist follows you on every device.</p>
     </div>
   </div>
@@ -1130,7 +1388,7 @@
 <!-- Admin -->
 <div class="backdrop" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle" hidden>
   <div class="card card-wide">
-    <div class="card-head"><div><h2 id="adminTitle"><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Nest control room</h2><p id="adminSub">Streams, content, members and watchlists.</p></div><div style="display:flex;align-items:center;gap:8px"><button class="mini" type="button" id="adminLock" title="End the owner session"><i class="fa-solid fa-lock"></i> Lock</button><button class="x" type="button" data-close="adminModal" aria-label="Close admin"><i class="fa-solid fa-xmark"></i></button></div></div>
+    <div class="card-head"><div><h2 id="adminTitle"><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Nest control room</h2><p id="adminSub">Streams, content, members and watchlists.</p></div><div style="display:flex;align-items:center;gap:8px"><a class="mini admin-home" href="./index.html"><i class="fa-solid fa-house"></i> Back to site</a><button class="mini" type="button" id="adminLock" title="End the owner session"><i class="fa-solid fa-lock"></i> Lock</button><button class="x" type="button" data-close="adminModal" aria-label="Close admin"><i class="fa-solid fa-xmark"></i></button></div></div>
 
       <div id="adminBody">
       <div class="sbbanner" id="sbBanner" hidden>
@@ -1144,6 +1402,7 @@
         <button class="tab" role="tab" aria-selected="false" data-tab="users">Members</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="lists">Watchlists</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="activity">Watch activity</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="reports">Reports <span class="tab-badge" id="reportsBadge" hidden>0</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="streams">Stream overrides</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="content">Content manager</button>
       </div>
@@ -1196,6 +1455,18 @@
       </section>
 
       <!-- Streams -->
+      <section class="pane" id="pane-reports" role="tabpanel" hidden>
+        <div class="stats" id="repStats"></div>
+        <div class="panel-head">
+          <div><h3>Broken stream reports</h3><p>Members press "Not working?" in the player. Fix a title with a stream override, then mark the report fixed.</p></div>
+          <div class="actions">
+            <select class="fsel" id="repFilter" aria-label="Filter reports"><option value="open">Open</option><option value="fixed">Fixed</option><option value="ignored">Ignored</option><option value="all">All</option></select>
+            <button class="btn btn-glass btn-sm" type="button" id="repRefresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
+          </div>
+        </div>
+        <div id="repBody"><p class="hint" style="padding:14px">Reports have not loaded yet.</p></div>
+      </section>
+
       <section class="pane" id="pane-activity" role="tabpanel" hidden>
         <div class="stats" id="actStats"></div>
         <h3>Watch activity</h3>
@@ -1297,24 +1568,30 @@
 (() => {
   "use strict";
 
-  /* ================= OWNER CONFIGURATION (edit these values) ================= */
+  /* ================= OWNER CONFIGURATION (edit these values) =================
+     Nothing secret lives here any more:
+       - no owner password: admin access is Supabase sign-in only
+       - no TMDB key: requests go through your Cloudflare Worker (tmdbProxy),
+         which holds the key server-side and caches responses
+     The Supabase anon key is public by design and protected by RLS.
+     ========================================================================== */
   const OWNER = {
     email: "wanidawar03@gmail.com",
-    password: "dawar@123",
-    tmdbKey: "cc306d0684189df48d37b51bc9e06e04",
+    // Your Cloudflare Worker URL from worker/tmdb-proxy.js, e.g.
+    // "https://flickerz-tmdb.YOUR-SUBDOMAIN.workers.dev"  (no trailing slash)
+    tmdbProxy: "",
+    // Only used if tmdbProxy is empty. Leave blank in production.
+    tmdbKey: "",
     supabaseUrl: "https://ctbrfynxmgcyvsrdihfg.supabase.co",
     supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA"
   };
   const STORE_KEY = "flickerz.owner.config.v1";
   const SESSION_KEY = "flickerz.owner.session.v1";
-  const OWNER_SESSION_HOURS = 12;   // auto-lock the owner session after this long
+  const OWNER_SESSION_HOURS = 12;   // re-open the admin panel automatically for this long after sign-in
   /* ========================================================================== */
 
-  // Same-origin Vercel proxy: Cloud TV browsers can be restrictive with
-  // direct third-party TLS/CDN requests, so TMDB traffic goes through the
-  // site's own origin.
-  const TMDB = "/tmdb-api";
-  const IMG = "/tmdb-image/";
+  const TMDB = "https://api.themoviedb.org/3";
+  const IMG = "https://image.tmdb.org/t/p/";
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const httpsUrl = (v) => { try { const u = new URL(String(v || "").trim()); return u.protocol === "https:" ? u.href : ""; } catch { return ""; } };
@@ -1381,7 +1658,7 @@
   function syncLock() {
     // Only real modals lock scrolling. Full pages (title, explore, my list)
     // must scroll normally - locking them hid everything below the fold.
-    const anyModal = [...document.querySelectorAll(".backdrop")].some((b) => !b.hidden);
+    const anyModal = [...document.querySelectorAll(".backdrop")].some((b) => !b.hidden && !(b.id === "adminModal" && document.body.classList.contains("admin-page")));
     document.body.classList.toggle("locked", anyModal);
   }
   function openModal(id) {
@@ -1389,19 +1666,31 @@
     const m = $(id); if (!m) return;
     m.hidden = false;
     syncLock();
-    // Remote and keyboard users need the dialog focused as soon as it opens.
-    if (state.tv || state.kbNav) setTimeout(() => focusFirstIn(m), 50);
+    // Remote users need focus inside the dialog, or OK does nothing.
+    if (document.body.classList.contains("tv")) setTimeout(() => TV.focusFirst(m), 40);
   }
   function closeModal(id) {
+    // On the dedicated admin page the panel is the page: it never closes.
+    if (id === "adminModal" && document.body.classList.contains("admin-page")) return;
+    // On the player page, closing the player means leaving the page.
+    if (id === "playerModal" && document.body.classList.contains("watch-page")) {
+      stopPlayback();
+      if (history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin) history.back();
+      else location.href = "index.html";
+      return;
+    }
     const m = $(id); if (!m || m.hidden) return;
     m.hidden = true;
     if (id === "playerModal") stopPlayback();
     // Closing sign-in without signing in cancels the title they wanted to watch.
     if (id === "authModal" && !state.user) state.pendingPlay = null;
+    if (id === "authModal") TVCODE.stop();
     syncLock();
+    if (document.body.classList.contains("tv")) TV.restoreFocus();
   }
   function closeAllModals() {
-    document.querySelectorAll(".backdrop").forEach((b) => { b.hidden = true; });
+    const adminPage = document.body.classList.contains("admin-page");
+    document.querySelectorAll(".backdrop").forEach((b) => { if (!(adminPage && b.id === "adminModal")) b.hidden = true; });
     stopPlayback();
     syncLock();
   }
@@ -1441,14 +1730,19 @@
     try { if (window.top) window.top.location.href = url; } catch {}
   }
   const isOwnerEmail = (e) => String(e || "").trim().toLowerCase() === OWNER.email.toLowerCase();
-  const isOwnerSession = () => state.ownerSession === true;
-  const isAdmin = () => isOwnerSession() || Boolean(state.user && (isOwnerEmail(state.user.email) || state.profile?.role === "admin"));
+  // Admin is decided by the signed-in Supabase account only. The local
+  // "owner session" flag is just a UI convenience (auto-open the panel) and
+  // is never enough on its own.
+  const isOwnerSession = () => state.ownerSession === true && Boolean(state.user);
+  const isAdmin = () => Boolean(state.user && (isOwnerEmail(state.user.email) || state.profile?.role === "admin"));
 
   // Keys come only from the OWNER block in this file. Browser storage can no
   // longer override them, so nobody can swap in their own keys.
   function computeConfig() {
     state.cfg = {
-      tmdbKey: OWNER.tmdbKey || "",
+      // "proxy" marks TMDB as available without exposing any key. The real
+      // key, if any, is only used by tmdb() when no proxy is configured.
+      tmdbKey: OWNER.tmdbProxy ? "proxy" : (OWNER.tmdbKey || ""),
       supabaseUrl: (OWNER.supabaseUrl || "").replace(/\/$/, ""),
       supabaseAnonKey: OWNER.supabaseAnonKey || ""
     };
@@ -1535,6 +1829,8 @@
       alertHTML,
       (load || !continueItems().length) ? ""
         : section("continue", "Continue Watching", "Pick up where you left off", continueItems()),
+      (load || !(state.recs || []).length) ? ""
+        : section("recs", "Recommended for you", "Based on what you have watched", state.recs),
       load ? '<section class="row visible"><div class="row-head"><div><h2>Loading your Nest</h2><p>Fetching the latest from TMDB</p></div></div>' + skeletons() + "</section>"
            : section("trending", "Trending Movies", "What everyone is watching this week", state.trending),
       load ? "" : section("tv", "Popular TV Shows", "Series worth the binge", state.tv),
@@ -1558,16 +1854,27 @@
   }
 
   /* ---------- TMDB ---------- */
+  /* All catalogue data goes through the proxy when one is configured. The
+     Worker adds the TMDB key server-side and caches responses at the edge, so
+     the key never appears in this file and repeat requests are faster. */
+  const memo = new Map();   // short in-page cache: same request, same tab
   async function tmdb(path, params = {}) {
-    const k = state.cfg.tmdbKey;
-    if (!k) throw new Error("No TMDB key configured yet.");
-    const url = new URL(TMDB + path);
+    const proxy = String(OWNER.tmdbProxy || "").replace(/\/+$/, "");
+    const k = OWNER.tmdbKey || "";
+    if (!proxy && !k) throw new Error("No TMDB proxy or key configured yet.");
+    const url = new URL((proxy || TMDB) + path);
     Object.entries(params).forEach(([n, v]) => url.searchParams.set(n, v));
     const headers = { Accept: "application/json" };
-    if (/^eyJ/.test(k)) headers.Authorization = "Bearer " + k; else url.searchParams.set("api_key", k);
-    const res = await fetch(url, { headers });
+    if (!proxy) { if (/^eyJ/.test(k)) headers.Authorization = "Bearer " + k; else url.searchParams.set("api_key", k); }
+    const key = url.toString();
+    const hit = memo.get(key);
+    if (hit && Date.now() - hit.t < 5 * 60 * 1000) return hit.v;
+    const res = await fetch(key, { headers });
     if (!res.ok) throw new Error("TMDB request failed (" + res.status + ")");
-    return res.json();
+    const v = await res.json();
+    memo.set(key, { t: Date.now(), v });
+    if (memo.size > 300) memo.delete(memo.keys().next().value);
+    return v;
   }
   const norm = (i, type) => ({ ...i, title: i.title || i.name || "Untitled", media_type: i.media_type === "movie" || i.media_type === "tv" ? i.media_type : (type || "movie") });
 
@@ -1590,11 +1897,23 @@
      401/403 = key invalid, 404 = key fine but key type mismatch,
      network error = offline / DNS / blocked by a browser extension. */
   function explainTmdbFailure(status, networkError) {
+    const viaProxy = Boolean(OWNER.tmdbProxy);
     if (networkError) {
-      return "Network request blocked. This is caused by being offline, a DNS/ad-blocker, or a browser privacy extension - it is never a TMDB domain setting.";
+      return viaProxy
+        ? "Could not reach the proxy at " + OWNER.tmdbProxy + ". Check the Worker URL in OWNER.tmdbProxy, that the Worker is deployed, and that you are online."
+        : "Network request blocked. This is caused by being offline, a DNS/ad-blocker, or a browser privacy extension - it is never a TMDB domain setting.";
+    }
+    if (status === 500 && viaProxy) {
+      return "The proxy is running but has no TMDB key. In Cloudflare: Worker > Settings > Variables and Secrets > add secret TMDB_KEY.";
+    }
+    if (status === 403 && viaProxy) {
+      return "The proxy refused this site (403). Add this domain to the Worker's ALLOWED_ORIGINS variable, or clear that variable.";
+    }
+    if (status === 404 && viaProxy) {
+      return "The proxy does not allow this request path (404). Make sure the Worker code is the latest worker/tmdb-proxy.js.";
     }
     if (status === 401) {
-      return "TMDB rejected the API key (401). The key is invalid, expired, or was revoked. Generate a new v3 key in TMDB > Settings > API.";
+      return "TMDB rejected the API key (401). The key is invalid, expired, or was revoked. Generate a new v3 key in TMDB > Settings > API" + (viaProxy ? " and update the Worker's TMDB_KEY secret." : ".");
     }
     if (status === 403) {
       return "TMDB refused the request (403). Your key is usually suspended for missing attribution. TMDB does NOT restrict by domain, so your domain change is not the cause.";
@@ -1611,7 +1930,7 @@
     return "TMDB returned no usable titles.";
   }
   async function probeTmdb() {
-    if (!state.cfg.tmdbKey) return { ok: false, reason: "No TMDB key is configured.", status: 0, network: false };
+    if (!state.cfg.tmdbKey) return { ok: false, reason: "TMDB is not configured. Deploy worker/tmdb-proxy.js and set OWNER.tmdbProxy in index.html.", status: 0, network: false };
     try {
       await tmdb("/configuration", {});
       return { ok: true, reason: "Key accepted by TMDB.", status: 200, network: false };
@@ -1627,7 +1946,7 @@
     if (!state.cfg.tmdbKey) {
       state.trending = DEMO_MOVIES; state.tv = DEMO_TV;
       state.rated = [...DEMO_MOVIES].sort((a, b) => b.vote_average - a.vote_average);
-      state.tmdbState = { ok: false, reason: "No TMDB key configured.", status: 0, network: false };
+      state.tmdbState = { ok: false, reason: "TMDB is not configured - set OWNER.tmdbProxy (see worker/tmdb-proxy.js).", status: 0, network: false };
       state.loading = false; renderHero(state.trending[0]); renderRows(); return;
     }
     try {
@@ -1778,8 +2097,8 @@
         if (detailCache.has(key)) full = detailCache.get(key);
         else {
           const append = type === "tv"
-            ? "credits,videos,similar,external_ids,content_ratings"
-            : "credits,videos,similar,external_ids,release_dates";
+            ? "credits,videos,similar,recommendations,external_ids,content_ratings"
+            : "credits,videos,similar,recommendations,external_ids,release_dates";
           full = await tmdb("/" + type + "/" + id, { language: "en-US", append_to_response: append });
           detailCache.set(key, full);
         }
@@ -1807,6 +2126,10 @@
 
     state.detail = item;
     renderTitlePage(item, full, type);
+    // Extras that need a second request: the film's collection, and real
+    // episode counts per season for the progress bars. Both are additive and
+    // never block the page.
+    enrichTitlePage(item, full, type, seq);
   }
 
   function renderTitlePage(item, full, type) {
@@ -1822,7 +2145,11 @@
     const tagline = full?.tagline ? '<p class="tp-tag">' + esc(full.tagline) + "</p>" : "";
     const crew = (full?.credits?.crew || []).filter((c) => ["Director", "Creator", "Writer"].includes(c.job)).slice(0, 3);
     const cast = (full?.credits?.cast || []).slice(0, 14);
+    const seenKeys = new Set([String(item.id)]);
     const similar = (full?.similar?.results || []).filter(usable).slice(0, 14).map((i) => norm(i, type));
+    similar.forEach((i) => seenKeys.add(String(i.id)));
+    const recs = (full?.recommendations?.results || []).filter((i) => usable(i) && !seenKeys.has(String(i.id))).slice(0, 14).map((i) => norm(i, type));
+    const prog = isTv ? seriesProgress(item, full) : null;
     const seasons = (full?.seasons || []).filter((s) => Number(s.season_number) > 0 || s.episode_count);
     const trailer = (full?.videos?.results || []).find((v) => v.site === "YouTube" && /trailer|teaser/i.test(v.type));
     const certs = type === "tv"
@@ -1854,8 +2181,10 @@
             '<div class="chips">' + chips(item) + "</div>" +
             (genres ? '<div class="tp-genres">' + genres + "</div>" : "") +
             (crew.length ? '<div class="tp-facts">' + crew.map((c) => "<span>" + esc(c.job) + ": <b>" + esc(c.name) + "</b></span>").join("") + "</div>" : "") +
+            (prog && prog.total ? '<div class="tp-progress" id="tpProgress">' + progressHTML(prog) + "</div>" : "") +
             '<div class="tp-actions">' +
-              '<button class="btn btn-light" type="button" data-play-now="1"' + (canPlay ? "" : " disabled") + '><i class="fa-solid fa-play"></i> ' + (canPlay ? '<span class="when-user">Play now</span><span class="when-guest">Sign in to watch</span>' : "No stream yet") + "</button>" +
+              '<button class="btn btn-light" type="button" data-play-now="1"' + (canPlay ? "" : " disabled") + '><i class="fa-solid fa-play"></i> ' +
+                (canPlay ? '<span class="when-user">' + (prog && prog.next ? (prog.watched ? "Continue S" + prog.next.s + " E" + prog.next.e : "Play S1 E1") : "Play now") + '</span><span class="when-guest">Sign in to watch</span>' : "No stream yet") + "</button>" +
               (isCustom ? "" : '<button class="btn btn-glass" type="button" data-save-page="1"><i class="fa-solid ' + (saved ? "fa-check" : "fa-plus") + '"></i> ' + (saved ? "In your list" : "Add to watchlist") + "</button>") +
               (trailer ? '<a class="btn btn-glass" href="https://www.youtube.com/watch?v=' + esc(trailer.key) + '" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i> Trailer</a>' : "") +
             "</div>" +
@@ -1863,30 +2192,166 @@
         "</div>" +
       "</div>" +
       '<div class="tp-sec">' +
+        '<div id="tpCollection"></div>' +
         "<h3>Storyline</h3><p class=\"lead\">" + esc(overview) + "</p>" +
         (facts ? "<h3>Details</h3><div class=\"fact-grid\">" + facts + "</div>" : "") +
-        (seasons.length ? "<h3>Seasons</h3><div class=\"season-row\">" + seasons.map((s) =>
-          '<button class="season" type="button" data-season="' + esc(s.season_number) + '"><b>' + esc(s.name) + "</b><span>" +
-          esc(s.episode_count || 0) + " episodes" + (s.air_date ? " | " + esc(String(s.air_date).slice(0, 4)) : "") +
-          (s.overview ? "</span><span style=\"margin-top:7px\">" + esc(String(s.overview).slice(0, 90)) + "..." : "") + "</span></button>").join("") + "</div>" : "") +
+        (seasons.length ? "<h3>Seasons</h3><div class=\"season-row\" id=\"tpSeasons\">" + seasons.map((s) => {
+          const sp = prog ? prog.bySeason[Number(s.season_number)] : null;
+          const sn = Number(s.season_number), tot = Number(s.episode_count) || 0, got = sp ? sp.size : 0;
+          return '<button class="season" type="button" data-season="' + esc(s.season_number) + '"><b>' + esc(s.name) + "</b><span>" +
+            esc(tot) + " episodes" + (s.air_date ? " | " + esc(String(s.air_date).slice(0, 4)) : "") + "</span>" +
+            (sn > 0 && tot && state.user ? '<span class="sprog"><span class="progress"><i style="width:' + Math.min(100, Math.round(got / tot * 100)) + '%"></i></span><small>' + got + " of " + tot + " watched</small></span>" : "") +
+            (s.overview && !(sn > 0 && tot && state.user) ? "<span style=\"margin-top:7px\">" + esc(String(s.overview).slice(0, 90)) + "...</span>" : "") + "</button>";
+        }).join("") + "</div>" : "") +
         (cast.length ? "<h3>Top billed cast</h3><div class=\"tp-grid\">" + cast.map((c) => {
           const pic = img(c.profile_path, "w185");
           return '<div class="cast-card">' + (pic ? '<img src="' + esc(pic) + '" alt="' + esc(c.name) + '" loading="lazy" data-err>' : '<div class="cast-ph"><i class="fa-solid fa-user"></i></div>') +
             "<b>" + esc(c.name) + "</b><span>" + esc(c.character || c.job || "") + "</span></div>";
         }).join("") + "</div>" : "") +
         (similar.length ? '<h3>More like this</h3><div class="strip-wrap"><div class="strip">' + similar.map((i) => tile(i, true)).join("") + "</div></div>" : "") +
+        (recs.length ? '<h3>Viewers also watched</h3><div class="strip-wrap"><div class="strip">' + recs.map((i) => tile(i, true)).join("") + "</div></div>" : "") +
       "</div>";
 
     wireImages($("titlePage"));
     reveal();
     state.titlePlaying = item;
   }
+
+  /* ---- series progress, built from the watch history already saved ---- */
+  function seriesProgress(item, full) {
+    const id = Number(item.id);
+    const bySeason = {};
+    (state.myHistory || []).forEach((h) => {
+      if (Number(h.tmdb_id) !== id || h.media_type !== "tv" || !h.season) return;
+      (bySeason[h.season] = bySeason[h.season] || new Set()).add(Number(h.episode) || 1);
+    });
+    const seasons = (full?.seasons || []).filter((s) => Number(s.season_number) > 0 && Number(s.episode_count) > 0)
+      .map((s) => ({ n: Number(s.season_number), count: Number(s.episode_count) })).sort((a, b) => a.n - b.n);
+    const total = seasons.reduce((a, s) => a + s.count, 0);
+    let watched = 0;
+    seasons.forEach((s) => { watched += Math.min(s.count, (bySeason[s.n] || new Set()).size); });
+    // Next episode = first unwatched after the latest watched one.
+    let next = null, last = null;
+    const hist = (state.myHistory || []).filter((h) => Number(h.tmdb_id) === id && h.media_type === "tv" && h.season);
+    if (hist.length) last = { s: Number(hist[0].season), e: Number(hist[0].episode) || 1 };
+    if (seasons.length) {
+      if (!last) next = { s: seasons[0].n, e: 1 };
+      else {
+        const si = seasons.findIndex((s) => s.n === last.s);
+        const cur = seasons[si] || seasons[0];
+        if (last.e < cur.count) next = { s: cur.n, e: last.e + 1 };
+        else if (seasons[si + 1]) next = { s: seasons[si + 1].n, e: 1 };
+        else next = null;                                    // finished the show
+      }
+    }
+    return { bySeason, seasons, total, watched, last, next, done: total > 0 && watched >= total };
+  }
+  function progressHTML(p) {
+    const pct = p.total ? Math.min(100, Math.round(p.watched / p.total * 100)) : 0;
+    const label = p.done ? "You have watched every episode"
+      : (p.last ? "S" + p.last.s + " \u00b7 " + (p.bySeason[p.last.s] ? p.bySeason[p.last.s].size : 0) + " of " + ((p.seasons.find((s) => s.n === p.last.s) || {}).count || 0) + " watched" : "Not started yet");
+    return '<div class="tp-progress-head"><span>' + esc(label) + "</span><b>" + p.watched + " / " + p.total + " episodes</b></div>" +
+      '<div class="progress"><i style="width:' + pct + '%"></i></div>';
+  }
+  const isSeen = (item, s, e) => (state.myHistory || []).some((h) => Number(h.tmdb_id) === Number(item.id) && h.media_type === "tv" && Number(h.season) === Number(s) && (Number(h.episode) || 1) === Number(e));
+
+  /* Mark / unmark an episode as watched without playing it. */
+  async function toggleSeen(item, s, e) {
+    if (!state.sb || !state.user || !item) { toast("Sign in to track episodes.", ""); return; }
+    const seen = isSeen(item, s, e);
+    if (seen) {
+      const { error } = await state.sb.from("watch_history").delete()
+        .eq("user_id", state.user.id).eq("tmdb_id", Number(item.id)).eq("media_type", "tv").eq("season", s).eq("episode", e);
+      if (error) { toast(error.message || "Could not update.", "error"); return; }
+      state.myHistory = state.myHistory.filter((h) => !(Number(h.tmdb_id) === Number(item.id) && h.media_type === "tv" && Number(h.season) === s && (Number(h.episode) || 1) === e));
+    } else {
+      const row = { user_id: state.user.id, tmdb_id: Number(item.id), media_type: "tv", title: titleOf(item), poster_path: item.poster_path || null, season: s, episode: e };
+      const { data, error } = await state.sb.from("watch_history").insert(row).select("id,watched_at").single();
+      if (error) { toast(error.message || "Could not update.", "error"); return; }
+      state.myHistory.unshift({ ...row, id: data?.id || "local-" + Date.now(), watched_at: data?.watched_at || new Date().toISOString() });
+    }
+    paintEpisodeBrowser();
+    refreshProgressUI();
+  }
+  function refreshProgressUI() {
+    const item = state.detail;
+    if (!item || item.media_type !== "tv" || $("titlePage").hidden) return;
+    const full = detailCache.get("tv:" + item.id);
+    if (!full) return;
+    const p = seriesProgress(item, full);
+    const box = $("tpProgress");
+    if (box) box.innerHTML = progressHTML(p);
+    document.querySelectorAll("#tpSeasons .season").forEach((btn) => {
+      const sn = Number(btn.dataset.season);
+      const meta = p.seasons.find((s) => s.n === sn);
+      const bar = btn.querySelector(".sprog");
+      if (!meta || !bar) return;
+      const got = (p.bySeason[sn] || new Set()).size;
+      bar.innerHTML = '<span class="progress"><i style="width:' + Math.min(100, Math.round(got / meta.count * 100)) + '%"></i></span><small>' + got + " of " + meta.count + " watched</small>";
+    });
+  }
+
+  /* ---- collection banner + accurate season counts (second request) ---- */
+  async function enrichTitlePage(item, full, type, seq) {
+    if (!full || seq !== state.titleSeq) return;
+    const box = $("tpCollection");
+    if (type === "movie" && full.belongs_to_collection && box) {
+      const c = full.belongs_to_collection;
+      const bg = img(c.backdrop_path, "w780"), ps = img(c.poster_path, "w185");
+      box.innerHTML = '<div class="tp-collection">' + (bg ? '<div class="cbg" style="background-image:url(\'' + esc(bg) + '\')"></div>' : "") +
+        (ps ? '<img src="' + esc(ps) + '" alt="" data-err>' : "") +
+        "<div><b>Part of the " + esc(c.name) + "</b><small>See every film in this series, in order.</small></div>" +
+        '<button class="btn btn-glass btn-sm" type="button" data-collection="' + esc(c.id) + '"><i class="fa-solid fa-layer-group"></i> View collection</button></div>';
+      wireImages(box);
+      try {
+        const col = await tmdb("/collection/" + c.id, { language: "en-US" });
+        if (seq !== state.titleSeq) return;
+        const parts = (col.parts || []).filter(usable).map((p) => norm(p, "movie"))
+          .sort((a, b) => String(a.release_date || "9999").localeCompare(String(b.release_date || "9999")));
+        if (parts.length > 1) {
+          const sec = document.createElement("div");
+          sec.id = "tpCollectionStrip";
+          sec.innerHTML = "<h3>" + esc(c.name) + '</h3><div class="strip-wrap"><div class="strip">' + parts.map((p) => tile(p, true)).join("") + "</div></div>";
+          const anchor = $("titlePage").querySelector(".tp-sec h3");
+          if (anchor) anchor.parentNode.insertBefore(sec, anchor); else box.after(sec);
+          wireImages(sec);
+        }
+      } catch { /* banner alone is fine */ }
+    }
+  }
+
+  /* ---- "Recommended for you" home row, from the member's own history ---- */
+  async function buildRecommendations() {
+    if (!state.user || !state.cfg.tmdbKey) { state.recs = []; return; }
+    const seedsAll = [];
+    const seen = new Set();
+    (state.myHistory || []).concat(state.watch.map((w) => ({ tmdb_id: w.id, media_type: w.media_type }))).forEach((h) => {
+      const k = h.media_type + ":" + h.tmdb_id;
+      if (!seen.has(k) && (h.media_type === "movie" || h.media_type === "tv")) { seen.add(k); seedsAll.push({ type: h.media_type, id: Number(h.tmdb_id) }); }
+    });
+    const seeds = seedsAll.slice(0, 3);            // most recent three titles drive the row
+    if (!seeds.length) { state.recs = []; return; }
+    const out = [], have = new Set(seen);
+    const results = await Promise.allSettled(seeds.map((s) => tmdb("/" + s.type + "/" + s.id + "/recommendations", { language: "en-US", page: "1" }).then((r) => ({ s, r }))));
+    results.forEach((res) => {
+      if (res.status !== "fulfilled") return;
+      (res.value.r.results || []).filter(usable).slice(0, 8).forEach((i) => {
+        const n = norm(i, res.value.s.type);
+        const k = n.media_type + ":" + n.id;
+        if (!have.has(k)) { have.add(k); out.push(n); }
+      });
+    });
+    // Interleave so one seed does not dominate, then cap the row.
+    state.recs = out.slice(0, 20);
+  }
   function buildUrl(item, server) {
     if (!item) return "";
     if (item.is_custom) return httpsUrl(item.custom_stream_url);
     const id = Number(item.id);
     if (!Number.isSafeInteger(id) || id < 1) return "";
-    return streamSource(server, item.media_type, id, state.season || 1, state.episode || 1);
+    const s = Math.max(1, parseInt($("seasonIn").value, 10) || 1);
+    const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
+    return streamSource(server, item.media_type, id, s, e);
   }
   /* Multiple independent providers, because public embeds go down often.
      Trying a different host fixes most "movie will not load" reports. */
@@ -2007,31 +2472,31 @@
     state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
-    // Series: show the real season and episode picker. Playback only starts
-    // once a specific episode is chosen (or a resume point supplies one).
-    const isSeries = !item.is_custom && item.media_type === "tv";
+    $("epControls").hidden = item.is_custom || item.media_type !== "tv";
     // Resume series at the last episode this member played.
-    if (isSeries && !opts.season) {
+    if (item.media_type === "tv" && !opts.season) {
       const last = lastPlayed(item);
       if (last && last.season) {
         opts = { season: last.season, episode: last.episode || 1 };
         toast("Resuming S" + last.season + " E" + (last.episode || 1) + ".", "");
       }
     }
-    state.season = Math.max(1, parseInt(opts.season, 10) || 1);
-    state.episode = Math.max(1, parseInt(opts.episode, 10) || 1);
-    const startEpisode = Boolean(opts.episode);
-    $("seasonIn").value = String(state.season);
-    $("episodeIn").value = String(state.episode);
-    $("epControls").hidden = true;
-    $("epPicker").hidden = !isSeries;
+    // Season and episode pickers are filled from TMDB (real seasons, real
+    // episode counts). Until that loads, the requested values are used as is.
+    const s0 = Math.max(1, parseInt(opts.season, 10) || 1), e0 = Math.max(1, parseInt(opts.episode, 10) || 1);
+    const isTv = !item.is_custom && item.media_type === "tv";
+    setSelectOptions($("seasonIn"), [[s0, "Season " + s0]], s0);
+    setSelectOptions($("episodeIn"), [[e0, "Episode " + e0]], e0);
+    $("epBrowser").hidden = true; $("epBrowser").innerHTML = "";
+    if (isTv) loadSeriesStructure(item, s0, e0);
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = true; });
     $("frame").src = "about:blank";
     setNote("load", "Preparing your stream", "Checking for the best available source.");
     openModal("playerModal");
-    if (isSeries) loadEpisodePicker(item, state.season);
-    if (startEpisode) recordWatch(item);
+    recordWatch(item);
     markWatching(item);
+    const wl = $("watchPageLink");
+    if (wl) { const u = watchUrl(item, s0, e0); wl.href = u || "watch.html"; wl.hidden = !u || PAGE === "watch"; }
     if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
       try {
         const { data, error } = await state.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
@@ -2039,11 +2504,7 @@
       } catch { /* fall back to VidSrc */ }
     }
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = false; });
-    if (state.playing !== item) return;
-    if (isSeries && !startEpisode) {
-      setNote("info", "Choose a season and episode", "Pick an episode below and streaming starts right away.");
-      $("playerNote").textContent = "Select an episode to start watching.";
-    } else setServer(1);
+    if (state.playing === item) setServer(1);
   }
 
   /* ---------- watchlist ---------- */
@@ -2108,7 +2569,12 @@
       $("authSub").textContent = '"' + t + '" starts as soon as you ' + (up ? "create your account." : "sign in.");
     }
   }
-  function openAuth() { closeMenu(); setMode("signin"); openModal("authModal"); setTimeout(() => $("emailIn").focus(), 30); }
+  function openAuth() {
+    closeMenu(); setMode("signin"); openModal("authModal");
+    // TVs get the code flow first; everyone else gets the normal form.
+    if (typeof TV !== "undefined" && TV.on) TVCODE.start(); else TVCODE.showForm();
+    setTimeout(() => { if (!(typeof TV !== "undefined" && TV.on)) $("emailIn").focus(); }, 30);
+  }
   function teardown() {
     if (state.channel && state.sb) state.sb.removeChannel(state.channel);
     if (state.authSub) state.authSub.unsubscribe();
@@ -2129,6 +2595,7 @@
     catch (e) { toast(e.message || "Could not create the Supabase client.", "error"); await applyUser(null); paintAdmin(); return false; }
     state.sbSig = sig;
     const sub = state.sb.auth.onAuthStateChange((_e, s) => setTimeout(() => applyUser(s?.user || null), 0));
+    if (typeof watchRecovery === "function") watchRecovery();   // password-reset links
     state.authSub = sub.subscription;
     try {
       const { data, error } = await state.sb.auth.getSession();
@@ -2154,9 +2621,11 @@
       try { localStorage.removeItem(SUSP_KEY); } catch {}
       await Promise.all([loadWatch(), loadCustom(), loadMyHistory()]);
       subscribe();
+      // Personal row: computed after history is known; re-renders when ready.
+      buildRecommendations().then(() => { if (!$("rows").hidden) renderRows(); }).catch(() => {});
     } else {
       if (state.channel && state.sb) state.sb.removeChannel(state.channel);
-      state.channel = null; state.watch = []; state.myHistory = [];
+      state.channel = null; state.watch = []; state.myHistory = []; state.recs = [];
       await loadCustom();
     }
     paintAccount(); renderRows(); paintAdmin(); renderMyListGrid();
@@ -2186,7 +2655,7 @@
     const on = Boolean(state.user);
     const name = state.profile?.display_name || state.user?.user_metadata?.display_name || (state.user?.email ? state.user.email.split("@")[0] : "Your Nest");
     $("menuName").innerHTML = esc(name) + (isAdmin() ? ' <i class="fa-solid fa-crown" style="color:var(--gold)"></i>' : "");
-    $("menuEmail").textContent = state.user?.email || (isOwnerSession() ? "Owner session (local admin)" : "Sign in to sync your list");
+    $("menuEmail").textContent = state.user?.email || "Sign in to sync your list";
     const av = $("avatar");
     av.textContent = on ? name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase() : "FN";
     av.classList.toggle("owner", isAdmin());
@@ -2198,10 +2667,16 @@
     $("adminShortcut").hidden = !admin;
     $("footAdmin").hidden = !admin;
     $("menuLock").hidden = !isOwnerSession();
+    // "Link a TV" is for the phone/desktop side only; a TV never needs it.
+    $("menuLinkTv").hidden = !(on && state.sb) || (typeof TV !== "undefined" && TV.on);
+    $("menuAdminPage").hidden = !admin || document.body.classList.contains("admin-page");
+    $("menuAccountPage").hidden = !on || PAGE === "account";
     paintSessionBanner();
     // Only switch labels to "Sign in to watch" once the saved session has been
     // checked, so signed-in members never see it flash on load.
     document.body.classList.toggle("guest", !state.user && Boolean(state.authReady));
+    const tvLabel = $("menuTvLabel");
+    if (tvLabel && typeof TV !== "undefined") tvLabel.textContent = TV.on ? "Turn off TV mode" : "TV mode (remote control)";
   }
   async function submitAuth(ev) {
     ev.preventDefault();
@@ -2250,11 +2725,12 @@
   /* ---------- owner gate ---------- */
   function openOwnerGate(prefill) {
     closeMenu();
-    $("ownerEmailIn").value = prefill ? OWNER.email : $("ownerEmailIn").value;
-    if (prefill) $("ownerPassIn").value = OWNER.password;
+    // The email is prefilled for convenience; the password is always typed.
+    $("ownerEmailIn").value = prefill || !$("ownerEmailIn").value ? OWNER.email : $("ownerEmailIn").value;
+    $("ownerPassIn").value = "";
     $("ownerStatus").textContent = ""; $("ownerStatus").className = "status";
     openModal("ownerModal");
-    setTimeout(() => $(prefill ? "ownerGo" : "ownerEmailIn").focus(), 30);
+    setTimeout(() => $("ownerPassIn").focus(), 30);
   }
   async function submitOwner(ev) {
     ev.preventDefault();
@@ -2270,35 +2746,32 @@
     $("ownerStatus").textContent = "Verifying credentials...";
     $("ownerStatus").className = "status";
 
-    // Preferred path: real authentication through Supabase Auth (hashed, rate
-    // limited server side) plus an admin profile row. This is what makes the
-    // gate genuinely secure in production.
-    if (state.sb) {
-      try {
-        const { data, error } = await state.sb.auth.signInWithPassword({ email, password: pass });
-        if (!error && data?.user) {
-          state.sbAuthError = "";
-          await applyUser(data.user);
-          grantOwner();
-          return;
-        }
-        // Remember the real reason so the panel can show it instead of silently
-        // opening with empty tables.
-        if (error) state.sbAuthError = friendlyAuthError(error.message, email);
-      } catch { /* fall through */ }
-    }
-
-    // Offline fallback for first run, before Supabase is reachable.
-    if (pass !== OWNER.password) {
-      $("ownerStatus").textContent = state.sb
-        ? "Sign-in failed. Check the password, or confirm this email in Supabase Auth."
-        : "That email and admin key combination is not recognised.";
+    // Admin access is Supabase Auth only: hashed password, rate limited on the
+    // server, and the account must carry the admin role. There is no offline
+    // password in this file any more.
+    if (!state.sb) {
+      $("ownerStatus").textContent = "Cannot reach Supabase right now, so admin sign-in is unavailable. Check your connection and try again.";
       $("ownerStatus").className = "status error";
       go.disabled = false;
       return;
     }
-    grantOwner();
-    if (state.sbAuthError) toast("Opened without database access: " + state.sbAuthError, "error");
+    try {
+      const { data, error } = await state.sb.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      if (!data?.user) throw new Error("Sign-in returned no user.");
+      state.sbAuthError = "";
+      await applyUser(data.user);
+      if (!isAdmin()) {
+        await state.sb.auth.signOut(); await applyUser(null);
+        throw new Error("This account is not an admin. Run STEP 13 of schema.sql to grant the owner role.");
+      }
+      grantOwner();
+    } catch (e) {
+      state.sbAuthError = friendlyAuthError(e.message, email);
+      $("ownerStatus").textContent = state.sbAuthError;
+      $("ownerStatus").className = "status error";
+      go.disabled = false;
+    }
   }
   function grantOwner() {
     state.ownerSession = true;
@@ -2315,6 +2788,8 @@
     state.ownerSession = false;
     clearSession();
     paintAccount();
+    // On the dedicated admin page, locking sends you back to the public site.
+    if (document.body.classList.contains("admin-page")) { location.href = "index.html"; return; }
     closeModal("adminModal");
     toast("Owner session locked.", "ok");
   }
@@ -2343,10 +2818,12 @@
     await Promise.all([loadOverview(), loadStreams(), loadContentAdmin(), loadMembers(), loadAllLists()]);
     paintActivityUsers();
     renderActivity();
+    countOpenReports();
   }
   function selectTab(name) {
     if (name === "activity") loadActivity();
-    ["overview", "keys", "users", "lists", "activity", "streams", "content"].forEach((t) => {
+    if (name === "reports") loadReports();
+    ["overview", "keys", "users", "lists", "activity", "reports", "streams", "content"].forEach((t) => {
       const on = t === name;
       const btn = document.querySelector('[data-tab="' + t + '"]');
       if (btn) { btn.classList.toggle("active", on); btn.setAttribute("aria-selected", String(on)); }
@@ -2393,9 +2870,9 @@
     const done = (ok, t, s) => row("<strong>" + (ok ? '<i class="fa-solid fa-circle-check" style="color:var(--green)"></i> ' : '<i class="fa-regular fa-circle" style="color:#7c8190"></i> ') + t + "</strong><small>" + s + "</small>",
       '<span class="role ' + (ok ? "admin" : "") + '">' + (ok ? "done" : "todo") + "</span>");
     $("ovChecklist").innerHTML =
-      done(isOwnerSession(), "Unlock the owner session", "Already done - you are in the control room.") +
+      done(isAdmin(), "Sign in as the owner", "Supabase sign-in with the admin role - no password is stored in the site.") +
       done(Boolean(state.cfg.supabaseUrl && state.cfg.supabaseAnonKey), "Connect Supabase", "Built into index.html (OWNER block).") +
-      done(Boolean(state.cfg.tmdbKey), "Add your TMDB key", "Built into index.html (OWNER block).") +
+      done(Boolean(OWNER.tmdbProxy), "Hide the TMDB key behind the proxy", OWNER.tmdbProxy ? "Done - key lives in the Cloudflare Worker." : "Deploy worker/tmdb-proxy.js and set OWNER.tmdbProxy.") +
       done(connected, "Verify members and watchlists", "Admin > Members and Watchlists tabs.");
     fillDbProbe();
   }
@@ -2407,7 +2884,8 @@
     const on = (v, a, b) => '<span class="role ' + (v ? "admin" : "") + '">' + (v ? a : b) + "</span>";
     box.innerHTML =
       row("<strong>Owner identity</strong><small>" + esc(OWNER.email) + "</small>", '<span class="role owner">owner</span>') +
-      row("<strong>TMDB key</strong><small>" + mask(state.cfg.tmdbKey, 6) + " | built into the site</small>", on(state.cfg.tmdbKey, "live", "missing")) +
+      row("<strong>TMDB access</strong><small>" + (OWNER.tmdbProxy ? "via proxy " + esc(OWNER.tmdbProxy) + " | key stays on the server" : (OWNER.tmdbKey ? "direct key in index.html (visible to visitors - set tmdbProxy instead)" : "not set")) + "</small>",
+          on(state.cfg.tmdbKey, OWNER.tmdbProxy ? "proxied" : "direct", "missing")) +
       row("<strong>Supabase URL</strong><small>" + esc(state.cfg.supabaseUrl || "not set") + "</small>", on(state.cfg.supabaseUrl, "set", "missing")) +
       row("<strong>Supabase anon key</strong><small>" + mask(state.cfg.supabaseAnonKey, 8) + " | public key, protected by RLS</small>", on(state.cfg.supabaseAnonKey, "set", "missing")) +
       row("<strong>Owner session</strong><small>expires " + OWNER_SESSION_HOURS + "h after unlock</small>", '<span class="role owner">active</span>');
@@ -2494,6 +2972,7 @@
   async function loadStreams() {
     if (!isAdmin() || !state.sb) { $("streamList").innerHTML = none("Connect Supabase to manage overrides."); return; }
     const { data, error } = await state.sb.from("custom_streams").select("id,tmdb_id,stream_url,updated_by,created_at").order("created_at", { ascending: false });
+    if (!error) state.overrides = data || [];       // Reports tab shows "override exists"
     $("streamList").innerHTML = error ? none(error.message)
       : ((data || []).length ? data.map((r) => row("<strong>TMDB " + esc(r.tmdb_id) + '</strong><small title="' + esc(r.stream_url) + '">' + esc(r.stream_url) + "</small>",
           '<button class="mini" type="button" data-del-stream="' + esc(r.tmdb_id) + '">Remove</button>')).join("") : none("No overrides yet."));
@@ -2919,8 +3398,8 @@
     const id = Number(item.id);
     if (!Number.isSafeInteger(id) || id < 1) return;
     const tv = item.media_type === "tv";
-    const s = tv ? state.season || 1 : null;
-    const e = tv ? state.episode || 1 : null;
+    const s = tv ? Math.max(1, parseInt($("seasonIn").value, 10) || 1) : null;
+    const e = tv ? Math.max(1, parseInt($("episodeIn").value, 10) || 1) : null;
     const k = keyOf(item) + ":" + s + ":" + e;
     if (Date.now() - (recentPlays.get(k) || 0) < 5 * 60 * 1000) return;   // no duplicate spam
     recentPlays.set(k, Date.now());
@@ -3060,7 +3539,7 @@
     if (t.id === "mlSearch") { ML.q = t.value; renderMyListGrid(); }
     else if (t.id === "actSearch") renderActivity();
   });
-
+  ["seasonIn", "episodeIn"].forEach((id) => $(id).addEventListener("change", () => { if (state.playing) recordWatch(state.playing); }));
   // Safety net for suspensions if Realtime is unavailable.
   setInterval(() => { if (state.user && document.visibilityState === "visible") checkBlocked(); }, 60000);
 
@@ -3190,12 +3669,7 @@
   /* =====================================================================
      v4 - Reliable owner sign-in, database diagnostics, member watch history
      ===================================================================== */
-  Object.assign(state, { myHistory: [], sbAuthError: "", pendingPlay: null, authReady: false, sessionReady: null, tv: false, kbNav: false });
-
-  // Arrow keys pressed before TV mode is known: treat as keyboard/remote use.
-  document.addEventListener("keydown", (ev) => {
-    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Enter"].indexOf(ev.key) !== -1) state.kbNav = true;
-  }, { once: false, capture: true });
+  Object.assign(state, { myHistory: [], sbAuthError: "", pendingPlay: null, authReady: false, sessionReady: null });
 
   /* Opens sign-in for a guest who pressed Play, and remembers the title so it
      starts automatically after they sign in (see applyUser). */
@@ -3204,6 +3678,7 @@
     closeMenu();
     setMode("signin");
     openModal("authModal");
+    if (typeof TV !== "undefined" && TV.on) TVCODE.start(); else TVCODE.showForm();
     if (!state.sb) {
       $("authStatus").textContent = "Sign-in is temporarily unavailable. Please try again in a moment.";
       $("authStatus").className = "status error";
@@ -3225,27 +3700,13 @@
     return m || "Sign-in failed.";
   }
 
+  /* The password is never stored in this file, so "Sign in as owner" opens
+     the owner gate where it is typed. After a successful sign-in the admin
+     data is refreshed (see grantOwner -> openAdmin). */
   async function ownerSupabaseSignIn() {
     if (!state.sb) { toast("Supabase is not configured.", "error"); return false; }
-    const btn = $("sbSignIn"), msg = $("sbBannerMsg");
-    if (btn) btn.disabled = true;
-    if (msg) msg.textContent = "Signing in to Supabase...";
-    let res;
-    try { res = await state.sb.auth.signInWithPassword({ email: OWNER.email, password: OWNER.password }); }
-    catch (e) { res = { error: e }; }
-    if (btn) btn.disabled = false;
-    if (res.error || !res.data?.user) {
-      state.sbAuthError = friendlyAuthError(res.error?.message, OWNER.email);
-      paintSessionBanner();
-      toast(state.sbAuthError, "error");
-      fillDbProbe();
-      return false;
-    }
-    state.sbAuthError = "";
-    await applyUser(res.data.user);
-    toast("Signed in to Supabase - loading live data.", "ok");
-    await refreshAdminData();
-    return true;
+    openOwnerGate(true);
+    return false;
   }
 
   async function refreshAdminData() {
@@ -3384,401 +3845,706 @@
   });
 
   /* =====================================================================
-     v5 - Real season / episode picker for series
+     v6 - Season and episode pickers driven by TMDB
      ===================================================================== */
-  const seasonCache = new Map();
-  const seriesOf = (item) => Boolean(item && !item.is_custom && item.media_type === "tv");
+  const seriesCache = new Map();   // "tv:123" -> { seasons:[...], episodes:{ [season]: [...] } }
 
-  function manualEpisodes(msg) {
-    const grid = $("epGrid");
-    if (grid) grid.innerHTML = '<div class="ep-loading"><i class="fa-solid fa-circle-info"></i><span>' +
-      esc(msg || "Episode list could not be loaded. Use manual entry below.") + "</span></div>";
-    const c = $("epCount"); if (c) c.textContent = "manual entry";
-    $("epControls").hidden = false;
+  function setSelectOptions(sel, opts, value) {
+    sel.innerHTML = opts.map((o) => '<option value="' + esc(o[0]) + '">' + esc(o[1]) + "</option>").join("");
+    setSelectValue(sel, value);
   }
+  function setSelectValue(sel, value) {
+    const v = String(value);
+    if ([...sel.options].some((o) => o.value === v)) sel.value = v;
+    else if (sel.options.length) sel.selectedIndex = 0;
+  }
+  const seriesKey = (item) => "tv:" + Number(item.id);
 
-  // Season list + episode grid, straight from TMDB. Nothing to type by hand.
-  async function loadEpisodePicker(item, season) {
-    const sel = $("seasonSelect"), grid = $("epGrid");
-    if (!seriesOf(item)) return;
-    if (!state.cfg.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
-    grid.innerHTML = '<div class="ep-loading"><div class="spin"></div><span>Loading seasons...</span></div>';
+  /* Fetch the show's seasons (and the episodes of the one being watched). */
+  async function loadSeriesStructure(item, season, episode) {
     const id = Number(item.id);
-    let seasons = [];
-    try {
-      let full = detailCache.get("tv:" + id);
-      if (!full || !Array.isArray(full.seasons) || !full.seasons.length) {
-        full = await tmdb("/tv/" + id, { language: "en-US" });
-        detailCache.set("tv:" + id, full);
+    if (!Number.isSafeInteger(id) || id < 1 || !state.cfg.tmdbKey) return;
+    const key = seriesKey(item);
+    let entry = seriesCache.get(key);
+    if (!entry) {
+      try {
+        const show = await tmdb("/tv/" + id, { language: "en-US" });
+        const seasons = (show.seasons || [])
+          .filter((s) => Number(s.season_number) > 0 && Number(s.episode_count) > 0)
+          .map((s) => ({ n: Number(s.season_number), name: s.name || ("Season " + s.season_number), count: Number(s.episode_count) || 0 }))
+          .sort((a, b) => a.n - b.n);
+        entry = { seasons, episodes: {} };
+        seriesCache.set(key, entry);
+      } catch (e) {
+        console.warn("[Flickerz Nest] seasons", e);
+        return;                                   // keep the typed values
       }
-      seasons = (full.seasons || []).filter((s) => Number(s.season_number) > 0);
-    } catch { /* fall back below */ }
-    if (state.playing !== item) return;
-    if (!seasons.length) {
-      seasons = Array.from({ length: Math.max(1, season) }, (_, i) => ({ season_number: i + 1, name: "Season " + (i + 1) }));
     }
-    const nums = seasons.map((s) => Number(s.season_number));
-    if (nums.indexOf(Number(season)) === -1) season = nums[0];
-    state.season = season;
-    sel.innerHTML = seasons.map((s) =>
-      '<option value="' + esc(s.season_number) + '"' + (Number(s.season_number) === Number(season) ? " selected" : "") + ">" +
-      esc(s.name || ("Season " + s.season_number)) + "</option>").join("");
-    $("epControls").hidden = true;
-    await loadEpisodeList(item, season);
-  }
-
-  async function loadEpisodeList(item, season) {
-    const grid = $("epGrid"), count = $("epCount");
-    if (!seriesOf(item)) return;
-    if (!state.cfg.tmdbKey) { manualEpisodes("Episode lists need a TMDB key."); return; }
-    grid.innerHTML = '<div class="ep-loading"><div class="spin"></div><span>Loading episodes...</span></div>';
-    const id = Number(item.id), key = id + ":" + season;
-    try {
-      let data = seasonCache.get(key);
-      if (!data) {
-        data = await tmdb("/tv/" + id + "/season/" + season, { language: "en-US" });
-        seasonCache.set(key, data);
-      }
-      if (state.playing !== item) return;
-      const eps = (data.episodes || []).filter((e) => Number(e.episode_number) > 0);
-      if (!eps.length) throw new Error("empty season");
-      count.textContent = eps.length + " episode" + (eps.length === 1 ? "" : "s") + " in this season";
-      grid.innerHTML = eps.map((e) => {
-        const still = img(e.still_path, "w300");
-        const on = Number(state.episode) === Number(e.episode_number);
-        return '<button class="ep-card' + (on ? " on" : "") + '" type="button" data-ep="' + esc(e.episode_number) + '" aria-pressed="' + on + '">' +
-          (still ? '<img src="' + esc(still) + '" alt="" loading="lazy" data-err>' : '<span class="ep-still"><i class="fa-solid fa-play"></i></span>') +
-          "<span><b>E" + esc(e.episode_number) + " | " + esc(e.name || ("Episode " + e.episode_number)) + "</b>" +
-          (e.air_date ? "<small>" + esc(String(e.air_date).slice(0, 10)) + "</small>" : "") + "</span></button>";
-      }).join("");
-      wireImages(grid);
-    } catch {
-      if (state.playing === item) manualEpisodes("Episodes for season " + season + " are unavailable. Use manual entry below.");
+    if (!state.playing || seriesKey(state.playing) !== key) return;    // user moved on
+    if (entry.seasons.length) {
+      const target = entry.seasons.some((s) => s.n === season) ? season : entry.seasons[0].n;
+      setSelectOptions($("seasonIn"), entry.seasons.map((s) => [s.n, s.name + " (" + s.count + " ep)"]), target);
+      await fillEpisodes(item, target, episode);
+      if (target !== season && state.playing && seriesKey(state.playing) === key) setServer(state.server);
     }
   }
 
-  function pickEpisode(n) {
-    const e = Math.max(1, parseInt(n, 10) || 1);
-    state.episode = e;
-    $("episodeIn").value = String(e);
-    document.querySelectorAll("[data-ep]").forEach((b) => {
-      const on = Number(b.dataset.ep) === e;
-      b.classList.toggle("on", on);
-      b.setAttribute("aria-pressed", String(on));
-    });
-    if (state.playing) {
-      setServer(state.server);
-      recordWatch(state.playing);
-      markWatching(state.playing);
-    }
-  }
-
-  // ---- picker events ----
-  document.addEventListener("click", async (ev) => {
-    const ep = ev.target.closest("[data-ep]");
-    if (ep) { pickEpisode(ep.dataset.ep); return; }
-    if (ev.target.closest("#epManual")) {
-      ev.preventDefault();
-      const box = $("epControls");
-      box.hidden = !box.hidden;
-      if (!box.hidden) { $("seasonIn").value = String(state.season); $("episodeIn").value = String(state.episode); }
-      return;
-    }
-    const seasonCard = ev.target.closest("[data-season]");
-    if (seasonCard) {
-      ev.preventDefault();
-      if (state.detail) play(state.detail, { season: Number(seasonCard.dataset.season) || 1 });
-    }
-  });
-  document.addEventListener("change", (ev) => {
-    const t = ev.target;
-    if (!t || !t.id) return;
-    if (t.id === "seasonSelect") {
-      state.season = Math.max(1, parseInt(t.value, 10) || 1);
-      state.episode = 1;
-      $("episodeIn").value = "1";
-      if (state.playing) loadEpisodeList(state.playing, state.season);
-      return;
-    }
-    if (t.id === "seasonIn") {
-      state.season = Math.max(1, parseInt(t.value, 10) || 1);
-      t.value = String(state.season);
-      if (state.playing) { setServer(state.server); recordWatch(state.playing); }
-      return;
-    }
-    if (t.id === "episodeIn") {
-      state.episode = Math.max(1, parseInt(t.value, 10) || 1);
-      t.value = String(state.episode);
-      if (state.playing) { setServer(state.server); recordWatch(state.playing); }
-    }
-  });
-
-  /* =====================================================================
-     v6 - TV / remote-control support: focus navigation, TV mode
-     ===================================================================== */
-  const TV_KEY = "flickerz.tvmode.v1";
-  const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-
-  function detectTv() {
-    const ua = navigator.userAgent || "";
-    const viewport = Math.max(
-      Number(window.innerWidth || 0),
-      Number(window.screen?.width || 0)
-    );
-    const screenSize = Math.max(
-      Number(window.screen?.width || 0),
-      Number(window.screen?.height || 0)
-    );
-
-    const knownTv = /SMART[-_ ]?TV|SmartTV|Smart TV|Tizen|WebOS|Web0S|NetCast|Viera|HbbTV|Android[ ._-]*TV|AFT(SS|KA|KR|SA)|BRAVIA|GoogleTV|Google TV|CrKey|AppleTV|LG_Web|NetTV|SkyQ|Freebox|Vestel|CloudTV|Cloud TV|CloudWalker/i.test(ua);
-
-    // Cloud-TV browsers may identify only as generic Android.
-    // A large non-mobile Android viewport is a useful fallback.
-    const genericAndroidTv =
-      /Android/i.test(ua) &&
-      viewport >= 800 &&
-      Number(window.innerHeight || 0) >= 450 &&
-      screenSize >= 900;
-
-    // Cloud TV may expose a desktop/Linux-style UA. Its large-screen
-    // viewport is therefore a stronger signal than the UA alone.
-    const largeScreenTv =
-      screenSize >= 1200 &&
-      viewport >= 800 &&
-      Number(window.innerHeight || 0) >= 450;
-
-    return knownTv || genericAndroidTv || largeScreenTv;
-  }
-  function applyTvMode(on, persist) {
-    state.tv = Boolean(on);
-    document.body.classList.toggle("tv", state.tv);
-    const label = $("menuTv") && $("menuTv").querySelector("span");
-    if (label) label.textContent = state.tv ? "Turn off TV mode" : "Turn on TV mode";
-    if (persist) {
-      try { localStorage.setItem(TV_KEY, state.tv ? "1" : "0"); } catch {}
-    }
-  }
-  function initTvMode() {
-    let stored = null;
-    try { stored = localStorage.getItem(TV_KEY); } catch {}
-    const detected = detectTv();
-    // Detected TV hardware always wins over a stale "TV mode off" value.
-    applyTvMode(detected || stored === "1", false);
-  }
-
-  function focusables(root) {
-    return Array.from((root || document).querySelectorAll(FOCUSABLE)).filter((el) => {
-      const r = el.getBoundingClientRect();
-      return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== "hidden" && !el.closest("[hidden]");
-    });
-  }
-  // Arrow keys / D-pad move focus the way a TV remote expects.
-  function moveFocus(dir) {
-    const items = focusables();
-    if (!items.length) return;
-    const cur = document.activeElement;
-    if (!cur || items.indexOf(cur) === -1) { (items[0]).focus(); scrollFocusIntoView(items[0]); return; }
-    const cr = cur.getBoundingClientRect();
-    const cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
-    let best = null, bestScore = Infinity;
-    items.forEach((el) => {
-      if (el === cur) return;
-      const r = el.getBoundingClientRect();
-      const dx = (r.left + r.width / 2) - cx, dy = (r.top + r.height / 2) - cy;
-      let forward = 0, sideways = 0;
-      if (dir === "left")  { forward = -dx; sideways = Math.abs(dy); }
-      if (dir === "right") { forward =  dx; sideways = Math.abs(dy); }
-      if (dir === "up")    { forward = -dy; sideways = Math.abs(dx); }
-      if (dir === "down")  { forward =  dy; sideways = Math.abs(dx); }
-      if (forward <= 6) return;
-      const score = forward + sideways * 2.2;
-      if (score < bestScore) { bestScore = score; best = el; }
-    });
-    if (best) { best.focus({ preventScroll: true }); scrollFocusIntoView(best); }
-  }
-  function scrollFocusIntoView(el) {
-    try { el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); } catch {}
-  }
-  function focusFirstIn(el) {
-    const list = focusables(el);
-    if (list.length) { list[0].focus({ preventScroll: true }); scrollFocusIntoView(list[0]); }
-  }
-
-  document.addEventListener("keydown", (ev) => {
-    const t = ev.target;
-    const editable = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
-    if (editable) return;                                   // never steal caret keys
-    const map = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
-    const dir = map[ev.key];
-    if (!dir) return;
-    // Inside a horizontal carousel Left/Right should scroll the strip, not jump.
-    const strip = t && t.closest && t.closest(".strip");
-    if (strip && (dir === "left" || dir === "right")) {
-      ev.preventDefault();
-      strip.scrollBy({ left: dir === "right" ? strip.clientWidth * .8 : -strip.clientWidth * .8, behavior: "smooth" });
-      return;
-    }
-    ev.preventDefault();
-    moveFocus(dir);
-  }, true);
-  document.addEventListener("focusin", (ev) => {
-    if (ev.target && ev.target.scrollIntoView) scrollFocusIntoView(ev.target);
-  });
-
-
-
-  /* =====================================================================
-     v7 - TV pairing codes, full screen, standalone admin page
-     ===================================================================== */
-
-  // The control room is its own page now: it opens full screen on a TV and
-  // keeps the same data and permissions as before.
-  function openAdmin() { closeMenu(); location.href = "admin.html"; }
-  function openOwnerGate() { location.href = "admin.html"; }
-  function openAuth() {
-    closeMenu();
-    setMode("signin");
-    openModal("authModal");
-    if (state.tv) showTvPanel();
-    setTimeout(() => (state.tv ? $("tvCodeIn") : $("emailIn")).focus(), 30);
-  }
-  function showTvPanel() {
-    $("tvCodePanel").hidden = false;
-    $("useTvCode").hidden = true;
-  }
-
-  /* Pairing: the signed-in device mints a one-time code together with its
-     session; the TV types the code, becomes that account, and the code dies. */
-  async function makeTvCode() {
-    const st = $("linkTvStatus");
-    if (!state.sb || !state.user) {
-      st.textContent = "Sign in on this device first, then link your TV.";
-      st.className = "status error";
-      return;
-    }
-    let ses = null;
-    try { ses = (await state.sb.auth.getSession()).data?.session; } catch {}
-    if (!ses) { st.textContent = "Your session expired. Sign in again."; st.className = "status error"; return; }
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-    for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-    let res;
-    try {
-      res = await state.sb.from("tv_codes").insert({
-        code: code,
-        user_id: state.user.id,
-        access_token: ses.access_token,
-        refresh_token: ses.refresh_token
-      });
-    } catch (e) { res = { error: e }; }
-    if (res.error) {
-      const m = res.error.message || "";
-      st.textContent = /tv_codes|relation|schema cache|column/i.test(m)
-        ? "TV pairing is not set up yet. Run STEP 15 of schema.sql in the Supabase SQL Editor."
-        : m;
-      st.className = "status error";
-      return;
-    }
-    $("tvCodeDisplay").innerHTML = esc(code) + "<small>valid for 3 minutes</small>";
-    st.textContent = "Code ready. Enter it on your TV.";
-    st.className = "status ok";
-  }
-
-  async function claimTvCode() {
-    const st = $("tvCodeStatus");
-    const code = $("tvCodeIn").value.trim().toUpperCase();
-    if (code.length < 4) { st.textContent = "Enter the code shown on your phone or computer."; st.className = "status error"; return; }
-    if (!state.sb) { st.textContent = "TV pairing needs Supabase. Check your connection."; st.className = "status error"; return; }
-    st.textContent = "Checking code...";
-    st.className = "status";
-    let res;
-    try { res = await state.sb.from("tv_codes").select("code,access_token,refresh_token,expires_at").eq("code", code).maybeSingle(); }
-    catch (e) { res = { error: e }; }
-    const row = res.data;
-    if (res.error || !row) {
-      st.textContent = /tv_codes|relation|schema cache/i.test((res.error && res.error.message) || "")
-        ? "TV pairing is not set up yet on this site (run STEP 15 of schema.sql)."
-        : "That code is not valid. Generate a new one on your phone.";
-      st.className = "status error";
-      return;
-    }
-    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) {
-      st.textContent = "That code has expired. Generate a new one on your phone.";
-      st.className = "status error";
-      return;
-    }
-    st.textContent = "Connecting this TV...";
-    let out;
-    try { out = await state.sb.auth.setSession({ access_token: row.access_token, refresh_token: row.refresh_token }); }
-    catch (e) { out = { error: e }; }
-    if (out.error || !out.data?.user) {
-      st.textContent = (out.error && out.error.message) || "Could not connect this TV.";
-      st.className = "status error";
-      return;
-    }
-    try { await state.sb.from("tv_codes").delete().eq("code", code); } catch {}
-    st.textContent = "";
-    $("authModal").hidden = true;
-    syncLock();
-    await applyUser(out.data.user);
-    toast("TV connected as " + (out.data.user.email || "your account") + ". Press play on any title.", "ok");
-  }
-
-  /* Full screen: the most reliable way to get the whole screen on a TV. */
-  function toggleFullscreen() {
-    const target = $("playerModal") || document.documentElement;
-    const doc = document;
-    const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen;
-    const req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen;
-    try {
-      if (doc.fullscreenElement || doc.webkitFullscreenElement) { (exit || function () {}).call(doc); }
-      else if (req) req.call(target);
-      else toast("This browser does not support full screen.", "error");
-    } catch {
-      toast("Full screen was blocked. Use the New tab button instead.", "error");
-    }
-  }
-  function syncFsIcon() {
-    const i = $("fsBtn") && $("fsBtn").querySelector("i");
-    if (i) i.className = (document.fullscreenElement || document.webkitFullscreenElement) ? "fa-solid fa-compress" : "fa-solid fa-expand";
-  }
-  document.addEventListener("fullscreenchange", syncFsIcon);
-  document.addEventListener("webkitfullscreenchange", syncFsIcon);
-
-  /* The player lives on its own page so it can use the whole screen anywhere,
-     including TVs. Sign-in is enforced on that page before anything plays. */
-  function play(item, opts) {
+  /* Fill the episode picker with the real episodes of one season. */
+  async function fillEpisodes(item, season, episode) {
     if (!item) return;
-    const o = opts || {};
-    closeModal("searchModal");
-    const q = new URLSearchParams({
-      m: item.is_custom ? "custom" : (item.media_type || "movie"),
-      t: String(item.id)
-    });
-    q.set("name", titleOf(item));
-    if (o.season) q.set("s", String(o.season));
-    if (o.episode) q.set("e", String(o.episode));
-    if (item.is_custom && item.custom_stream_url) q.set("u", item.custom_stream_url);
-    location.href = "player.html?" + q.toString();
+    const key = seriesKey(item);
+    const entry = seriesCache.get(key);
+    const sel = $("episodeIn");
+    const meta = entry && entry.seasons.find((s) => s.n === season);
+    // Instant placeholder from the episode count, then real titles when loaded.
+    if (meta && meta.count) setSelectOptions(sel, Array.from({ length: meta.count }, (_, i) => [i + 1, "Episode " + (i + 1)]), episode);
+    let eps = entry && entry.episodes[season];
+    if (!eps && state.cfg.tmdbKey) {
+      sel.disabled = true;
+      try {
+        const data = await tmdb("/tv/" + Number(item.id) + "/season/" + season, { language: "en-US" });
+        eps = (data.episodes || []).map((e) => ({
+          n: Number(e.episode_number), name: e.name || "", overview: e.overview || "",
+          still: e.still_path || "", runtime: Number(e.runtime) || 0, air: e.air_date || ""
+        })).filter((e) => e.n > 0);
+        if (entry) entry.episodes[season] = eps;
+      } catch (e) { console.warn("[Flickerz Nest] episodes", e); }
+      sel.disabled = false;
+    }
+    if (!state.playing || seriesKey(state.playing) !== key) return;
+    if (eps && eps.length) {
+      const wanted = eps.some((e) => e.n === episode) ? episode : eps[0].n;
+      setSelectOptions(sel, eps.map((e) => [e.n, "E" + e.n + (e.name ? " - " + e.name : "")]), wanted);
+    }
+    paintEpisodeBrowser();
   }
 
-  $("useTvCode").addEventListener("click", () => { showTvPanel(); $("tvCodeIn").focus(); });
-  $("tvCodeGo").addEventListener("click", claimTvCode);
-  $("tvCodeIn").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); claimTvCode(); }
-    else if (e.key === "Escape") $("tvCodeIn").value = "";
+  /* Episode cards under the player: thumbnail, title, length, summary. */
+  function paintEpisodeBrowser() {
+    const box = $("epBrowser");
+    const item = state.playing;
+    if (!item || item.is_custom || item.media_type !== "tv") { box.hidden = true; box.innerHTML = ""; return; }
+    const entry = seriesCache.get(seriesKey(item));
+    const s = parseInt($("seasonIn").value, 10) || 1;
+    const cur = parseInt($("episodeIn").value, 10) || 1;
+    const eps = entry && entry.episodes[s];
+    if (!eps || !eps.length) { box.hidden = true; box.innerHTML = ""; return; }
+    const meta = entry.seasons.find((x) => x.n === s);
+    box.hidden = false;
+    const seenCount = state.user ? eps.filter((e) => isSeen(item, s, e.n)).length : 0;
+    box.innerHTML = '<div class="ep-browser-head"><b>' + esc(meta ? meta.name : "Season " + s) + "</b><small>" + eps.length + " episodes" +
+        (state.user ? " \u00b7 " + seenCount + " watched" : "") + " - tap one to play</small></div>" +
+      (state.user && seenCount ? '<div class="progress" style="margin:-4px 0 12px"><i style="width:' + Math.round(seenCount / eps.length * 100) + '%"></i></div>' : "") +
+      '<div class="ep-list">' + eps.map((e) => {
+        const pic = e.still ? img(e.still, "w300") : "";
+        const extra = [e.runtime ? e.runtime + " min" : "", e.air ? e.air.slice(0, 4) : ""].filter(Boolean).join(" | ");
+        const seen = state.user && isSeen(item, s, e.n);
+        return '<div class="ep-card' + (e.n === cur ? " now" : "") + (seen ? " seen" : "") + '" role="button" tabindex="0" data-ep="' + e.n + '" aria-current="' + (e.n === cur ? "true" : "false") + '">' +
+          '<span class="ep-thumb">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy" data-err>' : "") + "<span>E" + e.n + "</span>" +
+            (state.user ? '<button class="ep-mark" type="button" data-mark-ep="' + s + ":" + e.n + '" title="' + (seen ? "Mark as not watched" : "Mark as watched") + '" aria-label="' + (seen ? "Mark as not watched" : "Mark as watched") + '"><i class="fa-solid fa-check"></i></button>' : "") +
+          "</span>" +
+          '<span class="ep-info"><b>' + esc(e.name || "Episode " + e.n) + "</b>" + (extra ? "<small>" + esc(extra) + "</small>" : "") +
+          (e.overview ? "<p>" + esc(e.overview) + "</p>" : "") + "</span></div>";
+      }).join("") + "</div>" +
+      (state.user && seenCount === eps.length ? '<div class="ep-done"><i class="fa-solid fa-circle-check"></i> Season complete' + (entry.seasons.some((x) => x.n > s) ? " - press Next to start the next season." : ".") + "</div>" : "");
+    wireImages(box);
+    const now = box.querySelector(".ep-card.now");
+    if (now && now.scrollIntoView) now.scrollIntoView({ block: "nearest" });
+  }
+
+  /* Previous / Next episode, crossing into the next season when needed. */
+  async function stepEpisode(dir) {
+    const item = state.playing;
+    if (!item || item.media_type !== "tv") return;
+    const sSel = $("seasonIn"), eSel = $("episodeIn");
+    const si = sSel.selectedIndex, ei = eSel.selectedIndex;
+    if (dir > 0 && ei < eSel.options.length - 1) eSel.selectedIndex = ei + 1;
+    else if (dir < 0 && ei > 0) eSel.selectedIndex = ei - 1;
+    else if (dir > 0 && si < sSel.options.length - 1) {
+      sSel.selectedIndex = si + 1;
+      await fillEpisodes(item, parseInt(sSel.value, 10), 1);
+    } else if (dir < 0 && si > 0) {
+      sSel.selectedIndex = si - 1;
+      await fillEpisodes(item, parseInt(sSel.value, 10), 9999);   // snaps to the last episode
+      eSel.selectedIndex = eSel.options.length - 1;
+    } else { toast(dir > 0 ? "This is the last episode." : "This is the first episode.", ""); return; }
+    paintEpisodeBrowser();
+    recordWatch(item);
+    setServer(state.server);
+  }
+
+  /* =====================================================================
+     v11 - Stream reports, password reset
+     ===================================================================== */
+  Object.assign(state, { recs: [], reports: [], repTabReady: false });
+  const REASONS = { black: "Black screen / never loads", buffer: "Keeps buffering", wrong: "Wrong movie or episode", audio: "No sound / wrong language", other: "Something else" };
+
+  /* ---- member side: "Not working?" ---- */
+  function openReport() {
+    const item = state.playing;
+    if (!item || item.is_custom) { toast("Open a title first.", ""); return; }
+    if (!state.sb || !state.user) { toast("Sign in to report a problem.", ""); openAuth(); return; }
+    const tv = item.media_type === "tv";
+    const s = tv ? parseInt($("seasonIn").value, 10) || 1 : null;
+    const e = tv ? parseInt($("episodeIn").value, 10) || 1 : null;
+    $("reportSub").textContent = titleOf(item) + (tv ? " \u00b7 S" + s + " E" + e : "");
+    $("reportMeta").textContent = "We will include: source " + state.server + " (" + (SERVER_NAMES[state.server] || "?") + ")" + (tv ? ", season " + s + ", episode " + e : "") + ". Tip: try the other sources first - one of them usually works.";
+    $("reportNote").value = "";
+    $("reportStatus").textContent = ""; $("reportStatus").className = "status";
+    const first = $("reportForm").querySelector('input[name="reason"]'); if (first) first.checked = true;
+    openModal("reportModal");
+  }
+  $("reportForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const item = state.playing;
+    const st = $("reportStatus");
+    if (!item || !state.sb || !state.user) { st.textContent = "Sign in first."; st.className = "status error"; return; }
+    const tv = item.media_type === "tv";
+    const reason = (new FormData($("reportForm")).get("reason") || "other").toString();
+    $("reportGo").disabled = true; st.textContent = "Sending..."; st.className = "status";
+    const row = {
+      user_id: state.user.id, tmdb_id: Number(item.id), media_type: tv ? "tv" : "movie",
+      title: titleOf(item), poster_path: item.poster_path || null,
+      season: tv ? parseInt($("seasonIn").value, 10) || 1 : null,
+      episode: tv ? parseInt($("episodeIn").value, 10) || 1 : null,
+      server: Number(state.server) || null, reason, note: ($("reportNote").value || "").trim().slice(0, 500) || null
+    };
+    const { error } = await state.sb.from("stream_reports").insert(row);
+    $("reportGo").disabled = false;
+    if (error) {
+      const m = String(error.message || "");
+      if (/duplicate|unique/i.test(m)) { st.textContent = "You already reported this today - thank you. We are on it."; st.className = "status ok"; setTimeout(() => closeModal("reportModal"), 1800); return; }
+      st.textContent = /stream_reports|relation|schema cache/i.test(m) ? "Reporting is not set up yet (owner: run STEP 16 of schema.sql)." : m;
+      st.className = "status error"; return;
+    }
+    st.textContent = "Thanks - your report is in. Meanwhile, try another source or New tab."; st.className = "status ok";
+    toast("Report sent. Thank you.", "ok");
+    setTimeout(() => closeModal("reportModal"), 1600);
   });
-  $("menuLinkTv").addEventListener("click", () => {
-    closeMenu();
-    $("linkTvStatus").textContent = "";
-    $("tvCodeDisplay").innerHTML = '--------<small>code appears here</small>';
+
+  /* ---- admin side: Reports tab ---- */
+  async function countOpenReports() {
+    const badge = $("reportsBadge");
+    if (!badge || !isAdmin() || !state.sb || !state.user) return;
+    const { count, error } = await state.sb.from("stream_reports").select("id", { count: "exact", head: true }).eq("status", "open");
+    if (error) { badge.hidden = true; return; }
+    badge.textContent = String(count || 0);
+    badge.hidden = !count;
+  }
+  async function loadReports() {
+    const body = $("repBody"), stats = $("repStats");
+    if (!isAdmin()) { body.innerHTML = '<p class="hint" style="padding:14px">Owner access required.</p>'; stats.innerHTML = ""; return; }
+    if (!state.sb || !state.user) { body.innerHTML = '<p class="hint" style="padding:14px">Sign in as the owner to load reports.</p>'; stats.innerHTML = ""; return; }
+    body.innerHTML = '<p class="hint" style="padding:14px">Loading reports...</p>';
+    const filter = ($("repFilter") || {}).value || "open";
+    let q = state.sb.from("stream_reports").select("id,user_id,tmdb_id,media_type,title,poster_path,season,episode,server,reason,note,status,created_at").order("created_at", { ascending: false }).limit(500);
+    if (filter !== "all") q = q.eq("status", filter);
+    const { data, error } = await q;
+    if (error) {
+      body.innerHTML = '<div class="wl-user"><p class="hint">' + (/stream_reports|relation|schema cache/i.test(error.message || "") ? "Reports are not set up yet. Run STEP 16 of schema.sql in the Supabase SQL Editor, then press Refresh." : esc(error.message)) + "</p></div>";
+      stats.innerHTML = ""; return;
+    }
+    state.reports = data || [];
+    // Group by title so a popular broken film shows once with a count.
+    const groups = new Map();
+    state.reports.forEach((r) => {
+      const k = r.media_type + ":" + r.tmdb_id + (r.media_type === "tv" ? ":" + (r.season || 0) + ":" + (r.episode || 0) : "");
+      if (!groups.has(k)) groups.set(k, { key: k, first: r, rows: [] });
+      groups.get(k).rows.push(r);
+    });
+    const list = [...groups.values()].sort((a, b) => b.rows.length - a.rows.length || new Date(b.first.created_at) - new Date(a.first.created_at));
+    const overrideIds = new Set((state.overrides || []).map((o) => String(o.tmdb_id)));
+    const open = state.reports.filter((r) => r.status === "open").length;
+    const day = state.reports.filter((r) => Date.now() - new Date(r.created_at).getTime() < 864e5).length;
+    stats.innerHTML = statCard(state.reports.length, filter === "all" ? "Reports" : filter[0].toUpperCase() + filter.slice(1)) + statCard(list.length, "Titles") + statCard(day, "Last 24h") + statCard(open, "Open");
+    const b = $("reportsBadge"); if (b && filter !== "fixed" && filter !== "ignored") { b.textContent = String(open); b.hidden = !open; }
+    if (!list.length) { body.innerHTML = '<div class="wl-user"><p class="hint">' + (filter === "open" ? "No open reports. Nice." : "Nothing here.") + "</p></div>"; return; }
+    body.innerHTML = '<div class="list">' + list.map((g) => {
+      const r = g.first, p = img(r.poster_path, "w92");
+      const ep = r.media_type === "tv" && r.season ? " \u00b7 S" + r.season + " E" + (r.episode || 1) : "";
+      const reasons = {}; g.rows.forEach((x) => { reasons[x.reason || "other"] = (reasons[x.reason || "other"] || 0) + 1; });
+      const servers = [...new Set(g.rows.map((x) => x.server).filter(Boolean))].sort().map((n) => SERVER_NAMES[n] || n).join(", ");
+      const notes = g.rows.map((x) => x.note).filter(Boolean).slice(0, 2);
+      const hasOverride = overrideIds.has(String(r.tmdb_id));
+      const ids = g.rows.map((x) => x.id).join(",");
+      const anyOpen = g.rows.some((x) => x.status === "open");
+      return '<div class="rep-row">' + (p ? '<img src="' + esc(p) + '" alt="" loading="lazy" data-err>' : '<span class="rep-ph"></span>') +
+        "<div><b>" + (g.rows.length > 1 ? '<span class="rep-count">' + g.rows.length + "</span> " : "") + esc(r.title) + esc(ep) + "</b>" +
+        '<small><span class="rep-tag ' + esc(r.status) + '">' + esc(r.status) + "</span>" +
+          Object.entries(reasons).map(([k, n]) => esc(REASONS[k] || k) + (n > 1 ? " \u00d7" + n : "")).join(", ") +
+          (servers ? " \u00b7 on " + esc(servers) : "") + " \u00b7 " + esc(timeAgo(r.created_at)) +
+          (hasOverride ? ' \u00b7 <span style="color:var(--green)">override exists</span>' : "") + "</small>" +
+        (notes.length ? "<small>\u201c" + notes.map(esc).join("\u201d \u00b7 \u201c") + "\u201d</small>" : "") + "</div>" +
+        '<div class="rep-actions">' +
+          '<a class="mini" href="' + esc(watchUrl({ id: r.tmdb_id, media_type: r.media_type }, r.season, r.episode)) + '" target="_blank" rel="noopener"><i class="fa-solid fa-play"></i> Test</a>' +
+          '<button class="mini up" type="button" data-rep-fix="' + esc(r.tmdb_id) + '" data-rep-title="' + esc(r.title) + '"><i class="fa-solid fa-link"></i> Add override</button>' +
+          (anyOpen ? '<button class="mini good" type="button" data-rep-act="fixed" data-rep-id="' + esc(ids) + '"><i class="fa-solid fa-check"></i> Fixed</button>' +
+                     '<button class="mini" type="button" data-rep-act="ignored" data-rep-id="' + esc(ids) + '">Ignore</button>'
+                   : '<button class="mini" type="button" data-rep-act="open" data-rep-id="' + esc(ids) + '">Reopen</button>') +
+          '<button class="mini danger" type="button" data-rep-act="delete" data-rep-id="' + esc(ids) + '" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>' +
+        "</div></div>";
+    }).join("") + "</div>";
+    wireImages(body);
+  }
+  async function resolveReport(ids, action, btn) {
+    if (!isAdmin() || !state.sb || !ids) return;
+    const list = String(ids).split(",").filter(Boolean);
+    if (btn) btn.disabled = true;
+    let error;
+    if (action === "delete") {
+      if (!confirm("Delete " + list.length + " report" + (list.length === 1 ? "" : "s") + "?")) { if (btn) btn.disabled = false; return; }
+      ({ error } = await state.sb.from("stream_reports").delete().in("id", list));
+    } else {
+      const patch = action === "open" ? { status: "open", resolved_at: null, resolved_by: null } : { status: action, resolved_at: new Date().toISOString(), resolved_by: state.user.id };
+      ({ error } = await state.sb.from("stream_reports").update(patch).in("id", list));
+    }
+    if (btn) btn.disabled = false;
+    if (error) { toast(error.message || "Could not update the report.", "error"); return; }
+    toast(action === "delete" ? "Deleted." : "Marked " + action + ".", "ok");
+    await loadReports();
+    countOpenReports();
+  }
+  /* Jump to the Streams tab with the TMDB id already filled in. */
+  function prefillOverride(tmdbId, title) {
+    selectTab("streams");
+    const idIn = $("stId"), urlIn = $("stUrl");
+    if (idIn) { idIn.value = tmdbId; idIn.dispatchEvent(new Event("input", { bubbles: true })); }
+    if (urlIn) setTimeout(() => urlIn.focus(), 60);
+    toast("Paste a working stream URL for " + (title || "this title") + ", then save.", "");
+  }
+  $("repFilter").addEventListener("change", loadReports);
+
+  /* ---- password reset ---- */
+  function openForgot() {
+    const email = ($("emailIn").value || "").trim();
+    closeModal("authModal");
+    $("forgotEmail").value = email;
+    $("forgotStatus").textContent = ""; $("forgotStatus").className = "status";
+    openModal("forgotModal");
+    setTimeout(() => $(email ? "forgotGo" : "forgotEmail").focus(), 40);
+  }
+  $("forgotForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const st = $("forgotStatus"), email = ($("forgotEmail").value || "").trim();
+    if (!state.sb) { st.textContent = "Sign-in service is unavailable right now."; st.className = "status error"; return; }
+    $("forgotGo").disabled = true; st.textContent = "Sending..."; st.className = "status";
+    // The link returns to this exact page; the app detects the recovery
+    // session and shows the "choose a new password" dialog.
+    const redirectTo = location.origin + location.pathname.replace(/[^/]*$/, "") + "index.html";
+    const { error } = await state.sb.auth.resetPasswordForEmail(email, { redirectTo });
+    $("forgotGo").disabled = false;
+    if (error) { st.textContent = friendlyAuthError(error.message, email); st.className = "status error"; return; }
+    st.textContent = "If an account exists for " + email + ", a reset link is on its way. Check your inbox and spam folder."; st.className = "status ok";
+  });
+  $("newPassForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const st = $("newPassStatus"), a = $("newPass1").value, b = $("newPass2").value;
+    if (a.length < 6) { st.textContent = "Use at least 6 characters."; st.className = "status error"; return; }
+    if (a !== b) { st.textContent = "The two passwords do not match."; st.className = "status error"; return; }
+    if (!state.sb) { st.textContent = "Sign-in service is unavailable right now."; st.className = "status error"; return; }
+    $("newPassGo").disabled = true; st.textContent = "Saving..."; st.className = "status";
+    const { error } = await state.sb.auth.updateUser({ password: a });
+    $("newPassGo").disabled = false;
+    if (error) { st.textContent = error.message || "Could not save the password."; st.className = "status error"; return; }
+    st.textContent = "Password saved. You are signed in."; st.className = "status ok";
+    state.recovering = false;
+    toast("Your new password is set.", "ok");
+    try { history.replaceState(null, "", location.pathname + location.search); } catch {}
+    setTimeout(() => closeModal("newPassModal"), 900);
+  });
+  // Supabase sends the member back with a recovery session; show the dialog then.
+  function watchRecovery() {
+    if (!state.sb) return;
+    const hash = location.hash || "";
+    if (/type=recovery/.test(hash)) state.recovering = true;
+    state.sb.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY" || (state.recovering && event === "SIGNED_IN")) {
+        state.recovering = true;
+        closeAllModals();
+        $("newPass1").value = ""; $("newPass2").value = "";
+        $("newPassStatus").textContent = ""; $("newPassStatus").className = "status";
+        openModal("newPassModal");
+        setTimeout(() => $("newPass1").focus(), 60);
+      }
+    });
+  }
+
+  /* =====================================================================
+     v9 - Dedicated pages: watch.html, tv.html, account.html
+     ===================================================================== */
+  Object.assign(state, { pageRouted: false });
+
+  /* watch.html?type=movie&id=123[&s=1&e=2]  -> opens the player directly */
+  async function openWatchPage() {
+    const q = new URLSearchParams(location.search);
+    const type = q.get("type") === "tv" ? "tv" : "movie";
+    const id = Number(q.get("id"));
+    showHome();
+    if (!Number.isSafeInteger(id) || id < 1) { location.replace("index.html"); return; }
+    let item = state.index.get(type + ":" + id);
+    if (!item && state.cfg.tmdbKey) {
+      try { item = norm(await tmdb("/" + type + "/" + id, { language: "en-US" }), type); } catch { /* fall through */ }
+    }
+    if (!item) item = { id, media_type: type, title: q.get("title") || "Title " + id };
+    // Wait for the saved session so signed-in members are not asked to sign in.
+    if (state.sessionReady) { try { await state.sessionReady; } catch {} }
+    play(item, { season: q.get("s"), episode: q.get("e") });
+  }
+
+  /* tv.html -> TV mode on, code sign-in shown immediately for guests */
+  async function openTvPage() {
+    showHome();
+    if (typeof TV !== "undefined" && !TV.on) TV.enable("manual");
+    if (state.sessionReady) { try { await state.sessionReady; } catch {} }
+    if (!state.user) openAuth();           // on a TV, openAuth shows the code first
+  }
+
+  /* account.html -> account overview with the "Link a TV" box */
+  function openAccountPage() {
+    if (!state.user) { openAuth(); return; }
     openModal("linkTvModal");
-    makeTvCode();
+    $("linkTvCode").value = ""; $("linkTvStatus").textContent = "";
+  }
+
+  /* Share / open-in-new-page links for the player. */
+  function watchUrl(item, s, e) {
+    if (!item || item.is_custom) return "";
+    const p = new URLSearchParams({ type: item.media_type === "tv" ? "tv" : "movie", id: String(item.id) });
+    if (item.media_type === "tv") { if (s) p.set("s", s); if (e) p.set("e", e); }
+    return "watch.html?" + p.toString();
+  }
+
+  /* =====================================================================
+     v8 - TV code sign-in (TV shows code, phone approves, TV gets a session)
+     ===================================================================== */
+  const TVCODE = (() => {
+    let code = "", secret = "", timer = null, expires = 0, active = false;
+    const box = () => $("tvCodeBox");
+    function paint(c) {
+      const cells = $("tvCodeDigits").querySelectorAll("span");
+      cells.forEach((el, i) => { el.textContent = c && c[i] ? c[i] : "-"; });
+    }
+    function showForm(fromTv) {
+      stop();
+      if (box()) box().hidden = true;
+      $("authForm").hidden = false; $("authSwap").hidden = false;
+      // Only offer code sign-in on a TV. Phones and desktops never see it.
+      $("authUseCode").hidden = !(state.sb && TV.on);
+      if (fromTv) setTimeout(() => $("emailIn").focus(), 30);
+    }
+    async function start(force) {
+      if (!state.sb) { showForm(); return; }
+      if (box()) box().hidden = false;
+      $("authForm").hidden = true; $("authSwap").hidden = true; $("authUseCode").hidden = true;
+      $("tvCodeUrl").textContent = location.host + location.pathname.replace(/[^/]*$/, "") + "account.html";
+      $("authTitle").textContent = "Sign in on your TV";
+      $("authSub").textContent = "No typing on the remote. Approve this TV from your phone.";
+      active = true;
+      if (!force && code && Date.now() < expires - 15000) { paint(code); poll(); return; }
+      paint(""); $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting a code...';
+      try {
+        const { data, error } = await state.sb.rpc("tv_code_create");
+        if (error) throw error;
+        const row = Array.isArray(data) ? data[0] : data;
+        if (!row || !row.code) throw new Error("No code returned");
+        code = row.code; secret = row.secret; expires = new Date(row.expires_at).getTime() || (Date.now() + 9 * 60000);
+        paint(code);
+        $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Waiting for approval from your phone...';
+        poll();
+        if (TV.on) setTimeout(() => TV.focusFirst($("tvCodeBox")), 50);
+      } catch (e) {
+        const m = String(e.message || "");
+        $("tvCodeWait").innerHTML = /tv_code_create|function|schema cache/i.test(m)
+          ? "Code sign-in is not set up yet (the owner must run STEP 15 of schema.sql). Use email and password instead."
+          : "Could not get a code: " + esc(m);
+        setTimeout(() => { $("tvCodeOr").hidden = false; $("authForm").hidden = false; }, 10);
+      }
+    }
+    function poll() {
+      clearTimeout(timer);
+      if (!active || !code) return;
+      if (Date.now() > expires) { $("tvCodeWait").textContent = "This code expired. Press New code."; return; }
+      timer = setTimeout(async () => {
+        if (!active) return;
+        try {
+          const { data, error } = await state.sb.rpc("tv_code_poll", { p_code: code, p_secret: secret });
+          if (error) throw error;
+          const row = Array.isArray(data) ? data[0] : data;
+          if (row && row.status === "approved" && row.grant_token) { await finish(row.grant_token); return; }
+          if (row && row.status === "expired") { $("tvCodeWait").textContent = "This code expired. Press New code."; code = ""; return; }
+        } catch (e) { console.warn("[Flickerz Nest] tv poll", e); }
+        poll();
+      }, 2500);
+    }
+    async function finish(refreshToken) {
+      $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Approved - signing in...';
+      try {
+        // The phone's refresh token becomes this TV's own session (Supabase rotates it).
+        const { data, error } = await state.sb.auth.refreshSession({ refresh_token: refreshToken });
+        if (error) throw error;
+        if (!data || !data.session) throw new Error("No session");
+        code = ""; active = false;
+        toast("Signed in on this TV.", "ok");
+        await applyUser(data.session.user);
+        if (!$("authModal").hidden) closeModal("authModal");
+      } catch (e) {
+        $("tvCodeWait").textContent = "Sign-in failed: " + (e.message || "unknown error") + ". Press New code and try again.";
+        code = "";
+      }
+    }
+    function stop() { active = false; clearTimeout(timer); timer = null; }
+    return { start, stop, showForm };
+  })();
+
+  // Phone side: approve a code shown on a TV.
+  $("linkTvForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const st = $("linkTvStatus");
+    const c = ($("linkTvCode").value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (c.length !== 6) { st.textContent = "Enter the 6-character code shown on the TV."; st.className = "status error"; return; }
+    if (!state.sb || !state.user) { st.textContent = "Sign in on this device first."; st.className = "status error"; return; }
+    $("linkTvGo").disabled = true; st.textContent = "Approving..."; st.className = "status";
+    try {
+      const { data: sess } = await state.sb.auth.getSession();
+      const rt = sess && sess.session && sess.session.refresh_token;
+      if (!rt) throw new Error("No active session on this device. Sign out and in again.");
+      const { data, error } = await state.sb.rpc("tv_code_approve", { p_code: c, p_grant: rt });
+      if (error) throw error;
+      if (!data) throw new Error("Code not found or already used. Ask the TV for a new code.");
+      st.textContent = "Approved. The TV will sign in within a few seconds."; st.className = "status ok";
+      // The TV consumes this refresh token; refresh ours so this device stays signed in.
+      setTimeout(async () => { try { await state.sb.auth.refreshSession(); } catch {} }, 4000);
+      setTimeout(() => closeModal("linkTvModal"), 2500);
+    } catch (e) {
+      const m = String(e.message || "");
+      st.textContent = /tv_code_approve|function|schema cache/i.test(m) ? "TV linking is not set up yet (run STEP 15 of schema.sql)." : m;
+      st.className = "status error";
+    } finally { $("linkTvGo").disabled = false; }
   });
-  $("tvCodeNew").addEventListener("click", makeTvCode);
-  $("fsBtn").addEventListener("click", toggleFullscreen);
-  // On a TV, open the code entry instead of the email form.
-  if (state.tv) showTvPanel();
+
+  /* ---- multi-page mode -----------------------------------------------------
+     Each page is its own file (admin.html, watch.html, explore.html, ...) that
+     loads this shared app with ?page=NAME. The app then opens that section
+     directly. One codebase, so every page shares the same UI and data. */
+  const PAGE = (() => {
+    const q = /[?&]page=([a-z-]+)/i.exec(location.search);
+    if (q) return q[1].toLowerCase();
+    const p = /\/([a-z-]+)(?:\.html)?\/?$/i.exec(location.pathname);
+    const name = p ? p[1].toLowerCase() : "";
+    return ["admin", "watch", "explore", "mylist", "about", "contact", "privacy", "terms", "dmca", "tv", "login", "account"].includes(name) ? name : "";
+  })();
+  const ADMIN_PAGE = PAGE === "admin";
+  if (ADMIN_PAGE) {
+    document.body.classList.add("admin-page");
+    document.title = "Admin | Flickerz Nest";
+  }
+  if (PAGE === "watch") document.body.classList.add("watch-page");
+  // Links on every page go to the right file when the site is split.
+  const PAGE_FILES = { explore: "explore.html", mylist: "mylist.html", about: "about.html", contact: "about.html#contact",
+    privacy: "about.html#privacy", terms: "about.html#terms", dmca: "about.html#dmca", admin: "admin.html", watch: "watch.html", tv: "tv.html" };
+  const onSplitSite = Boolean(PAGE) || /\/index\.html$/i.test(location.pathname) || location.pathname === "/" || /\/$/.test(location.pathname);
+  function pageHref(name, hash) {
+    const file = PAGE_FILES[name] || "index.html";
+    return file + (hash ? (file.includes("#") ? "" : hash) : "");
+  }
+
+  /* =====================================================================
+     v7 - TV mode: remote-control navigation, fullscreen, large UI
+     ===================================================================== */
+  const TV = (() => {
+    const ua = navigator.userAgent || "";
+    const uaTv = /\b(SmartTV|Smart-TV|SMART-TV|Tizen|Web0S|WebOS|NetCast|BRAVIA|AppleTV|GoogleTV|Android TV|AFT[A-Z]|CrKey|HbbTV|Roku|Viera|Hisense|VIDAA|TiVo|Opera TV|Philips|SonyDTV|Xbox|PlayStation|NEBULA)\b/i.test(ua)
+      || (/Android/i.test(ua) && !/Mobile/i.test(ua) && !("ontouchstart" in window));
+    // A screen with no touch AND no hover-capable pointer at all is a TV; a
+    // laptop trackpad still reports hover, a phone reports touch.
+    const noPointerAtAll = window.innerWidth >= 960 && !("ontouchstart" in window) && navigator.maxTouchPoints === 0 &&
+      matchMedia("(any-hover:none)").matches && matchMedia("(any-pointer:fine)").matches === false;
+    const bigNoTouch = noPointerAtAll;
+    let on = false, lastFocus = null, pointerTimer = null;
+    const prefs = (() => { try { return JSON.parse(localStorage.getItem("flickerz.tv") || "{}"); } catch { return {}; } })();
+    const savePrefs = () => { try { localStorage.setItem("flickerz.tv", JSON.stringify(prefs)); } catch {} };
+
+    const BACK_KEYS = { Escape: 1, GoBack: 1, BrowserBack: 1, XF86Back: 1, Backspace: 0 };
+    const BACK_CODES = { 27: 1, 461: 1, 10009: 1, 8: 0, 166: 1 };  // 461 LG/webOS, 10009 Samsung/Tizen, 166 BrowserBack
+    const OK_CODES = { 13: 1, 23: 1, 29443: 1 };                  // Enter, Android TV D-pad center, Samsung Enter
+    const DIRS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+    const DIR_CODES = { 37: "left", 38: "up", 39: "right", 40: "down", 21: "left", 19: "up", 22: "right", 20: "down" };
+
+    const isBack = (e) => Boolean(BACK_KEYS[e.key] || BACK_CODES[e.keyCode]) &&
+      !(e.key === "Backspace" || e.keyCode === 8) &&
+      !["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement || {}).tagName);
+
+    const focusables = (root) => [...(root || document).querySelectorAll(
+      'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+    )].filter((el) => {
+      if (el.closest("[hidden]") || el.closest(".tv-help")) return false;
+      const r = el.getBoundingClientRect();
+      if (!r.width && !r.height) return false;
+      const cs = getComputedStyle(el);
+      return cs.visibility !== "hidden" && cs.display !== "none" && cs.opacity !== "0";
+    });
+
+    // Which layer should receive navigation: top-most open dialog, else the page.
+    const scope = () => {
+      const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden);
+      if (m) return m;
+      if (!$("profileMenu").hidden) return $("profileMenu");
+      return document;
+    };
+
+    // Spatial navigation: pick the nearest element in the pressed direction.
+    function move(dir) {
+      const cur = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+      const list = focusables(scope()).filter((el) => el !== cur);
+      if (!list.length) return false;
+      if (!cur) { setFocus(list[0]); return true; }
+      const a = cur.getBoundingClientRect();
+      const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+      let best = null, bestScore = Infinity;
+      for (const el of list) {
+        const b = el.getBoundingClientRect();
+        const bx = b.left + b.width / 2, by = b.top + b.height / 2;
+        const dx = bx - ax, dy = by - ay;
+        let primary, secondary, ok;
+        if (dir === "left")  { ok = b.right <= a.left + 4 || (dx < -4 && Math.abs(dy) < a.height); primary = -dx; secondary = Math.abs(dy); }
+        if (dir === "right") { ok = b.left >= a.right - 4 || (dx > 4 && Math.abs(dy) < a.height); primary = dx; secondary = Math.abs(dy); }
+        if (dir === "up")    { ok = b.bottom <= a.top + 4 || (dy < -4 && Math.abs(dx) < a.width); primary = -dy; secondary = Math.abs(dx); }
+        if (dir === "down")  { ok = b.top >= a.bottom - 4 || (dy > 4 && Math.abs(dx) < a.width); primary = dy; secondary = Math.abs(dx); }
+        if (!ok || primary <= 0) continue;
+        // Favour staying in the same row/column: overlap in the cross axis counts a lot.
+        const overlap = (dir === "left" || dir === "right")
+          ? Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top))
+          : Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+        const score = primary + secondary * (overlap > 0 ? 0.6 : 2.4);
+        if (score < bestScore) { bestScore = score; best = el; }
+      }
+      if (!best) return false;
+      setFocus(best);
+      return true;
+    }
+
+    function setFocus(el) {
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      el.classList.add("tv-focus");
+      document.querySelectorAll(".tv-focus").forEach((x) => { if (x !== el) x.classList.remove("tv-focus"); });
+      el.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+      const r = el.getBoundingClientRect();
+      if (r.top < 100) window.scrollBy({ top: r.top - 140, behavior: "smooth" });
+    }
+    function focusFirst(root) {
+      const list = focusables(root);
+      const pick = list.find((el) => el.matches("input,select,textarea")) || list.find((el) => !el.matches(".x,[data-close]")) || list[0];
+      if (pick) setFocus(pick);
+    }
+    function restoreFocus() {
+      const target = lastFocus && document.contains(lastFocus) && !lastFocus.closest("[hidden]") ? lastFocus : focusables(document)[0];
+      if (target) setFocus(target);
+    }
+
+    function onKey(e) {
+      if (!on) return;
+      const ae = document.activeElement || document.body;
+      const typing = ae.tagName === "INPUT" || ae.tagName === "TEXTAREA";
+      const dir = DIRS[e.key] || DIR_CODES[e.keyCode];
+      if (dir) {
+        // Inside a text box, left/right edit text; up/down leaves it. Dropdowns keep up/down.
+        if (typing && (dir === "left" || dir === "right")) return;
+        if (ae.tagName === "SELECT" && (dir === "up" || dir === "down")) return;
+        if (move(dir)) e.preventDefault();
+        return;
+      }
+      if (OK_CODES[e.keyCode] && !typing && ae !== document.body && ae.tagName !== "SELECT" && ae.tagName !== "A" && ae.tagName !== "BUTTON") {
+        ae.click(); e.preventDefault();
+      }
+      if ((e.key === "f" || e.key === "F") && !typing) { e.preventDefault(); toggleFullscreen(); }
+      if ((e.key === "MediaPlayPause" || e.key === "MediaPlay" || e.keyCode === 415 || e.keyCode === 10252) && !state.playing) {
+        const btn = $("heroPlay"); if (btn && !$("homeHero").hidden) { btn.click(); e.preventDefault(); }
+      }
+    }
+
+    function toggleFullscreen() {
+      const d = document, el = d.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+      const exit = d.exitFullscreen || d.webkitExitFullscreen || d.mozCancelFullScreen || d.msExitFullscreen;
+      const active = d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement;
+      hideFsPrompt();
+      if (active && exit) { try { exit.call(d); } catch {} return; }
+      if (!req) { toast("This TV browser has no full-screen mode. Use the browser's own menu or zoom.", ""); return; }
+      // requestFullscreen returns a promise in modern browsers; older TV
+      // browsers return nothing, so handle both without throwing.
+      try {
+        const p = req.call(el, { navigationUI: "hide" });
+        if (p && p.catch) p.catch((err) => {
+          console.warn("[Flickerz Nest] fullscreen", err);
+          toast("Full screen was blocked. Press the full-screen key on your remote, or use the browser's menu.", "error");
+        });
+      } catch (err) {
+        console.warn("[Flickerz Nest] fullscreen", err);
+        toast("Full screen is not available in this browser.", "error");
+      }
+    }
+    function hideFsPrompt() { const p = $("tvFs"); if (p) p.classList.remove("show"); }
+    function offerFullscreen() {
+      if (prefs.fsDismissed || document.fullscreenElement) return;
+      const p = $("tvFs"); if (!p) return;
+      p.classList.add("show");
+      // Browsers only allow full screen from a real key press or click, so the
+      // remote's highlight lands on the "Go full screen" button: one press of OK.
+      setTimeout(() => { const b = $("tvFsGo"); if (b && p.classList.contains("show")) setFocus(b); }, 120);
+      setTimeout(hideFsPrompt, 30000);
+    }
+
+    function enable(reason) {
+      if (on) return;
+      on = true;
+      document.body.classList.add("tv");
+      document.querySelectorAll(".poster").forEach((p) => { if (!p.hasAttribute("tabindex")) p.setAttribute("tabindex", "0"); });
+      // Make poster tiles keyboard-selectable as they are rendered.
+      new MutationObserver(() => {
+        document.querySelectorAll(".poster:not([tabindex])").forEach((p) => p.setAttribute("tabindex", "0"));
+      }).observe(document.body, { childList: true, subtree: true });
+      document.addEventListener("focusin", (e) => {
+        if (e.target && e.target !== document.body && !e.target.closest(".backdrop")) lastFocus = e.target;
+        if (e.target && e.target.classList) {
+          document.querySelectorAll(".tv-focus").forEach((x) => x.classList.remove("tv-focus"));
+          e.target.classList.add("tv-focus");
+        }
+      });
+      // Show the pointer only while a mouse / air-mouse is actually moving.
+      document.addEventListener("mousemove", () => {
+        document.body.classList.add("tv-pointer");
+        clearTimeout(pointerTimer);
+        pointerTimer = setTimeout(() => document.body.classList.remove("tv-pointer"), 2500);
+      }, { passive: true });
+      document.addEventListener("keydown", onKey, true);
+      $("tvFsGo").addEventListener("click", toggleFullscreen);
+      $("tvFsNo").addEventListener("click", () => { prefs.fsDismissed = true; savePrefs(); hideFsPrompt(); });
+      // Give the remote something to start from.
+      setTimeout(() => { if (!document.activeElement || document.activeElement === document.body) { const b = $("heroPlay"); if (b && !$("homeHero").hidden) setFocus(b); else { const f = focusables(document)[0]; if (f) setFocus(f); } } }, 900);
+      setTimeout(offerFullscreen, 1600);
+      // Any key press counts as a gesture: once the viewer presses OK anywhere
+      // after the prompt was dismissed by time, F still works.
+      if (reason === "auto") setTimeout(() => toast("TV mode is on - use the arrow keys and OK on your remote.", ""), 700);
+    }
+    function disable() {
+      on = false; prefs.mode = "off"; savePrefs();
+      document.body.classList.remove("tv", "tv-pointer");
+      document.removeEventListener("keydown", onKey, true);
+      location.reload();
+    }
+    function toggle() {
+      if (on) { disable(); return; }
+      prefs.mode = "on"; savePrefs(); enable("manual");
+      toast("TV mode on. Press F for full screen.", "ok");
+    }
+
+    // Auto-detect, unless the viewer has chosen otherwise.
+    const forced = /[?&#]tv(=1|&|$)/.test(location.search + location.hash) || /\/tv(\.html)?\/?$/i.test(location.pathname) || /[?&]page=tv(&|$)/.test(location.search);
+    const wanted = prefs.mode === "on" || (prefs.mode !== "off" && (uaTv || noPointerAtAll || forced)) || forced;
+    return { enable, disable, toggle, isBack, focusFirst, restoreFocus, wanted, detected: uaTv || bigNoTouch || noPointerAtAll, get on() { return on; } };
+  })();
+  if (TV.wanted) TV.enable("auto");
 
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:
@@ -3798,11 +4564,23 @@
     return false;
   }
   function route() {
-    if (isOwnerRoute()) {
+    if (isOwnerRoute() || ADMIN_PAGE) {
       if ($("adminModal").hidden === false || $("ownerModal").hidden === false) return;
       if (isAdmin()) openAdmin("overview");
       else openOwnerGate(false);
       return;
+    }
+    // Dedicated page files open their section straight away (first route only).
+    if (PAGE && !state.pageRouted) {
+      state.pageRouted = true;
+      const h = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
+      if (PAGE === "explore" && !/^explore/.test(h)) { history.replaceState(null, "", location.pathname + location.search + "#explore"); }
+      else if (PAGE === "mylist" && h !== "mylist") { history.replaceState(null, "", location.pathname + location.search + "#mylist"); }
+      else if (["about", "contact", "privacy", "terms", "dmca"].includes(PAGE) && !INFO_PAGES[h]) { history.replaceState(null, "", location.pathname + location.search + "#" + PAGE); }
+      else if (PAGE === "watch") { openWatchPage(); return; }
+      else if (PAGE === "tv") { openTvPage(); return; }
+      else if (PAGE === "login") { showHome(); if (!state.user) openAuth(); return; }
+      else if (PAGE === "account") { showHome(); openAccountPage(); return; }
     }
     const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
     if (raw !== state.curRoute) { state.prevRoute = state.curRoute || ""; state.curRoute = raw; }
@@ -3849,12 +4627,23 @@
     if (blk) { await setBlocked(blk.dataset.blockId, blk.dataset.block === "1"); return; }
     if (ev.target.closest("#actRefresh")) { await loadActivity(); return; }
     if (ev.target.closest("#tabSearch")) { openSearch(); return; }
+    if (ev.target.closest("#menuTv")) { closeMenu(); TV.toggle(); return; }
+    if (ev.target.closest("#menuLinkTv")) { closeMenu(); openModal("linkTvModal"); $("linkTvCode").value = ""; $("linkTvStatus").textContent = ""; setTimeout(() => $("linkTvCode").focus(), 40); return; }
+    if (ev.target.closest("#tvCodeNew")) { TVCODE.start(true); return; }
+    if (ev.target.closest("#tvCodeTyped")) { TVCODE.showForm(true); return; }
+    if (ev.target.closest("#authUseCode")) { TVCODE.start(); return; }
     const navLink = ev.target.closest("a[data-nav]");
-    if (navLink && navLink.getAttribute("href") === location.hash) {
-      ev.preventDefault();
-      route();
-      if (navLink.dataset.nav === "home") window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
+    if (navLink) {
+      // Same file, same hash: re-run the router (and scroll up for Home).
+      const href = navLink.getAttribute("href") || "";
+      const [file, hash] = href.split("#");
+      const sameFile = !file || location.pathname.endsWith("/" + file) || (file === "index.html" && /\/$/.test(location.pathname));
+      if (sameFile && ("#" + (hash || "")) === location.hash) {
+        ev.preventDefault();
+        route();
+        if (navLink.dataset.nav === "home") window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
     }
     const sv = ev.target.closest("[data-server]");
     if (sv && !sv.disabled) { setServer(Number(sv.dataset.server)); return; }
@@ -3876,8 +4665,34 @@
     if (dc) { await delRow("custom_content", "id", dc.dataset.delContent, async () => { await Promise.all([loadCustom(), loadContentAdmin(), loadOverview()]); renderRows(); }); return; }
     const rl = ev.target.closest("[data-role-id]");
     if (rl) { await roleChange(rl.dataset.roleId, rl.dataset.next); return; }
-    // (season + episode picking is handled by the episode picker below)
-    if (ev.target.closest("[data-play-now]")) { const b = ev.target.closest("[data-play-now]"); if (!b.disabled) play(state.detail); return; }
+    const season = ev.target.closest("[data-season]");
+    if (season) {
+      if (state.detail) { closeModal("playerModal"); play(state.detail, { season: season.dataset.season || "1", episode: 1 }); }
+      return;
+    }
+    if (ev.target.closest("[data-play-now]")) {
+      const b = ev.target.closest("[data-play-now]");
+      if (b.disabled || !state.detail) return;
+      // Series: start at the next unwatched episode.
+      if (state.detail.media_type === "tv") {
+        const full = detailCache.get("tv:" + state.detail.id);
+        const p = full ? seriesProgress(state.detail, full) : null;
+        if (p && p.next) { play(state.detail, { season: p.next.s, episode: p.next.e }); return; }
+      }
+      play(state.detail); return;
+    }
+    const colBtn = ev.target.closest("[data-collection]");
+    if (colBtn) { const strip = $("tpCollectionStrip"); if (strip) strip.scrollIntoView({ behavior: "smooth", block: "start" }); else toast("Loading the collection...", ""); return; }
+    const mark = ev.target.closest("[data-mark-ep]");
+    if (mark) { ev.stopPropagation(); const [s, e] = mark.dataset.markEp.split(":").map(Number); toggleSeen(state.playing || state.detail, s, e); return; }
+    if (ev.target.closest("#playerReport")) { openReport(); return; }
+    if (ev.target.closest("#authForgot")) { openForgot(); return; }
+    if (ev.target.closest("#forgotBack")) { closeModal("forgotModal"); openAuth(); return; }
+    if (ev.target.closest("#repRefresh")) { loadReports(); return; }
+    const repAct = ev.target.closest("[data-rep-act]");
+    if (repAct) { resolveReport(repAct.dataset.repId, repAct.dataset.repAct, repAct); return; }
+    const repFix = ev.target.closest("[data-rep-fix]");
+    if (repFix) { prefillOverride(repFix.dataset.repFix, repFix.dataset.repTitle); return; }
     const savePage = ev.target.closest("[data-save-page]");
     if (savePage) { await toggleSave(state.detail); return; }
     const act = ev.target.closest("[data-act]")?.dataset.act;
@@ -3895,6 +4710,33 @@
     if (act === "retry") { const d = state.detail; closeTitlePage(); if (d) openDetail(d); else route(); return; }
     if (act === "test-tmdb") { await runTmdbTest(); return; }
   });
+  /* Full screen for the video itself. Tries the frame first (true video full
+     screen), then the whole player, and says so when the browser refuses. */
+  function playerFullscreen() {
+    const d = document;
+    const active = d.fullscreenElement || d.webkitFullscreenElement;
+    const exit = d.exitFullscreen || d.webkitExitFullscreen;
+    if (active && exit) { try { exit.call(d); } catch {} return; }
+    const targets = [$("frame"), $("playerModal") && $("playerModal").querySelector(".stage"), d.documentElement].filter(Boolean);
+    for (const el of targets) {
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitEnterFullscreen;
+      if (!req) continue;
+      try {
+        const p = req.call(el, { navigationUI: "hide" });
+        if (p && p.then) { p.catch(() => tryNext(el)); return; }
+        return;
+      } catch { /* try the next target */ }
+    }
+    toast("Full screen is not available here. Use New tab, then the player's own full-screen button.", "");
+    function tryNext(failed) {
+      const i = targets.indexOf(failed);
+      const next = targets[i + 1];
+      if (!next) { toast("Full screen was blocked by the browser. Use New tab instead.", "error"); return; }
+      const req = next.requestFullscreen || next.webkitRequestFullscreen;
+      if (!req) { tryNext(next); return; }
+      try { const p = req.call(next, { navigationUI: "hide" }); if (p && p.catch) p.catch(() => tryNext(next)); } catch { tryNext(next); }
+    }
+  }
   function popOut() {
     const item = state.playing;
     if (!item) return;
@@ -3927,27 +4769,6 @@
   $("footAdmin").addEventListener("click", (e) => { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); });
   $("menuAdmin").addEventListener("click", () => (isAdmin() ? openAdmin("overview") : openOwnerGate(false)));
   $("menuAuth").addEventListener("click", openAuth);
-  $("menuTv").addEventListener("click", () => {
-    const turningOn = !state.tv;
-    applyTvMode(turningOn, true);
-    closeMenu();
-
-    // Entering TV mode is a user gesture, so request browser full-screen here.
-    // If this browser does not expose Fullscreen API, TV mode still works.
-    if (turningOn) {
-      const root = document.documentElement;
-      const request = root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen;
-      if (request) {
-        try {
-          const result = request.call(root);
-          if (result && typeof result.catch === "function") result.catch(() => {});
-        } catch {}
-      }
-      setTimeout(() => focusFirstIn(document.querySelector(".nav-links") || document.body), 100);
-    }
-
-    toast(state.tv ? "TV mode on. Use the arrow keys / D-pad and OK button to move around." : "TV mode off.", "ok");
-  });
   $("menuOut").addEventListener("click", signOut);
   $("profileBtn").addEventListener("click", () => {
     const willOpen = $("profileMenu").hidden;
@@ -3994,28 +4815,45 @@
       return;
     }
     if (e.target.closest("#popOut") || e.target.closest("#failPop")) { e.preventDefault(); popOut(); }
+    if (e.target.closest("#playerFs")) { e.preventDefault(); playerFullscreen(); }
     if (!e.target.closest("#reloadCatalog")) return;
     loadCatalog();
   });
   $("searchBox").addEventListener("input", (e) => doSearch(e.target.value));
-
-  // Some TV remotes send "OK"/"Select" instead of Enter. Activate the
-  // currently focused control so the D-pad can actually operate the UI.
+  // Season change: load that season's real episode list, then start episode 1.
+  $("seasonIn").addEventListener("change", async () => {
+    const s = parseInt($("seasonIn").value, 10) || 1;
+    await fillEpisodes(state.playing, s, 1);
+    setServer(state.server);
+  });
+  $("episodeIn").addEventListener("change", () => { paintEpisodeBrowser(); setServer(state.server); });
+  $("epPrev").addEventListener("click", () => stepEpisode(-1));
+  $("epNext").addEventListener("click", () => stepEpisode(1));
+  // Keyboard/remote: Enter or Space on an episode card plays it.
+  $("epBrowser").addEventListener("keydown", (ev) => {
+    if (ev.key !== "Enter" && ev.key !== " ") return;
+    const c = ev.target.closest("[data-ep]"); if (!c) return;
+    ev.preventDefault(); c.click();
+  });
+  $("epBrowser").addEventListener("click", (ev) => {
+    if (ev.target.closest("[data-mark-ep]")) return;      // handled by the global click handler
+    const c = ev.target.closest("[data-ep]");
+    if (!c || !state.playing) return;
+    setSelectValue($("episodeIn"), c.dataset.ep);
+    paintEpisodeBrowser();
+    recordWatch(state.playing);
+    setServer(state.server);
+    $("frame").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
   document.addEventListener("keydown", (e) => {
-    if (!state.tv) return;
-    const key = String(e.key || "").toLowerCase();
-    if (!["enter","numpadenter","ok","select","accept","space"].includes(key)) return;
-    const active = document.activeElement;
-    if (!active || active === document.body) return;
-    if (["INPUT","TEXTAREA","SELECT"].includes(active.tagName)) return;
-    if (active.matches("button,a,[role='button']")) {
-      e.preventDefault();
-      active.click();
+    if (TV.isBack(e)) {
+      // TV remote Back / Escape: close the top-most layer, or go back a page.
+      const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden);
+      if (m) { e.preventDefault(); closeMenu(); closeModal(m.id); return; }
+      if (!$("profileMenu").hidden) { e.preventDefault(); closeMenu(); return; }
+      if (!$("titlePage").hidden || VIEWS.some((v) => !$(v).hidden)) { e.preventDefault(); history.back(); return; }
+      return;
     }
-  }, true);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeMenu(); const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden); if (m) closeModal(m.id); }
     if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
     if (e.key.toLowerCase() === "a" && e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); }
   });
@@ -4046,13 +4884,7 @@
 
   (async function boot() {
     $("footYear").textContent = "Flickerz Nest " + new Date().getFullYear();
-    initTvMode();
     state.env = detectEnv();
-    // Show the remote hint once when running on a TV.
-    if (state.tv) {
-      setTimeout(() => toast("TV detected - use the arrow keys / D-pad and OK to browse.", "ok"), 900);
-      setTimeout(() => focusFirstIn(document.querySelector(".nav-links") || document.body), 400);
-    }
     $("envBar").hidden = !state.env.sandboxed;
     safe(() => renderHero(state.hero), "the hero banner");
     safe(() => renderRows(), "the catalog");

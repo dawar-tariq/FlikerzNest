@@ -1080,52 +1080,149 @@ create policy custom_streams_select_members
 revoke select on public.custom_streams from anon;
 
 
---  STEP 15 - TV pairing codes (sign in on a TV without typing a password)
---  The signed-in phone/desktop stores a short-lived one-time code plus its
---  session; the TV reads it, signs itself in and the code is destroyed.
---  Safe to run again.
 -- ============================================================================
-begin;
-
+--  STEP 15 - TV sign-in with a code (no typing passwords on a remote)
+--  The TV shows a code. The member opens Account on their phone, enters the
+--  code, and the TV signs in. Safe to run again.
+-- ============================================================================
 create table if not exists public.tv_codes (
-  code          text primary key,
-  user_id       uuid not null references auth.users (id) on delete cascade,
-  access_token  text not null,
-  refresh_token text not null,
-  expires_at    timestamptz not null default (now() + interval '3 minutes'),
-  used_at       timestamptz,
-  created_at    timestamptz not null default now()
+  code        text primary key,                       -- 6 chars shown on the TV
+  secret      text not null,                          -- only the TV knows this
+  user_id     uuid references auth.users (id) on delete cascade,
+  grant_token text,                                   -- phone's refresh token, one-time, deleted on first read
+  created_at  timestamptz not null default now(),
+  expires_at  timestamptz not null default now() + interval '10 minutes',
+  claimed_at  timestamptz
 );
+create index if not exists tv_codes_expires_idx on public.tv_codes (expires_at);
 
 alter table public.tv_codes enable row level security;
+revoke all on public.tv_codes from public, anon, authenticated;
+-- Nobody reads or writes the table directly; the functions below do it safely.
 
-drop policy if exists tv_codes_insert_own on public.tv_codes;
-create policy tv_codes_insert_own
-  on public.tv_codes for insert to authenticated
-  with check ( user_id = (select auth.uid()) );
+-- 15a. TV asks for a fresh code -----------------------------------------------
+create or replace function public.tv_code_create()
+returns table (code text, secret text, expires_at timestamptz)
+language plpgsql security definer set search_path = ''
+as $$
+declare
+  v_code   text;
+  v_secret text := encode(gen_random_bytes(24), 'hex');
+  v_alpha  constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   -- no 0/O/1/I
+  v_try    int := 0;
+begin
+  delete from public.tv_codes where expires_at < now();
+  loop
+    v_code := '';
+    for i in 1..6 loop
+      v_code := v_code || substr(v_alpha, 1 + floor(random() * length(v_alpha))::int, 1);
+    end loop;
+    begin
+      insert into public.tv_codes (code, secret) values (v_code, v_secret);
+      exit;
+    exception when unique_violation then
+      v_try := v_try + 1;
+      if v_try > 20 then raise exception 'Could not generate a code, try again'; end if;
+    end;
+  end loop;
+  return query select v_code, v_secret, now() + interval '10 minutes';
+end;
+$$;
 
-drop policy if exists tv_codes_select_claim on public.tv_codes;
-create policy tv_codes_select_claim
-  on public.tv_codes for select to anon, authenticated
-  using ( used_at is null and expires_at > now() );
+-- 15b. Phone (signed-in member) approves the code --------------------------------
+-- The phone hands over a refresh token for its own session. The TV turns that
+-- into its own session with setSession(). Nobody's password is touched. The
+-- token is kept for at most 10 minutes and deleted the moment the TV reads it.
+create or replace function public.tv_code_approve(p_code text, p_grant text)
+returns boolean
+language plpgsql security definer set search_path = ''
+as $$
+declare v_uid uuid := auth.uid();
+begin
+  if v_uid is null then raise exception 'Sign in first' using errcode = '42501'; end if;
+  if exists (select 1 from public.profiles p where p.id = v_uid and p.is_blocked) then
+    raise exception 'This account is suspended' using errcode = '42501';
+  end if;
+  if p_grant is null or length(p_grant) < 10 then raise exception 'Invalid grant'; end if;
+  update public.tv_codes
+     set user_id = v_uid, grant_token = p_grant, claimed_at = now()
+   where code = upper(trim(p_code)) and claimed_at is null and expires_at > now();
+  return found;
+end;
+$$;
 
-drop policy if exists tv_codes_select_own on public.tv_codes;
-create policy tv_codes_select_own
-  on public.tv_codes for select to authenticated
-  using ( user_id = (select auth.uid()) or public.is_admin() );
+-- 15c. TV polls: has my code been approved? -------------------------------------------
+create or replace function public.tv_code_poll(p_code text, p_secret text)
+returns table (status text, grant_token text)
+language plpgsql security definer set search_path = ''
+as $$
+declare r public.tv_codes%rowtype;
+begin
+  select * into r from public.tv_codes t where t.code = upper(trim(p_code)) and t.secret = p_secret;
+  if not found or r.expires_at < now() then
+    return query select 'expired'::text, null::text; return;
+  end if;
+  if r.claimed_at is null then
+    return query select 'waiting'::text, null::text; return;
+  end if;
+  delete from public.tv_codes where code = r.code;        -- one-time use
+  return query select 'approved'::text, r.grant_token;
+end;
+$$;
 
-drop policy if exists tv_codes_delete_claim on public.tv_codes;
-create policy tv_codes_delete_claim
-  on public.tv_codes for delete to anon, authenticated
-  using ( true );
+grant execute on function public.tv_code_create()              to anon, authenticated;
+grant execute on function public.tv_code_poll(text, text)      to anon, authenticated;
+grant execute on function public.tv_code_approve(text, text)   to authenticated;
 
-revoke all on table public.tv_codes from public, anon, authenticated;
-grant select, insert, delete on table public.tv_codes to anon, authenticated;
 
-commit;
+-- ============================================================================
+--  STEP 16 - "Not working?" stream reports
+--  Members report a title that will not play; admins see the reports in the
+--  Reports tab and fix the title with a stream override. Safe to run again.
+-- ============================================================================
+create table if not exists public.stream_reports (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid references auth.users (id) on delete set null,
+  tmdb_id     bigint not null check (tmdb_id > 0),
+  media_type  text not null check (media_type in ('movie','tv')),
+  title       text not null,
+  poster_path text,
+  season      integer,
+  episode     integer,
+  server      integer,                       -- which source was active (1-4)
+  reason      text,                          -- 'black', 'buffer', 'wrong', 'audio', 'other'
+  note        text,
+  status      text not null default 'open' check (status in ('open','fixed','ignored')),
+  created_at  timestamptz not null default now(),
+  resolved_at timestamptz,
+  resolved_by uuid references auth.users (id) on delete set null
+);
+create index if not exists stream_reports_status_idx on public.stream_reports (status, created_at desc);
+create index if not exists stream_reports_title_idx  on public.stream_reports (tmdb_id, media_type);
 
--- maintenance: remove codes that expired more than a day ago
--- delete from public.tv_codes where expires_at < now() - interval '1 day';
+alter table public.stream_reports enable row level security;
+
+-- members: file a report for themselves; see their own
+drop policy if exists stream_reports_insert_own on public.stream_reports;
+create policy stream_reports_insert_own on public.stream_reports for insert to authenticated
+  with check (user_id = (select auth.uid()) and public.is_active());
+drop policy if exists stream_reports_select_own on public.stream_reports;
+create policy stream_reports_select_own on public.stream_reports for select to authenticated
+  using (user_id = (select auth.uid()) or public.is_admin());
+-- admins: resolve or delete
+drop policy if exists stream_reports_update_admin on public.stream_reports;
+create policy stream_reports_update_admin on public.stream_reports for update to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+drop policy if exists stream_reports_delete_admin on public.stream_reports;
+create policy stream_reports_delete_admin on public.stream_reports for delete to authenticated
+  using (public.is_admin());
+
+revoke all on public.stream_reports from public, anon;
+grant select, insert, update, delete on public.stream_reports to authenticated;
+
+-- 16b. one report per member per title per day (stops accidental double taps)
+create unique index if not exists stream_reports_daily_uniq
+  on public.stream_reports (user_id, tmdb_id, media_type, coalesce(season, 0), coalesce(episode, 0), (created_at::date));
 
 
 -- ============================================================================
