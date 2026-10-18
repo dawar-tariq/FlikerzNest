@@ -1076,6 +1076,81 @@
   .vjs-box .video-js .vjs-big-play-button{border-color:#fff;background:rgba(229,9,20,.85);border-radius:50%;width:2em;height:2em;line-height:2em;margin-left:-1em;margin-top:-1em}
   .vjs-box .video-js .vjs-play-progress,.vjs-box .video-js .vjs-volume-level{background:var(--red)}
   .stage-note{z-index:4}
+  /* =================== v13: splash, announcements =================== */
+  .splash{position:fixed;inset:0;z-index:9999;display:grid;place-content:center;justify-items:center;gap:34px;background:#000;
+    transition:opacity .55s ease,visibility .55s ease}
+  .splash.out{opacity:0;visibility:hidden}
+  html.splashing,html.splashing body{overflow:hidden}
+  .splash-mark{display:flex;align-items:center;gap:16px;animation:splashIn 1.25s cubic-bezier(.2,.8,.2,1) both}
+  .splash-f{display:grid;place-items:center;width:84px;height:84px;border-radius:22px 22px 22px 6px;background:var(--red);color:#fff;
+    font:900 54px/1 "Plus Jakarta Sans",system-ui,sans-serif;box-shadow:0 0 0 0 rgba(229,9,20,.6);animation:splashGlow 1.6s ease-out .35s both}
+  .splash-word{color:#fff;font:800 40px/1 "Plus Jakarta Sans",system-ui,sans-serif;letter-spacing:-.05em;opacity:0;animation:splashWord .7s ease-out .45s both}
+  .splash-word em{font-style:normal;color:var(--red-2);margin-left:6px}
+  .splash-bar{width:140px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;opacity:0;animation:splashWord .4s ease-out .7s both}
+  .splash-bar i{display:block;width:40%;height:100%;border-radius:3px;background:var(--red);animation:splashLoad 1.1s ease-in-out .75s infinite}
+  @keyframes splashIn{0%{opacity:0;transform:scale(1.35);filter:blur(10px)}55%{opacity:1;filter:blur(0)}100%{transform:scale(1)}}
+  @keyframes splashGlow{0%{box-shadow:0 0 0 0 rgba(229,9,20,.65)}100%{box-shadow:0 0 0 46px rgba(229,9,20,0)}}
+  @keyframes splashWord{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+  @keyframes splashLoad{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+  @media (max-width:620px){.splash-f{width:64px;height:64px;font-size:40px;border-radius:17px 17px 17px 5px}.splash-word{font-size:30px}}
+
+  /* "What's new" button in the header */
+  .news-btn{position:relative;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px 0 12px;border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;background:linear-gradient(135deg,rgba(229,9,20,.22),rgba(229,9,20,.06));color:#fff;cursor:pointer;font-size:13px;font-weight:700;
+    transition:transform .18s var(--ease),border-color .18s,background .18s}
+  .news-btn:hover{border-color:rgba(229,9,20,.6);background:linear-gradient(135deg,rgba(229,9,20,.35),rgba(229,9,20,.1));transform:translateY(-1px)}
+  .news-btn i{font-size:16px;color:#ff7a82}
+  .news-dot{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;border:2px solid #0a0b0f;border-radius:999px;background:var(--red);color:#fff;font-size:10px;font-weight:800}
+  .news-btn.has-new i{animation:bellRing 2.4s ease-in-out 1.2s 2}
+  @keyframes bellRing{0%,100%{transform:rotate(0)}6%,18%{transform:rotate(14deg)}12%,24%{transform:rotate(-12deg)}30%{transform:rotate(0)}}
+  @media (max-width:620px){.news-btn{width:38px;padding:0;justify-content:center}.news-label{display:none}}
+
+  /* announcements page */
+  .news-list{display:grid;gap:16px;max-width:860px}
+  .news-item{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025);animation:fade .35s ease-out both}
+  .news-item.unread{border-color:rgba(229,9,20,.35);box-shadow:inset 3px 0 0 var(--red)}
+  .news-item.pinned{background:linear-gradient(180deg,rgba(255,207,112,.06),rgba(255,255,255,.02))}
+  .news-img{aspect-ratio:21/9;background:#14161c center/cover no-repeat}
+  .news-in{padding:18px 20px 20px}
+  .news-item h2{margin:10px 0 0;font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+  .news-text{margin:10px 0 0;color:#c7cad2;font-size:14px;line-height:1.75;white-space:pre-line;overflow-wrap:anywhere}
+  .news-text a,.ann-text a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+  .ann-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#8b909c;font-size:12px}
+  .ann-kind{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.08);color:#d4d7de}
+  .ann-kind.update{background:rgba(110,168,255,.16);color:#9cc3ff}
+  .ann-kind.feature{background:rgba(229,9,20,.18);color:#ff8a92}
+  .ann-kind.fix{background:rgba(94,217,164,.16);color:var(--green)}
+  .ann-kind.maintenance{background:rgba(255,176,32,.16);color:#ffc857}
+  .ann-kind.event{background:rgba(179,155,255,.18);color:#c9b8ff}
+  .ann-pin{color:var(--gold);font-weight:700}
+  .ann-new{padding:2px 7px;border-radius:6px;background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.05em}
+  .news-empty{display:grid;place-items:center;gap:12px;min-height:40vh;color:#8b909c;text-align:center}
+  .news-empty i{font-size:40px;color:#3a3f4c}
+
+  /* announcement pop-up */
+  .ann-backdrop{align-items:center}
+  .ann-card{width:min(520px,94vw);overflow:hidden;padding:0;animation:annPop .38s cubic-bezier(.2,.9,.25,1.15) both}
+  @keyframes annPop{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+  .ann-hero{aspect-ratio:16/8;background:#14161c center/cover no-repeat}
+  .ann-x{position:absolute;top:12px;right:12px;z-index:2;background:rgba(0,0,0,.55)}
+  .ann-body{padding:20px 22px 22px}
+  .ann-body h2{margin:10px 0 0;font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.25}
+  .ann-text{margin:10px 0 0;max-height:38vh;overflow:auto;color:#c7cad2;font-size:14px;line-height:1.75;white-space:pre-line;overflow-wrap:anywhere}
+  .ann-actions{margin-top:18px}
+  .ann-count{margin-left:auto}
+
+  /* admin form */
+  .ann-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ann-checks{display:grid;gap:8px}
+  .check{display:flex;align-items:center;gap:10px;color:#d4d7de;font-size:13px;cursor:pointer}
+  .check input{width:18px;height:18px;accent-color:var(--red)}
+  .ann-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ann-row b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ann-row small{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:5px;color:#8b909c;font-size:11px}
+  .ann-row .rep-actions{justify-content:flex-end}
+  .ann-row select{height:32px;min-height:32px;padding:0 8px;font-size:11.5px;width:auto}
+  @media (max-width:620px){.ann-grid{grid-template-columns:1fr}.ann-row{grid-template-columns:1fr}.ann-row .rep-actions{justify-content:flex-start}}
+
   /* audio language switch + host status marks */
   .lang-switch{display:inline-flex;flex:0 0 auto;gap:2px;padding:3px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:#0e1015}
   .lang-switch button{min-height:30px;padding:0 12px;border:0;border-radius:999px;background:none;color:#a6aab5;cursor:pointer;font-size:12px;font-weight:700}
@@ -1112,6 +1187,34 @@
 </style>
 </head>
 <body>
+<!-- Splash: shown for a moment on first load of each visit, then fades away -->
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-mark">
+    <span class="splash-f">F</span>
+    <span class="splash-word">Flickerz<em>Nest</em></span>
+  </div>
+  <div class="splash-bar"><i></i></div>
+</div>
+<script>
+  /* Runs before anything else draws. Once per browser tab session, so moving
+     between pages never replays it. Reduced-motion users skip straight in. */
+  (function () {
+    var s = document.getElementById("splash");
+    var seen = false;
+    try { seen = sessionStorage.getItem("fz.splash") === "1"; sessionStorage.setItem("fz.splash", "1"); } catch (e) {}
+    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (seen || reduce || /[?&]page=(admin|watch)/.test(location.search)) { s.parentNode.removeChild(s); return; }
+    document.documentElement.classList.add("splashing");
+    window.__hideSplash = function () {
+      if (!s || s.classList.contains("out")) return;
+      s.classList.add("out");
+      document.documentElement.classList.remove("splashing");
+      setTimeout(function () { if (s && s.parentNode) s.parentNode.removeChild(s); }, 700);
+    };
+    // Never longer than 2.6s, even if the network is slow.
+    setTimeout(window.__hideSplash, 2600);
+  })();
+</script>
 <div class="aura"></div>
 <div class="grain"></div>
 
@@ -1125,6 +1228,9 @@
     <a href="mylist.html#mylist" data-nav="mylist">My List</a>
   </nav>
   <div class="nav-actions">
+    <button class="news-btn" type="button" id="newsBtn" aria-label="What's new">
+      <i class="fa-solid fa-bell"></i><span class="news-label">What's new</span><span class="news-dot" id="newsDot" hidden></span>
+    </button>
     <button class="nav-search" type="button" id="navSearch" aria-label="Search titles">
       <i class="fa-solid fa-magnifying-glass"></i><span>Search titles</span><kbd>/</kbd>
     </button>
@@ -1174,6 +1280,7 @@
   <div class="view-page" id="explorePage" hidden></div>
   <div class="view-page" id="listPage" hidden></div>
   <div class="view-page" id="infoPage" hidden></div>
+  <div class="view-page news-page" id="newsPage" hidden></div>
 </main>
 
 <footer class="foot">
@@ -1276,6 +1383,24 @@
         <p class="status" id="newPassStatus" role="status"></p>
         <div class="actions"><button class="btn btn-primary" type="submit" id="newPassGo"><i class="fa-solid fa-check"></i> Save password</button></div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Announcement pop-up -->
+<div class="backdrop ann-backdrop" id="annModal" role="dialog" aria-modal="true" aria-labelledby="annPopTitle" hidden>
+  <div class="card ann-card">
+    <div class="ann-hero" id="annPopImg" hidden></div>
+    <button class="x ann-x" type="button" id="annPopClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="ann-body">
+      <div class="ann-meta"><span class="ann-kind" id="annPopKind">Update</span><span id="annPopDate"></span><span class="ann-count" id="annPopCount" hidden></span></div>
+      <h2 id="annPopTitle">Title</h2>
+      <div class="ann-text" id="annPopText"></div>
+      <div class="actions ann-actions">
+        <a class="btn btn-primary" id="annPopLink" href="#" hidden>Learn more</a>
+        <button class="btn btn-glass" type="button" id="annPopNext" hidden>Next <i class="fa-solid fa-chevron-right"></i></button>
+        <button class="btn btn-glass" type="button" id="annPopAll"><i class="fa-solid fa-bell"></i> All updates</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1494,6 +1619,7 @@
         <button class="tab" role="tab" aria-selected="false" data-tab="reports">Reports <span class="tab-badge" id="reportsBadge" hidden>0</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="streams">Stream overrides</button>
         <button class="tab" role="tab" aria-selected="false" data-tab="content">Content manager</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="news">Announcements</button>
       </div>
 
       <!-- Overview -->
@@ -1585,6 +1711,54 @@
       </section>
 
       <!-- Content -->
+      <section class="pane" id="pane-news" role="tabpanel" hidden>
+        <div class="split">
+          <div>
+            <h3 id="annFormTitle">New announcement</h3>
+            <p>Post updates, new features, fixes or maintenance notices. Choose whether it pops up for visitors.</p>
+            <form class="form" id="annForm" autocomplete="off">
+              <input type="hidden" id="annId">
+              <div class="field"><label for="annTitle">Title</label><input id="annTitle" maxlength="160" required placeholder="e.g. Hindi audio is here"></div>
+              <div class="field"><label for="annBody">Message</label><textarea id="annBody" rows="6" maxlength="4000" placeholder="What changed? Line breaks are kept. Links starting with https:// become clickable."></textarea></div>
+              <div class="ann-grid">
+                <div class="field"><label for="annKind">Type</label>
+                  <select class="fsel" id="annKind"><option value="update">Update</option><option value="feature">New feature</option><option value="fix">Fix</option><option value="maintenance">Maintenance</option><option value="event">Event</option></select></div>
+                <div class="field"><label for="annPopup">Pop-up</label>
+                  <select class="fsel" id="annPopup">
+                    <option value="none">No pop-up (page only)</option>
+                    <option value="once">Pop up once per visitor</option>
+                    <option value="every">Pop up on every visit</option>
+                  </select></div>
+              </div>
+              <div class="field"><label for="annImage">Image URL (optional)</label><input id="annImage" type="url" placeholder="https://..."></div>
+              <div class="ann-grid">
+                <div class="field"><label for="annLink">Button link (optional)</label><input id="annLink" type="url" placeholder="https:// or explore.html"></div>
+                <div class="field"><label for="annLinkLabel">Button text</label><input id="annLinkLabel" maxlength="40" placeholder="Try it"></div>
+              </div>
+              <div class="ann-grid">
+                <div class="field"><label for="annStart">Show from (optional)</label><input id="annStart" type="datetime-local"></div>
+                <div class="field"><label for="annEnd">Hide after (optional)</label><input id="annEnd" type="datetime-local"></div>
+              </div>
+              <div class="ann-checks">
+                <label class="check"><input type="checkbox" id="annPinned"> <span>Pin to the top of the page</span></label>
+                <label class="check"><input type="checkbox" id="annPublished" checked> <span>Published (uncheck to save as draft)</span></label>
+              </div>
+              <p class="status" id="annStatus" role="status"></p>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit" id="annSave"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+                <button class="btn btn-glass" type="button" id="annPreview"><i class="fa-solid fa-eye"></i> Preview pop-up</button>
+                <button class="btn btn-glass" type="button" id="annCancel" hidden>Cancel edit</button>
+              </div>
+            </form>
+          </div>
+          <div>
+            <h3>Posted</h3>
+            <p>Newest first. Edit, change the pop-up rule, or remove.</p>
+            <div class="list" id="annList"><p class="hint" style="padding:12px 2px">Loading...</p></div>
+          </div>
+        </div>
+      </section>
+
       <section class="pane" id="pane-content" role="tabpanel" hidden>
         <div class="split">
           <div>
@@ -1624,6 +1798,7 @@
     "arrow-left": "arrow-left", "arrow-up": "arrow-up", "house": "house", "heart": "fill:heart",
     "bookmark": "bookmark-simple", "up-right-from-square": "arrow-square-out", "youtube": "youtube-logo",
     "expand": "arrows-out", "compress": "arrows-in", "link": "link", "share": "share-network", "flag": "flag",
+    "bell": "bell-simple", "thumbtack": "push-pin",
     "spinner": "circle-notch", "user": "user", "circle-check": "fill:check-circle", "circle": "circle",
     "compass": "compass", "cube": "app-window", "user-slash": "prohibit", "broom": "broom", "trash": "trash",
     "ban": "prohibit", "clock-rotate-left": "clock-counter-clockwise", "envelope": "envelope-simple",
@@ -1793,6 +1968,9 @@
     // Closing sign-in without signing in cancels the title they wanted to watch.
     if (id === "authModal" && !state.user) { state.pendingPlay = null; state.pendingAccount = false; }
     if (id === "authModal") TVCODE.stop();
+    // Dismissing a pop-up any way (outside tap, Back, Escape) counts as seen.
+    if (id === "annModal" && !state.annPreview && state.annQueue) state.annQueue.forEach((a, i) => { if (i <= state.annIdx && a.popup === "once") markAnnSeen(a.id); });
+    if (id === "annModal") state.annPreview = null;
     syncLock();
     if (document.body.classList.contains("tv")) TV.restoreFocus();
   }
@@ -3156,7 +3334,8 @@
   function selectTab(name) {
     if (name === "activity") loadActivity();
     if (name === "reports") loadReports();
-    ["overview", "keys", "users", "lists", "activity", "reports", "streams", "content"].forEach((t) => {
+    if (name === "news") loadAnnAdmin();
+    ["overview", "keys", "users", "lists", "activity", "reports", "streams", "content", "news"].forEach((t) => {
       const on = t === name;
       const btn = document.querySelector('[data-tab="' + t + '"]');
       if (btn) { btn.classList.toggle("active", on); btn.setAttribute("aria-selected", String(on)); }
@@ -3374,7 +3553,7 @@
   /* =====================================================================
      v2 - Explore, organised My List, watch history and member suspension
      ===================================================================== */
-  const VIEWS = ["explorePage", "listPage", "infoPage"];
+  const VIEWS = ["explorePage", "listPage", "infoPage", "newsPage"];
   const SUSP_KEY = "flickerz.suspended.v1";
   const STATUS = { plan: "Plan to watch", watching: "Watching", completed: "Completed" };
   Object.assign(state, { history: [], hasStatus: true, hasHistory: true, hasBlock: true, actFilter: null, prevRoute: "", curRoute: null, kicking: false });
@@ -4319,6 +4498,233 @@
   }
 
   /* =====================================================================
+     v13 - Announcements: public page, pop-ups, admin manager
+     ===================================================================== */
+  const ANN_SEEN = "flickerz.ann.seen.v1";        // ids already shown as a pop-up once
+  const ANN_READ = "flickerz.ann.read.v1";        // time the member last opened the page
+  const ANN_KINDS = { update: "Update", feature: "New feature", fix: "Fix", maintenance: "Maintenance", event: "Event" };
+  Object.assign(state, { ann: [], annLoaded: false, annQueue: [], annIdx: 0, annPreview: null });
+  const annSeen = () => { try { return new Set(JSON.parse(localStorage.getItem(ANN_SEEN) || "[]")); } catch { return new Set(); } };
+  const markAnnSeen = (id) => { const s = annSeen(); s.add(id); try { localStorage.setItem(ANN_SEEN, JSON.stringify([...s].slice(-200))); } catch {} };
+  const annReadAt = () => { try { return Number(localStorage.getItem(ANN_READ)) || 0; } catch { return 0; } };
+  const annLive = (a) => a.published && (!a.starts_at || new Date(a.starts_at) <= new Date()) && (!a.ends_at || new Date(a.ends_at) > new Date());
+  // Plain text in, safe HTML out: escapes everything, then turns https links into anchors.
+  const annText = (t) => esc(t || "").replace(/(https:\/\/[^\s<]+[^\s<.,;:!?)\]])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  const annDate = (d) => { const t = new Date(d); return isNaN(t) ? "" : t.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); };
+  const safeLink = (u) => { const v = String(u || "").trim(); if (!v) return ""; if (/^https:\/\//i.test(v)) return v; if (/^[a-z0-9._\-/?#=&]+$/i.test(v) && !/^\/\//.test(v) && !/:/.test(v)) return v; return ""; };
+
+  async function loadAnnouncements() {
+    if (!state.sb) { state.ann = []; state.annLoaded = true; paintNewsDot(); return; }
+    const { data, error } = await state.sb.from("announcements")
+      .select("id,title,body,kind,image_url,link_url,link_label,popup,pinned,published,starts_at,ends_at,created_at,updated_at")
+      .order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(100);
+    state.annLoaded = true;
+    state.ann = error ? [] : (data || []).filter(annLive);
+    if (error && !/announcements|relation|schema cache/i.test(error.message || "")) console.warn("[Flickerz Nest] announcements", error);
+    paintNewsDot();
+    if (!$("newsPage").hidden) renderNewsPage();
+  }
+  function unreadCount() { const t = annReadAt(); return state.ann.filter((a) => new Date(a.created_at).getTime() > t).length; }
+  function paintNewsDot() {
+    const n = unreadCount(), dot = $("newsDot"), btn = $("newsBtn");
+    if (!dot || !btn) return;
+    dot.textContent = n > 9 ? "9+" : String(n);
+    dot.hidden = !n;
+    btn.classList.toggle("has-new", n > 0);
+    btn.setAttribute("aria-label", n ? "What's new - " + n + " unread" : "What's new");
+  }
+
+  /* The public announcements page (#news). */
+  async function openNews() {
+    showView("newsPage");
+    setNavActive([]);
+    document.title = "What's new | Flickerz Nest";
+    if (!state.annLoaded) { $("newsPage").innerHTML = '<div class="tp-loading"><div class="spin"></div><span>Loading updates...</span></div>'; await loadAnnouncements(); }
+    renderNewsPage();
+    // Opening the page marks everything as read (after drawing, so "New" tags show this once).
+    try { localStorage.setItem(ANN_READ, String(Date.now())); } catch {}
+    paintNewsDot();
+  }
+  function renderNewsPage() {
+    const box = $("newsPage"), readAt = annReadAt();
+    const head = '<div class="page-head"><div><p class="eyebrow">Announcements</p><h1>What\'s new</h1><p class="sub">Updates, new features, fixes and notices from the Flickerz Nest team.</p></div></div>';
+    if (!state.ann.length) {
+      box.innerHTML = head + '<div class="news-empty"><i class="fa-solid fa-bell"></i><b>No announcements yet</b><span>Updates will appear here.</span></div>';
+      return;
+    }
+    box.innerHTML = head + '<div class="news-list">' + state.ann.map((a, i) => {
+      const unread = new Date(a.created_at).getTime() > readAt;
+      const img = httpsUrl(a.image_url), link = safeLink(a.link_url);
+      return '<article class="news-item' + (unread ? " unread" : "") + (a.pinned ? " pinned" : "") + '" style="animation-delay:' + Math.min(i, 8) * 40 + 'ms">' +
+        (img ? '<div class="news-img" style="background-image:url(\'' + esc(img) + '\')"></div>' : "") +
+        '<div class="news-in"><div class="ann-meta"><span class="ann-kind ' + esc(a.kind) + '">' + esc(ANN_KINDS[a.kind] || "Update") + "</span>" +
+          "<span>" + esc(annDate(a.created_at)) + "</span>" + (a.pinned ? '<span class="ann-pin"><i class="fa-solid fa-thumbtack"></i> Pinned</span>' : "") +
+          (unread ? '<span class="ann-new">NEW</span>' : "") + "</div>" +
+        "<h2>" + esc(a.title) + "</h2>" + (a.body ? '<div class="news-text">' + annText(a.body) + "</div>" : "") +
+        (link ? '<div class="actions" style="margin-top:14px"><a class="btn btn-primary btn-sm" href="' + esc(link) + '"' + (/^https:/i.test(link) ? ' target="_blank" rel="noopener"' : "") + ">" + esc(a.link_label || "Learn more") + "</a></div>" : "") +
+        "</div></article>";
+    }).join("") + "</div>";
+  }
+
+  /* Pop-ups: "every" ones each visit, "once" ones until dismissed. Shown one
+     after another with a Next button, newest/pinned first, at most 5. */
+  function popupQueue() {
+    const seen = annSeen();
+    return state.ann.filter((a) => a.popup === "every" || (a.popup === "once" && !seen.has(a.id))).slice(0, 5);
+  }
+  function showAnnPopups() {
+    if (PAGE === "admin" || PAGE === "watch" || (typeof TV !== "undefined" && TV.on)) return;   // never interrupt these
+    let shown = false;
+    try { shown = sessionStorage.getItem("fz.ann.session") === "1"; } catch {}
+    if (shown) return;                                    // "every visit" = once per browser session
+    const q = popupQueue();
+    if (!q.length) return;
+    try { sessionStorage.setItem("fz.ann.session", "1"); } catch {}
+    state.annQueue = q; state.annIdx = 0; state.annPreview = null;
+    paintAnnPopup();
+    openModal("annModal");
+  }
+  function paintAnnPopup() {
+    const a = state.annPreview || state.annQueue[state.annIdx];
+    if (!a) return;
+    const img = httpsUrl(a.image_url), link = safeLink(a.link_url);
+    $("annPopImg").hidden = !img;
+    if (img) $("annPopImg").style.backgroundImage = "url('" + img.replace(/'/g, "%27") + "')";
+    $("annPopKind").textContent = ANN_KINDS[a.kind] || "Update";
+    $("annPopKind").className = "ann-kind " + (a.kind || "update");
+    $("annPopDate").textContent = annDate(a.created_at || Date.now());
+    $("annPopTitle").textContent = a.title || "Untitled";
+    $("annPopText").innerHTML = annText(a.body);
+    const total = state.annPreview ? 1 : state.annQueue.length;
+    $("annPopCount").hidden = total < 2;
+    $("annPopCount").textContent = (state.annIdx + 1) + " / " + total;
+    $("annPopLink").hidden = !link;
+    if (link) { $("annPopLink").href = link; $("annPopLink").textContent = a.link_label || "Learn more"; $("annPopLink").target = /^https:/i.test(link) ? "_blank" : ""; }
+    $("annPopNext").hidden = state.annPreview || state.annIdx >= total - 1;
+  }
+  function dismissAnnPopup(goToPage) {
+    if (!state.annPreview) state.annQueue.forEach((a, i) => { if (i <= state.annIdx && a.popup === "once") markAnnSeen(a.id); });
+    state.annPreview = null;
+    closeModal("annModal");
+    if (goToPage) location.hash = "#news";
+  }
+  $("annPopClose").addEventListener("click", () => dismissAnnPopup(false));
+  $("annPopAll").addEventListener("click", () => dismissAnnPopup(true));
+  $("annPopLink").addEventListener("click", () => dismissAnnPopup(false));
+  $("annPopNext").addEventListener("click", () => {
+    const a = state.annQueue[state.annIdx]; if (a && a.popup === "once") markAnnSeen(a.id);
+    state.annIdx++; paintAnnPopup();
+  });
+  $("newsBtn").addEventListener("click", () => { if (location.hash === "#news") openNews(); else location.hash = "#news"; });
+
+  /* ---- admin: create / edit / delete ---- */
+  const toLocalInput = (d) => { if (!d) return ""; const t = new Date(d); if (isNaN(t)) return ""; const p = (n) => String(n).padStart(2, "0"); return t.getFullYear() + "-" + p(t.getMonth() + 1) + "-" + p(t.getDate()) + "T" + p(t.getHours()) + ":" + p(t.getMinutes()); };
+  const fromLocalInput = (v) => v ? new Date(v).toISOString() : null;
+  function annFormValues() {
+    return {
+      title: $("annTitle").value.trim(), body: $("annBody").value.trim(), kind: $("annKind").value, popup: $("annPopup").value,
+      image_url: httpsUrl($("annImage").value) || null, link_url: safeLink($("annLink").value) || null,
+      link_label: $("annLinkLabel").value.trim() || null, pinned: $("annPinned").checked, published: $("annPublished").checked,
+      starts_at: fromLocalInput($("annStart").value), ends_at: fromLocalInput($("annEnd").value)
+    };
+  }
+  function resetAnnForm() {
+    $("annForm").reset(); $("annId").value = ""; $("annPublished").checked = true;
+    $("annFormTitle").textContent = "New announcement";
+    $("annSave").innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish';
+    $("annCancel").hidden = true;
+    $("annStatus").textContent = ""; $("annStatus").className = "status";
+  }
+  async function loadAnnAdmin() {
+    const box = $("annList");
+    if (!isAdmin() || !state.sb || !state.user) { box.innerHTML = '<p class="hint" style="padding:12px 2px">Sign in as the owner to manage announcements.</p>'; return; }
+    const { data, error } = await state.sb.from("announcements").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(200);
+    if (error) {
+      box.innerHTML = '<p class="hint" style="padding:12px 2px">' + (/announcements|relation|schema cache/i.test(error.message || "") ? "Announcements are not set up yet. Run STEP 17 of schema.sql, then reopen this tab." : esc(error.message)) + "</p>";
+      return;
+    }
+    state.annAdmin = data || [];
+    if (!state.annAdmin.length) { box.innerHTML = '<p class="hint" style="padding:12px 2px">Nothing posted yet.</p>'; return; }
+    const popupLabel = { none: "Page only", once: "Pops up once", every: "Pops up every visit" };
+    box.innerHTML = state.annAdmin.map((a) => {
+      const live = annLive(a);
+      const status = !a.published ? "Draft" : (live ? "Live" : (a.starts_at && new Date(a.starts_at) > new Date() ? "Scheduled" : "Ended"));
+      return '<div class="ann-row"><div><b>' + esc(a.title) + "</b><small>" +
+        '<span class="ann-kind ' + esc(a.kind) + '">' + esc(ANN_KINDS[a.kind] || a.kind) + "</span>" +
+        '<span class="rep-tag ' + (status === "Live" ? "fixed" : status === "Draft" ? "ignored" : "open") + '">' + status + "</span>" +
+        (a.pinned ? '<span class="ann-pin">Pinned</span>' : "") + "<span>" + esc(annDate(a.created_at)) + "</span></small></div>" +
+        '<div class="rep-actions">' +
+          '<select class="fsel" data-ann-popup="' + esc(a.id) + '" aria-label="Pop-up rule">' +
+            Object.entries(popupLabel).map(([v, l]) => '<option value="' + v + '"' + (a.popup === v ? " selected" : "") + ">" + l + "</option>").join("") + "</select>" +
+          '<button class="mini" type="button" data-ann-edit="' + esc(a.id) + '"><i class="fa-solid fa-file-lines"></i> Edit</button>' +
+          '<button class="mini danger" type="button" data-ann-del="' + esc(a.id) + '" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>' +
+        "</div></div>";
+    }).join("");
+  }
+  $("annForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const st = $("annStatus");
+    if (!isAdmin() || !state.sb) { st.textContent = "Sign in as the owner first."; st.className = "status error"; return; }
+    const v = annFormValues();
+    if (!v.title) { st.textContent = "Add a title."; st.className = "status error"; return; }
+    if (v.starts_at && v.ends_at && new Date(v.ends_at) <= new Date(v.starts_at)) { st.textContent = "\"Hide after\" must be later than \"Show from\"."; st.className = "status error"; return; }
+    const id = $("annId").value;
+    $("annSave").disabled = true; st.textContent = "Saving..."; st.className = "status";
+    const res = id
+      ? await state.sb.from("announcements").update(v).eq("id", id)
+      : await state.sb.from("announcements").insert({ ...v, created_by: state.user.id });
+    $("annSave").disabled = false;
+    if (res.error) { st.textContent = /announcements|relation|schema cache/i.test(res.error.message || "") ? "Run STEP 17 of schema.sql first." : res.error.message; st.className = "status error"; return; }
+    toast(id ? "Announcement updated." : (v.published ? "Announcement published." : "Draft saved."), "ok");
+    // Editing a "once" pop-up does not re-show it to people who already saw it.
+    resetAnnForm();
+    await Promise.all([loadAnnAdmin(), loadAnnouncements()]);
+  });
+  $("annCancel").addEventListener("click", resetAnnForm);
+  $("annPreview").addEventListener("click", () => {
+    const v = annFormValues();
+    if (!v.title) { $("annStatus").textContent = "Add a title to preview."; $("annStatus").className = "status error"; return; }
+    state.annPreview = { ...v, created_at: new Date().toISOString() };
+    state.annIdx = 0;
+    paintAnnPopup();
+    openModal("annModal");
+  });
+  document.addEventListener("click", async (ev) => {
+    const ed = ev.target.closest("[data-ann-edit]");
+    if (ed) {
+      const a = (state.annAdmin || []).find((x) => String(x.id) === ed.dataset.annEdit); if (!a) return;
+      $("annId").value = a.id; $("annTitle").value = a.title || ""; $("annBody").value = a.body || "";
+      $("annKind").value = a.kind || "update"; $("annPopup").value = a.popup || "none";
+      $("annImage").value = a.image_url || ""; $("annLink").value = a.link_url || ""; $("annLinkLabel").value = a.link_label || "";
+      $("annStart").value = toLocalInput(a.starts_at); $("annEnd").value = toLocalInput(a.ends_at);
+      $("annPinned").checked = !!a.pinned; $("annPublished").checked = a.published !== false;
+      $("annFormTitle").textContent = "Edit announcement";
+      $("annSave").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save changes';
+      $("annCancel").hidden = false;
+      $("annTitle").focus();
+      $("annForm").scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    const del = ev.target.closest("[data-ann-del]");
+    if (del) {
+      if (!confirm("Delete this announcement for everyone?")) return;
+      const { error } = await state.sb.from("announcements").delete().eq("id", del.dataset.annDel);
+      if (error) { toast(error.message, "error"); return; }
+      toast("Deleted.", "ok");
+      if ($("annId").value === del.dataset.annDel) resetAnnForm();
+      await Promise.all([loadAnnAdmin(), loadAnnouncements()]);
+    }
+  });
+  document.addEventListener("change", async (ev) => {
+    const sel = ev.target.closest && ev.target.closest("[data-ann-popup]");
+    if (!sel) return;
+    const { error } = await state.sb.from("announcements").update({ popup: sel.value }).eq("id", sel.dataset.annPopup);
+    if (error) { toast(error.message, "error"); return; }
+    toast("Pop-up rule updated.", "ok");
+    loadAnnouncements();
+  });
+
+  /* =====================================================================
      v11 - Stream reports, password reset
      ===================================================================== */
   Object.assign(state, { recs: [], reports: [], repTabReady: false });
@@ -4984,6 +5390,7 @@
     const ex = /^explore(?:\/(movie|tv))?$/.exec(raw);
     if (ex) { openExplore(ex[1] || ""); return; }
     if (raw === "mylist" || raw === "my-list") { openMyList(); return; }
+    if (raw === "news" || raw === "updates" || raw === "announcements") { openNews(); return; }
     if (INFO_PAGES[raw]) { openInfo(raw); return; }
     showHome();                              // any other hash = home
     if (raw.indexOf("row-") === 0) {
@@ -5283,6 +5690,7 @@
   /* ---------- boot ---------- */
   // A single unexpected error must never leave the user on a blank screen.
   window.addEventListener("error", (e) => {
+    if (window.__hideSplash) window.__hideSplash();      // never leave the splash stuck on screen
     if (state.loading) { state.loading = false; try { renderRows(); } catch {} }
     syncLock();
     console.error("[Flickerz Nest]", e.error || e.message);
@@ -5316,6 +5724,10 @@
     try { await Promise.all([state.sessionReady, loadCatalog()]); }
     catch (e) { console.error("[Flickerz Nest] boot", e); state.loading = false; renderRows(); }
     try { route(); } catch (e) { console.error("[Flickerz Nest] route2", e); }
+    // Content is ready: let the splash fade out, then show any pop-up announcements.
+    if (window.__hideSplash) window.__hideSplash();
+    try { await loadAnnouncements(); } catch (e) { console.warn("[Flickerz Nest] announcements", e); }
+    setTimeout(() => { try { if (!topModal()) showAnnPopups(); } catch (e) { console.warn(e); } }, 900);
   })();
 })();
 </script>

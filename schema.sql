@@ -1227,6 +1227,52 @@ create unique index if not exists stream_reports_daily_uniq
 
 
 -- ============================================================================
+--  STEP 17 - Announcements (updates page + pop-ups). Safe to run again.
+-- ============================================================================
+create table if not exists public.announcements (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null check (length(title) between 1 and 160),
+  body        text not null default '',
+  kind        text not null default 'update' check (kind in ('update','feature','fix','maintenance','event')),
+  image_url   text,
+  link_url    text,
+  link_label  text,
+  popup       text not null default 'none' check (popup in ('none','once','every')),
+  pinned      boolean not null default false,
+  published   boolean not null default true,
+  starts_at   timestamptz,
+  ends_at     timestamptz,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  created_by  uuid references auth.users (id) on delete set null
+);
+create index if not exists announcements_list_idx on public.announcements (published, pinned desc, created_at desc);
+
+alter table public.announcements enable row level security;
+
+-- everyone (signed in or not) can read published announcements that are live now
+drop policy if exists announcements_select_public on public.announcements;
+create policy announcements_select_public on public.announcements for select to anon, authenticated
+  using ( (published and (starts_at is null or starts_at <= now()) and (ends_at is null or ends_at > now()))
+          or public.is_admin() );
+-- only admins write
+drop policy if exists announcements_write_admin on public.announcements;
+create policy announcements_write_admin on public.announcements for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+revoke all on public.announcements from public;
+grant select on public.announcements to anon, authenticated;
+grant insert, update, delete on public.announcements to authenticated;
+
+create or replace function public.touch_announcement()
+returns trigger language plpgsql set search_path = '' as $$
+begin new.updated_at := now(); return new; end $$;
+drop trigger if exists touch_announcement on public.announcements;
+create trigger touch_announcement before update on public.announcements
+  for each row execute function public.touch_announcement();
+
+
+-- ============================================================================
 --  EMERGENCY REPAIR - run this block on its own if Members / Watchlists are
 --  empty in the admin panel. It is safe to run any number of times.
 -- ============================================================================
