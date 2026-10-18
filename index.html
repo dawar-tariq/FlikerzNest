@@ -1070,6 +1070,16 @@
     .player-actions .pbtn span,.player-actions .pbtn-warn span{display:block!important;white-space:nowrap}
   }
 
+  /* Video.js box fills the video area exactly like the embed frame */
+  .vjs-box{position:absolute;inset:0;background:#000}
+  .vjs-box .video-js{width:100%;height:100%}
+  .vjs-box .video-js .vjs-big-play-button{border-color:#fff;background:rgba(229,9,20,.85);border-radius:50%;width:2em;height:2em;line-height:2em;margin-left:-1em;margin-top:-1em}
+  .vjs-box .video-js .vjs-play-progress,.vjs-box .video-js .vjs-volume-level{background:var(--red)}
+  .stage-note{z-index:4}
+  /* sources: more of them now, so a tidy horizontal scroller with a fade hint */
+  .player-sources .seg{scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:24px}
+  .player-sources .seg button{scroll-snap-align:start}
+
   /* My account */
   .acc-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
   .acc-head .avatar{width:52px;height:52px;font-size:18px;flex:0 0 auto}
@@ -1369,6 +1379,8 @@
     <div class="stage">
       <div class="stage-note" id="stageNote"><div class="spin"></div><b>Preparing your stream</b><span>This usually takes a few seconds.</span></div>
       <iframe id="frame" src="about:blank" title="Video player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>
+      <!-- Video.js: used for direct video files (.m3u8 / .mp4 / .webm), e.g. your custom streams -->
+      <div class="vjs-box" id="vjsBox" hidden></div>
     </div>
 
     <!-- 3. One control row: status on the left, actions on the right -->
@@ -1385,12 +1397,7 @@
     <!-- 4. Sources: compact pills, scroll sideways on small screens -->
     <div class="player-sources">
       <span class="player-sources-label">Source</span>
-      <div class="seg" role="group" aria-label="Stream server">
-        <button type="button" class="active" data-server="1" aria-pressed="true"><span class="srv-num">1</span><span class="srv-name">VidSrc</span></button>
-        <button type="button" data-server="2" aria-pressed="false"><span class="srv-num">2</span><span class="srv-name">VidSrc.to</span></button>
-        <button type="button" data-server="3" aria-pressed="false"><span class="srv-num">3</span><span class="srv-name">VidLink</span></button>
-        <button type="button" data-server="4" aria-pressed="false"><span class="srv-num">4</span><span class="srv-name">2Embed</span></button>
-      </div>
+      <div class="seg" id="srvList" role="group" aria-label="Stream server"></div>
     </div>
 
     <!-- 5. Series only: season + episode pickers, then the episode list -->
@@ -1438,19 +1445,14 @@
 <!-- Owner gate -->
 <div class="backdrop" id="ownerModal" role="dialog" aria-modal="true" aria-labelledby="ownerTitle" hidden>
   <div class="card">
-    <div class="card-head"><div><h2 id="ownerTitle"><i class="fa-solid fa-crown" style="color:var(--gold)"></i> Owner access</h2><p>Unlock the admin control room</p></div><button class="x" type="button" data-close="ownerModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-head"><div><h2 id="ownerTitle"><i class="fa-solid fa-lock"></i> Admin sign in</h2><p>Authorised staff only.</p></div><button class="x" type="button" data-close="ownerModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
-      <form class="stack" id="ownerForm">
-        <div class="field"><label for="ownerEmailIn">Owner email</label><input id="ownerEmailIn" type="email" autocomplete="off" required placeholder="owner@example.com"></div>
-        <div class="field"><label for="ownerPassIn">Admin key</label><input id="ownerPassIn" type="password" autocomplete="off" required placeholder="Your admin key"></div>
+      <form class="stack" id="ownerForm" autocomplete="off">
+        <div class="field"><label for="ownerEmailIn">Email</label><input id="ownerEmailIn" type="email" autocomplete="username" required placeholder="Email address"></div>
+        <div class="field"><label for="ownerPassIn">Password</label><input id="ownerPassIn" type="password" autocomplete="current-password" required placeholder="Password"></div>
         <p class="status" id="ownerStatus" role="status"></p>
-        <button class="btn btn-gold" type="submit" id="ownerGo"><i class="fa-solid fa-unlock"></i> Unlock admin panel</button>
+        <button class="btn btn-primary" type="submit" id="ownerGo"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
       </form>
-      <p class="hint" style="margin-top:14px">
-        Hidden from visitors. Open it with <b>index.html#admin</b>, <b>index.html?admin</b>, <b>/admin</b> (if your host rewrites paths),
-        press <b>Ctrl/Cmd + Shift + A</b>, or triple-click the year in the footer (that one prefills your credentials).
-        This gate works offline, so you can set your keys before Supabase is connected.
-      </p>
     </div>
   </div>
 </div>
@@ -1785,6 +1787,7 @@
   }
   function stopPlayback() {
     if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
+    if (typeof stopDirect === "function") stopDirect();
     const f = $("frame"); if (f) { f.src = "about:blank"; f.style.visibility = "visible"; }
     state.playing = null; state.override = ""; state.loadedOk = false;
   }
@@ -2481,18 +2484,114 @@
     const e = Math.max(1, parseInt($("episodeIn").value, 10) || 1);
     return streamSource(server, item.media_type, id, s, e);
   }
-  /* Multiple independent providers, because public embeds go down often.
-     Trying a different host fixes most "movie will not load" reports. */
+  /* =====================================================================
+     STREAM PROVIDERS - edit this list to add, remove or reorder sources.
+     Public embed hosts appear and disappear often, so keep several. Each
+     entry builds the URL for a film and for a TV episode from the TMDB id.
+     Order = default order. The member's last choice is remembered.
+     ===================================================================== */
+  const PROVIDERS = [
+    { name: "VidLink",   movie: (id) => "https://vidlink.pro/movie/" + id,
+                         tv: (id, s, e) => "https://vidlink.pro/tv/" + id + "/" + s + "/" + e },
+    { name: "VidSrc.cc", movie: (id) => "https://vidsrc.cc/v2/embed/movie/" + id,
+                         tv: (id, s, e) => "https://vidsrc.cc/v2/embed/tv/" + id + "/" + s + "/" + e },
+    { name: "VidFast",   movie: (id) => "https://vidfast.vc/movie/" + id,
+                         tv: (id, s, e) => "https://vidfast.vc/tv/" + id + "/" + s + "/" + e },
+    { name: "Videasy",   movie: (id) => "https://player.videasy.net/movie/" + id,
+                         tv: (id, s, e) => "https://player.videasy.net/tv/" + id + "/" + s + "/" + e },
+    { name: "Embed.su",  movie: (id) => "https://www.embed.su/embed/movie/" + id,
+                         tv: (id, s, e) => "https://www.embed.su/embed/tv/" + id + "/" + s + "/" + e },
+    { name: "VidSrc.to", movie: (id) => "https://vidsrc.to/embed/movie/" + id,
+                         tv: (id, s, e) => "https://vidsrc.to/embed/tv/" + id + "/" + s + "/" + e },
+    { name: "VidSrc.me", movie: (id) => "https://vidsrcme.ru/embed/movie/" + id,
+                         tv: (id, s, e) => "https://vidsrcme.ru/embed/tv/" + id + "/" + s + "/" + e },
+    { name: "2Embed",    movie: (id) => "https://www.2embed.cc/embed/" + id,
+                         tv: (id, s, e) => "https://www.2embed.cc/embedtv/" + id + "&s=" + s + "&e=" + e },
+    { name: "MultiEmbed", movie: (id) => "https://multiembed.mov/?video_id=" + id + "&tmdb=1",
+                         tv: (id, s, e) => "https://multiembed.mov/?video_id=" + id + "&tmdb=1&s=" + s + "&e=" + e },
+    { name: "AutoEmbed", movie: (id) => "https://player.autoembed.cc/embed/movie/" + id,
+                         tv: (id, s, e) => "https://player.autoembed.cc/embed/tv/" + id + "/" + s + "/" + e }
+  ];
+  // Server numbers: 0 = your own stream (custom override), 1..N = PROVIDERS.
+  const SERVER_NAMES = (() => { const m = { 0: "Your stream" }; PROVIDERS.forEach((p, i) => { m[i + 1] = p.name; }); return m; })();
+  const SRV_KEY = "flickerz.server.v2";
+  const savedServer = () => { try { const n = parseInt(localStorage.getItem(SRV_KEY), 10); return n >= 1 && n <= PROVIDERS.length ? n : 1; } catch { return 1; } };
+  const rememberServer = (n) => { if (n >= 1) { try { localStorage.setItem(SRV_KEY, String(n)); } catch {} } };
+
   function streamSource(server, media, id, s, e) {
-    const tv = media === "tv";
-    switch (server) {
-      case 2:  return tv ? "https://vidsrc.to/embed/tv/" + id + "/" + s + "/" + e   : "https://vidsrc.to/embed/movie/" + id;
-      case 3:  return tv ? "https://vidlink.pro/tv/" + id + "/" + s + "/" + e       : "https://vidlink.pro/movie/" + id;
-      case 4:  return tv ? "https://2embed.cc/embed/tv/" + id + "/" + s + "/" + e   : "https://2embed.cc/embed/movie/" + id;
-      default: return tv ? "https://vidsrc.net/embed/tv/" + id + "/" + s + "/" + e  : "https://vidsrc.net/embed/movie/" + id;
+    const p = PROVIDERS[(server || 1) - 1] || PROVIDERS[0];
+    return media === "tv" ? p.tv(id, s, e) : p.movie(id);
+  }
+
+  /* Draws the source pills. "Your stream" appears first when the owner has
+     added a custom stream for this title. */
+  function paintServers() {
+    const box = $("srvList");
+    if (!box) return;
+    const item = state.playing;
+    const hasCustom = Boolean(state.override && item && !item.is_custom);
+    const pills = [];
+    if (hasCustom) pills.push([0, "Your stream"]);
+    if (!(item && item.is_custom)) PROVIDERS.forEach((p, i) => pills.push([i + 1, p.name]));
+    box.innerHTML = pills.map(([n, name]) =>
+      '<button type="button" data-server="' + n + '" class="' + (n === state.server ? "active" : "") + '" aria-pressed="' + (n === state.server) + '">' +
+      '<span class="srv-num">' + (n === 0 ? "\u2605" : n) + '</span><span class="srv-name">' + esc(name) + "</span></button>").join("");
+    const act = box.querySelector(".active");
+    if (act && act.scrollIntoView) act.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+
+  /* ---------- Video.js for direct video files ---------- */
+  const isDirectMedia = (u) => /\.(m3u8|mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(String(u || ""));
+  const mediaType = (u) => /\.m3u8/i.test(u) ? "application/x-mpegURL" : /\.webm/i.test(u) ? "video/webm" : /\.ogv/i.test(u) ? "video/ogg" : "video/mp4";
+  var vjsReady = null, vjsPlayer = null;   // var: safe to read from stopPlayback at any time
+  function loadVideoJs() {
+    if (vjsReady) return vjsReady;
+    vjsReady = new Promise((resolve, reject) => {
+      const css = document.createElement("link");
+      css.rel = "stylesheet"; css.href = "https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video-js.min.css";
+      document.head.appendChild(css);
+      const js = document.createElement("script");
+      js.src = "https://cdn.jsdelivr.net/npm/video.js@8.10.0/dist/video.min.js";
+      js.onload = () => window.videojs ? resolve(window.videojs) : reject(new Error("Video.js did not load"));
+      js.onerror = () => { vjsReady = null; reject(new Error("Could not load Video.js")); };
+      document.head.appendChild(js);
+    });
+    return vjsReady;
+  }
+  async function playDirect(url, item) {
+    const box = $("vjsBox");
+    $("frame").src = "about:blank";
+    $("frame").hidden = true;
+    box.hidden = false;
+    setNote("load", "Loading video", "Starting the built-in player.");
+    try {
+      const videojs = await loadVideoJs();
+      if (state.playing !== item) return;
+      if (!vjsPlayer) {
+        box.innerHTML = '<video id="vjs" class="video-js vjs-big-play-centered vjs-fill" controls playsinline preload="auto"></video>';
+        vjsPlayer = videojs("vjs", { fluid: false, fill: true, playbackRates: [0.75, 1, 1.25, 1.5, 2], html5: { vhs: { overrideNative: true } } });
+        vjsPlayer.on("error", () => {
+          const err = vjsPlayer.error();
+          setNote("fail", "This video file could not be played",
+            (err && err.message ? err.message + " " : "") + "Try one of the other sources below.",
+            '<button class="mini" type="button" data-server="' + savedServer() + '">Use ' + esc(SERVER_NAMES[savedServer()]) + "</button>");
+        });
+        vjsPlayer.on("loadeddata", hideNote);
+        vjsPlayer.on("playing", hideNote);
+      }
+      vjsPlayer.src({ src: url, type: mediaType(url) });
+      vjsPlayer.play().catch(() => { hideNote(); });     // autoplay may be blocked: the big play button shows
+      $("playerNote").textContent = "Playing in the built-in player | " + titleOf(item);
+    } catch (e) {
+      box.hidden = true; $("frame").hidden = false;
+      setNote("fail", "The built-in player could not start", (e.message || "") + " Try another source below.", "");
     }
   }
-  const SERVER_NAMES = { 1: "VidSrc", 2: "VidSrc.to", 3: "VidLink", 4: "2Embed" };
+  function stopDirect() {
+    if (vjsPlayer) { try { vjsPlayer.pause(); vjsPlayer.reset(); } catch {} }
+    const box = $("vjsBox"); if (box) box.hidden = true;
+    const f = $("frame"); if (f) f.hidden = false;
+  }
   /* Player states. The iframe is kept visually out of the way until a source is
      actually assigned, so the user never stares at an empty black rectangle. */
   function noteHTML(icon, title, body, actions) {
@@ -2512,29 +2611,37 @@
      many providers load slowly or skip the load event entirely - killing the
      stream here is what made working videos appear broken. */
   function slowState(item, n) {
-    const next = n >= 4 ? 1 : n + 1;
+    const next = n >= PROVIDERS.length ? 1 : n + 1;
     const insideFrame = window.self !== window.top;
-    setNote("fail", "Still loading source " + n + " (" + SERVER_NAMES[n] + ")",
-      insideFrame
-        ? "If the video is playing behind this message, choose \"Show video\". Otherwise use \"New tab\", which always works."
-        : "If the video is playing behind this message, choose \"Show video\". Otherwise try a different source.",
+    const brave = Boolean(navigator.brave);
+    setNote("fail", "Still loading " + (SERVER_NAMES[n] || "this source"),
+      brave
+        ? "Brave Shields often block these players. Tap the lion icon in the address bar and turn Shields off for this site, or try the next source."
+        : insideFrame
+          ? "If the video is playing behind this message, choose \"Show video\". Otherwise use \"New tab\", which always works."
+          : "If the video is playing behind this message, choose \"Show video\". Otherwise try the next source.",
       '<button class="mini" type="button" id="forceShow">Show video</button>' +
       '<button class="mini" type="button" data-server="' + next + '">Try source ' + next + " (" + SERVER_NAMES[next] + ")</button>" +
       '<button class="mini" type="button" id="failPop">New tab</button>');
     $("playerNote").textContent = "Source " + n + " (" + SERVER_NAMES[n] + ") is taking longer than usual.";
   }
   function setServer(n) {
-    state.server = n;
-    document.querySelectorAll("[data-server]").forEach((b) => {
-      const on = Number(b.dataset.server) === n;
-      b.classList.toggle("active", on); b.setAttribute("aria-pressed", String(on));
-    });
+    n = Number(n);
+    if (!(n >= 0 && n <= PROVIDERS.length)) n = 1;
     const item = state.playing;
+    if (n === 0 && !(state.override && item && !item.is_custom)) n = savedServer();
+    state.server = n;
+    paintServers();
     if (!item) return;
     if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
+    if (n >= 1) rememberServer(n);
 
-    const custom = state.override && !item.is_custom;
-    const url = (custom && n === 1) ? state.override : buildUrl(item, n);
+    const custom = n === 0 || Boolean(item.is_custom);
+    const url = n === 0 ? state.override : buildUrl(item, n);
+
+    // Direct video files (custom streams) play in Video.js; everything else in the embed frame.
+    if (url && isDirectMedia(url)) { if (state.playTimer) clearTimeout(state.playTimer); playDirect(url, item); return; }
+    stopDirect();
 
     if (!url) {
       $("frame").src = "about:blank";
@@ -2547,10 +2654,10 @@
       return;
     }
 
-    setNote("load", "Connecting to source " + n, "Streaming should begin in a moment.");
-    $("playerNote").textContent = custom && n === 1
-      ? "Playing your custom stream override."
-      : "Source " + n + " (" + SERVER_NAMES[n] + ") | " + titleOf(item);
+    setNote("load", "Connecting to " + (SERVER_NAMES[n] || "the stream"), "Streaming should begin in a moment.");
+    $("playerNote").textContent = custom
+      ? "Playing the site's own stream | " + titleOf(item)
+      : (SERVER_NAMES[n] || "Source " + n) + " | " + titleOf(item);
 
     // The iframe is always visible and opaque. The note is a separate overlay
     // on top, so playback is never hidden or destroyed by our own UI.
@@ -2595,8 +2702,9 @@
     }
     state.playing = item;
     state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
-    state.server = 1;
+    state.server = savedServer();
     state.loadedOk = false;
+    paintServers();
     state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
     $("playerKicker").textContent = item.is_custom ? "From the Nest" : (item.media_type === "tv" ? "Series" : "Film");
@@ -2632,7 +2740,9 @@
       } catch { /* fall back to VidSrc */ }
     }
     document.querySelectorAll("[data-server]").forEach((b) => { b.disabled = false; });
-    if (state.playing === item) setServer(1);
+    // The owner's own stream wins when there is one; otherwise the member's
+    // last working source; otherwise the first provider in the list.
+    if (state.playing === item) setServer(state.override && !item.is_custom ? 0 : (item.is_custom ? 1 : savedServer()));
   }
 
   /* ---------- watchlist ---------- */
@@ -2857,25 +2967,25 @@
   }
 
   /* ---------- owner gate ---------- */
-  function openOwnerGate(prefill) {
+  function openOwnerGate() {
     closeMenu();
-    // The email is prefilled for convenience; the password is always typed.
-    $("ownerEmailIn").value = prefill || !$("ownerEmailIn").value ? OWNER.email : $("ownerEmailIn").value;
+    // Nothing is prefilled and nothing is hinted: visitors who find /admin
+    // learn neither the admin email nor how to get in. Your browser's saved
+    // password (if you let it save one) can still fill the form for you.
+    $("ownerEmailIn").value = "";
     $("ownerPassIn").value = "";
     $("ownerStatus").textContent = ""; $("ownerStatus").className = "status";
     openModal("ownerModal");
-    setTimeout(() => $("ownerPassIn").focus(), 30);
+    setTimeout(() => $("ownerEmailIn").focus(), 30);
   }
   async function submitOwner(ev) {
     ev.preventDefault();
     const email = $("ownerEmailIn").value.trim();
     const pass = $("ownerPassIn").value;
     const go = $("ownerGo");
-    if (!isOwnerEmail(email)) {
-      $("ownerStatus").textContent = "This dashboard only accepts the owner email.";
-      $("ownerStatus").className = "status error";
-      return;
-    }
+    // Same neutral message for every failure, so the form never reveals which
+    // email is the admin one or why a sign-in was refused.
+    const DENIED = "Incorrect email or password.";
     go.disabled = true;
     $("ownerStatus").textContent = "Verifying credentials...";
     $("ownerStatus").className = "status";
@@ -2884,7 +2994,7 @@
     // server, and the account must carry the admin role. There is no offline
     // password in this file any more.
     if (!state.sb) {
-      $("ownerStatus").textContent = "Cannot reach Supabase right now, so admin sign-in is unavailable. Check your connection and try again.";
+      $("ownerStatus").textContent = "Sign-in is unavailable right now. Please try again shortly.";
       $("ownerStatus").className = "status error";
       go.disabled = false;
       return;
@@ -2892,19 +3002,23 @@
     try {
       const { data, error } = await state.sb.auth.signInWithPassword({ email, password: pass });
       if (error) throw error;
-      if (!data?.user) throw new Error("Sign-in returned no user.");
+      if (!data?.user) throw new Error("no user");
       state.sbAuthError = "";
       await applyUser(data.user);
       if (!isAdmin()) {
+        // A real member who is not staff: sign them back out, say nothing more.
         await state.sb.auth.signOut(); await applyUser(null);
-        throw new Error("This account is not an admin. Run STEP 13 of schema.sql to grant the owner role.");
+        throw new Error("not admin");
       }
       grantOwner();
     } catch (e) {
-      state.sbAuthError = friendlyAuthError(e.message, email);
-      $("ownerStatus").textContent = state.sbAuthError;
+      const m = String(e && e.message || "");
+      // Only network problems get a different message; everything else is neutral.
+      $("ownerStatus").textContent = /fetch|network/i.test(m) ? "Sign-in is unavailable right now. Please try again shortly." : DENIED;
       $("ownerStatus").className = "status error";
+      $("ownerPassIn").value = "";
       go.disabled = false;
+      console.warn("[Flickerz Nest] admin sign-in refused:", m);   // detail for you in the browser console only
     }
   }
   function grantOwner() {
@@ -2915,7 +3029,7 @@
     $("ownerStatus").textContent = "";
     $("ownerGo").disabled = false;
     paintAccount();
-    toast("Owner access unlocked.", "ok");
+    toast("Signed in to the admin panel.", "ok");
     openAdmin("overview");
   }
   function lockOwner() {
@@ -3838,8 +3952,8 @@
      the owner gate where it is typed. After a successful sign-in the admin
      data is refreshed (see grantOwner -> openAdmin). */
   async function ownerSupabaseSignIn() {
-    if (!state.sb) { toast("Supabase is not configured.", "error"); return false; }
-    openOwnerGate(true);
+    if (!state.sb) { toast("Sign-in is unavailable right now.", "error"); return false; }
+    openOwnerGate();
     return false;
   }
 
@@ -4919,6 +5033,8 @@
     const active = d.fullscreenElement || d.webkitFullscreenElement;
     const exit = d.exitFullscreen || d.webkitExitFullscreen;
     if (active && exit) { try { exit.call(d); } catch {} return; }
+    // Built-in player: use its own full-screen (works on iPhone too).
+    if (vjsPlayer && !$("vjsBox").hidden) { try { vjsPlayer.requestFullscreen(); } catch {} return; }
     const targets = [$("frame"), $("playerModal") && $("playerModal").querySelector(".stage"), d.documentElement].filter(Boolean);
     for (const el of targets) {
       const req = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitEnterFullscreen;
@@ -4945,9 +5061,8 @@
     // In a sandbox the new-tab window itself is restricted, so break the whole
     // app out into a real top-level tab instead - that always works.
     if (state.env.sandboxed) { openSelfInTab(); return; }
-    const custom = state.override && !item.is_custom;
-    const n = state.server || 1;
-    const url = (custom && n === 1) ? state.override : buildUrl(item, n);
+    const n = state.server;
+    const url = n === 0 ? state.override : buildUrl(item, n || savedServer());
     if (!url) { toast("Nothing to open for this title.", "error"); return; }
     window.open(url, "_blank", "noopener,noreferrer");
     toast("Player opened in a new tab.", "ok");
@@ -4988,13 +5103,14 @@
   $("authForm").addEventListener("submit", submitAuth);
   $("authSwap").addEventListener("click", () => setMode(state.mode === "signin" ? "signup" : "signin"));
   $("ownerForm").addEventListener("submit", submitOwner);
-  // Discreet owner unlock: triple-click the footer year (invisible to visitors).
+  // Discreet owner unlock: triple-click the footer year. Opens the same empty
+  // sign-in form as /admin - it no longer fills anything in.
   let ownerTaps = 0, ownerTapTimer = null;
   $("footYear").addEventListener("click", () => {
     ownerTaps += 1;
     clearTimeout(ownerTapTimer);
     ownerTapTimer = setTimeout(() => { ownerTaps = 0; }, 900);
-    if (ownerTaps >= 3) { ownerTaps = 0; clearTimeout(ownerTapTimer); if (!isAdmin()) openOwnerGate(true); }
+    if (ownerTaps >= 3) { ownerTaps = 0; clearTimeout(ownerTapTimer); if (!isAdmin()) openOwnerGate(); }
   });
   // Key editing was removed. Drop any key overrides saved by older versions.
   try { localStorage.removeItem(STORE_KEY); } catch {}
