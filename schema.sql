@@ -1222,7 +1222,8 @@ grant select, insert, update, delete on public.stream_reports to authenticated;
 
 -- 16b. one report per member per title per day (stops accidental double taps)
 create unique index if not exists stream_reports_daily_uniq
-  on public.stream_reports (user_id, tmdb_id, media_type, coalesce(season, 0), coalesce(episode, 0), (created_at::date));
+  on public.stream_reports (user_id, tmdb_id, media_type, coalesce(season, 0), coalesce(episode, 0),
+                            ((created_at at time zone 'utc')::date));   -- UTC day: index expressions must be IMMUTABLE
 
 
 -- ============================================================================

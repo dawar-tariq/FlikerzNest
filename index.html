@@ -1038,6 +1038,54 @@
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   }
+
+  /* =================== v12: speed + player controls + account =================== */
+  /* Speed: no blur on per-poster badges (80+ of them on the home page), no
+     never-ending hero zoom, and rows below the fold are not drawn until near. */
+  .save,.info-btn,.score,.poster-play i,.chip,.btn-glass,.pbtn,.player-sources .seg button{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .save,.info-btn{background:rgba(10,11,15,.85)}
+  .score{background:rgba(10,11,15,.88)}
+  .hero-bg{animation:none!important;transform:none!important}
+  .aura{display:none}
+  .row{content-visibility:auto;contain-intrinsic-size:auto 340px}
+  .tile-ph{position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;color:#c9ccd3;font-size:12.5px;font-weight:700;line-height:1.4;background:linear-gradient(150deg,#262b36,#14161c)}
+  @media (max-width:920px){
+    .topbar{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(10,11,15,.97)}
+    .tile:hover .poster,.poster:hover{transform:none;box-shadow:none}
+    .poster:hover img{transform:none;filter:none}
+    .row{transition:none;opacity:1;transform:none}
+  }
+
+  /* Player controls: every button has an icon AND a label, on every screen. */
+  .player-bar{flex-wrap:wrap}
+  .player-actions{display:grid;grid-auto-flow:column;gap:8px}
+  .player-actions .pbtn{height:40px}
+  .player-actions .pbtn span{display:inline}
+  @media (max-width:620px){
+    .player-bar{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px 4px}
+    .player-status{order:2;text-align:center}
+    .player-actions{order:1;grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .player-actions .pbtn{flex-direction:column;gap:4px;width:auto;height:58px;padding:6px 2px;border-radius:12px;font-size:11px;font-weight:600}
+    .player-actions .pbtn i{font-size:19px}
+    .player-actions .pbtn span,.player-actions .pbtn-warn span{display:block!important;white-space:nowrap}
+  }
+
+  /* My account */
+  .acc-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .acc-head .avatar{width:52px;height:52px;font-size:18px;flex:0 0 auto}
+  .acc-who{min-width:0;flex:1}
+  .acc-who b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .acc-who small{display:block;margin-top:3px;color:#8b909c;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .acc-stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:16px}
+  .acc-list{display:grid;gap:8px}
+  .acc-item{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);color:#eef0f4;cursor:pointer;text-align:left;text-decoration:none;font:inherit;transition:background .16s,border-color .16s}
+  .acc-item:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
+  .acc-item>i:first-child{width:22px;font-size:19px;color:#c9ccd3;text-align:center}
+  .acc-item span{flex:1;min-width:0}
+  .acc-item b{display:block;font-size:14px}
+  .acc-item small{display:block;margin-top:3px;color:#8b909c;font-size:12px;line-height:1.45}
+  .acc-item .acc-go{color:#6b7080;font-size:14px}
+  .acc-item.danger b,.acc-item.danger>i:first-child{color:#ff8087}
 </style>
 </head>
 <body>
@@ -1067,7 +1115,7 @@
     <button class="menu-item" type="button" id="menuAuth"><i class="fa-regular fa-circle-user"></i><span>Sign in / Create account</span></button>
     <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
     <a class="menu-item" id="menuAdminPage" href="admin.html" hidden><i class="fa-solid fa-up-right-from-square"></i><span>Open full-screen admin page</span></a>
-    <a class="menu-item" id="menuAccountPage" href="account.html" hidden><i class="fa-solid fa-user"></i><span>Account page</span></a>
+    <a class="menu-item" id="menuAccountPage" href="account.html" hidden><i class="fa-solid fa-user"></i><span>My account</span></a>
     <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span id="menuTvLabel">TV mode</span></button>
     <button class="menu-item link-tv-btn" type="button" id="menuLinkTv" hidden><i class="fa-solid fa-key"></i><span>Link a TV (enter code)</span></button>
     <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
@@ -1197,7 +1245,7 @@
 <!-- Choose a new password (opened from the email link) -->
 <div class="backdrop" id="newPassModal" role="dialog" aria-modal="true" aria-labelledby="newPassTitle" hidden>
   <div class="card">
-    <div class="card-head"><div><h2 id="newPassTitle">Choose a new password</h2><p>You are signed in through your reset link. Set a new password to finish.</p></div></div>
+    <div class="card-head"><div><h2 id="newPassTitle">Choose a new password</h2><p id="newPassSub">You are signed in through your reset link. Set a new password to finish.</p></div><button class="x" type="button" data-close="newPassModal" id="newPassClose" aria-label="Close" hidden><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
       <form class="stack" id="newPassForm">
         <div class="field"><label for="newPass1">New password</label><input id="newPass1" type="password" autocomplete="new-password" minlength="6" required placeholder="At least 6 characters"></div>
@@ -1205,6 +1253,28 @@
         <p class="status" id="newPassStatus" role="status"></p>
         <div class="actions"><button class="btn btn-primary" type="submit" id="newPassGo"><i class="fa-solid fa-check"></i> Save password</button></div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- My account -->
+<div class="backdrop" id="accountModal" role="dialog" aria-modal="true" aria-labelledby="accTitle" hidden>
+  <div class="card">
+    <div class="card-head"><div><h2 id="accTitle">My account</h2><p>Your profile, devices and password.</p></div><button class="x" type="button" data-close="accountModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-body">
+      <div class="acc-head">
+        <span class="avatar" id="accAvatar">FN</span>
+        <div class="acc-who"><b id="accName">-</b><small id="accEmail">-</small></div>
+        <span class="role" id="accRole">member</span>
+      </div>
+      <div class="stats acc-stats" id="accStats"></div>
+      <div class="acc-list">
+        <a class="acc-item" href="mylist.html#mylist" id="accList"><i class="fa-solid fa-bookmark"></i><span><b>My List and history</b><small>Saved titles, statuses and everything you have watched</small></span><i class="fa-solid fa-chevron-right acc-go"></i></a>
+        <button class="acc-item" type="button" id="accLinkTv"><i class="fa-solid fa-tv"></i><span><b>Link a TV</b><small>Enter the code shown on your TV to sign it in</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
+        <button class="acc-item" type="button" id="accPassword"><i class="fa-solid fa-key"></i><span><b>Change password</b><small>Choose a new password for this account</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
+        <button class="acc-item" type="button" id="accAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span><b>Admin control room</b><small>Members, reports, streams and content</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
+        <button class="acc-item danger" type="button" id="accOut"><i class="fa-solid fa-arrow-right-from-bracket"></i><span><b>Sign out</b><small>Sign out on this device</small></span></button>
+      </div>
     </div>
   </div>
 </div>
@@ -1305,10 +1375,10 @@
     <div class="player-bar">
       <span class="player-status" id="playerNote">If playback does not start, switch servers.</span>
       <div class="player-actions">
-        <button class="pbtn pbtn-warn" type="button" id="playerReport" title="Report a problem with this stream"><i class="fa-solid fa-triangle-exclamation"></i><span>Not working?</span></button>
         <button class="pbtn" type="button" id="playerFs" title="Full screen"><i class="fa-solid fa-expand"></i><span>Full screen</span></button>
         <button class="pbtn" type="button" id="popOut" title="Open the player in a new tab - most reliable option"><i class="fa-solid fa-up-right-from-square"></i><span>New tab</span></button>
-        <a class="pbtn" id="watchPageLink" href="watch.html" title="Open this title on its own player page"><i class="fa-solid fa-link"></i><span>Link</span></a>
+        <a class="pbtn" id="watchPageLink" href="watch.html" title="Share a link to this title"><i class="fa-solid fa-share"></i><span>Share</span></a>
+        <button class="pbtn pbtn-warn" type="button" id="playerReport" title="Report a problem with this stream"><i class="fa-solid fa-flag"></i><span>Report</span></button>
       </div>
     </div>
 
@@ -1534,6 +1604,7 @@
     "stethoscope": "pulse", "triangle-exclamation": "warning", "circle-exclamation": "warning-circle",
     "arrow-left": "arrow-left", "arrow-up": "arrow-up", "house": "house", "heart": "fill:heart",
     "bookmark": "bookmark-simple", "up-right-from-square": "arrow-square-out", "youtube": "youtube-logo",
+    "expand": "arrows-out", "compress": "arrows-in", "link": "link", "share": "share-network", "flag": "flag",
     "spinner": "circle-notch", "user": "user", "circle-check": "fill:check-circle", "circle": "circle",
     "compass": "compass", "cube": "app-window", "user-slash": "prohibit", "broom": "broom", "trash": "trash",
     "ban": "prohibit", "clock-rotate-left": "clock-counter-clockwise", "envelope": "envelope-simple",
@@ -1580,8 +1651,10 @@
     // Your Cloudflare Worker URL from worker/tmdb-proxy.js, e.g.
     // "https://flickerz-tmdb.YOUR-SUBDOMAIN.workers.dev"  (no trailing slash)
     tmdbProxy: "",
-    // Only used if tmdbProxy is empty. Leave blank in production.
-    tmdbKey: "",
+    // Used only while tmdbProxy is empty, so the site keeps working until the
+    // Worker is deployed. Once tmdbProxy is set this key is never sent - you
+    // can then blank it and rotate it in TMDB.
+    tmdbKey: "cc306d0684189df48d37b51bc9e06e04",
     supabaseUrl: "https://ctbrfynxmgcyvsrdihfg.supabase.co",
     supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0YnJmeW54bWdjeXZzcmRpaGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MzA4NzEsImV4cCI6MjEwNjEwNjg3MX0.zAtoKaymmXp9A2rA4NAf3QELlt8GZR4LExhACKIw2OA"
   };
@@ -1661,10 +1734,26 @@
     const anyModal = [...document.querySelectorAll(".backdrop")].some((b) => !b.hidden && !(b.id === "adminModal" && document.body.classList.contains("admin-page")));
     document.body.classList.toggle("locked", anyModal);
   }
+  /* Every dialog that opens goes on top of the ones already open. Before this,
+     all dialogs shared one z-index, so a dialog written earlier in the page
+     (Report, Forgot password, Link a TV) opened BEHIND the player and only
+     appeared after the player was closed. */
+  var zTop = 130;
+  function topModal() {
+    let best = null, bz = -1;
+    document.querySelectorAll(".backdrop").forEach((b) => {
+      if (b.hidden) return;
+      if (b.id === "adminModal" && document.body.classList.contains("admin-page")) return;
+      const z = parseInt(b.style.zIndex || "120", 10);
+      if (z >= bz) { bz = z; best = b; }
+    });
+    return best;
+  }
   function openModal(id) {
     closeMenu();
     const m = $(id); if (!m) return;
     m.hidden = false;
+    m.style.zIndex = String(++zTop);
     syncLock();
     // Remote users need focus inside the dialog, or OK does nothing.
     if (document.body.classList.contains("tv")) setTimeout(() => TV.focusFirst(m), 40);
@@ -1683,7 +1772,7 @@
     m.hidden = true;
     if (id === "playerModal") stopPlayback();
     // Closing sign-in without signing in cancels the title they wanted to watch.
-    if (id === "authModal" && !state.user) state.pendingPlay = null;
+    if (id === "authModal" && !state.user) { state.pendingPlay = null; state.pendingAccount = false; }
     if (id === "authModal") TVCODE.stop();
     syncLock();
     if (document.body.classList.contains("tv")) TV.restoreFocus();
@@ -1784,7 +1873,7 @@
     const saved = inList(item);
     return '<article class="tile">' +
       '<button class="poster" type="button" data-play="' + esc(k) + '" aria-label="Play ' + esc(t) + '">' +
-        (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" data-err>' : '<span class="tp-poster-ph">' + esc(t) + "</span>") +
+        (p ? '<img src="' + esc(p) + '" alt="' + esc(t) + '" loading="lazy" decoding="async" data-err>' : '<span class="tp-poster-ph tile-ph">' + esc(t) + "</span>") +
         '<span class="poster-veil"></span>' +
         (item.vote_average ? '<span class="score"><i class="fa-solid fa-star"></i>' + Number(item.vote_average).toFixed(1) + "</span>" : "") +
         '<span class="poster-play"><i class="fa-solid fa-play"></i></span>' +
@@ -1809,7 +1898,15 @@
       "</div>" + body + "</section>";
   }
   const skeletons = () => '<div class="strip">' + Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join("") + "</div>";
+  /* Many things ask for a redraw while the page loads (catalogue, sign-in,
+     watchlist, history, recommendations). Coalesce them into one redraw per
+     frame instead of rebuilding every row 5-8 times. */
+  var rowsFrame = 0;
   function renderRows() {
+    if (rowsFrame) return;
+    rowsFrame = requestAnimationFrame(() => { rowsFrame = 0; renderRowsNow(); });
+  }
+  function renderRowsNow() {
     // The index is shared with Explore and My List, so it is never cleared here -
     // clearing it made cards on those pages stop responding to taps.
     let watchEmpty = "<span>Your watchlist lives here once you sign in.</span>";
@@ -1843,14 +1940,20 @@
     if (!load) renderHero(state.hero);
   }
   function wireImages(root) { root.querySelectorAll("img[data-err]").forEach((im) => im.addEventListener("error", () => im.remove(), { once: true })); }
+  // Rows fade in once. After a redraw, rows already seen appear instantly
+  // instead of flashing invisible and animating again.
+  const revealed = new Set();
   function reveal() {
     const nodes = document.querySelectorAll("[data-reveal]");
     if (!("IntersectionObserver" in window)) { nodes.forEach((n) => n.classList.add("visible")); return; }
     if (state.io) state.io.disconnect();
     state.io = new IntersectionObserver((entries, obs) => entries.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
+      if (e.isIntersecting) { e.target.classList.add("visible"); if (e.target.id) revealed.add(e.target.id); obs.unobserve(e.target); }
     }), { threshold: .05 });
-    nodes.forEach((n) => state.io.observe(n));
+    nodes.forEach((n) => {
+      if (n.id && revealed.has(n.id)) { n.classList.add("visible"); return; }
+      state.io.observe(n);
+    });
   }
 
   /* ---------- TMDB ---------- */
@@ -2320,6 +2423,31 @@
     }
   }
 
+  /* ---- fill in poster art for history saved while TMDB was unavailable ---- */
+  async function backfillPosters() {
+    if (!state.cfg.tmdbKey) return;
+    const done = new Set(), jobs = [];
+    (state.myHistory || []).forEach((h) => {
+      const k = h.media_type + ":" + h.tmdb_id;
+      if (h.poster_path || done.has(k) || jobs.length >= 12) return;
+      done.add(k);
+      jobs.push(tmdb("/" + h.media_type + "/" + h.tmdb_id, { language: "en-US" }).then((d) => ({ h, d })));
+    });
+    if (!jobs.length) return;
+    let changed = false;
+    (await Promise.allSettled(jobs)).forEach((r) => {
+      if (r.status !== "fulfilled" || !r.value.d) return;
+      const { h, d } = r.value;
+      const name = d.title || d.name;
+      state.myHistory.forEach((x) => {
+        if (x.media_type !== h.media_type || Number(x.tmdb_id) !== Number(h.tmdb_id)) return;
+        if (!x.poster_path && d.poster_path) { x.poster_path = d.poster_path; changed = true; }
+        if (name && (!x.title || /^Title \d+$/.test(x.title))) { x.title = name; changed = true; }
+      });
+    });
+    if (changed) renderRows();
+  }
+
   /* ---- "Recommended for you" home row, from the member's own history ---- */
   async function buildRecommendations() {
     if (!state.user || !state.cfg.tmdbKey) { state.recs = []; return; }
@@ -2496,7 +2624,7 @@
     recordWatch(item);
     markWatching(item);
     const wl = $("watchPageLink");
-    if (wl) { const u = watchUrl(item, s0, e0); wl.href = u || "watch.html"; wl.hidden = !u || PAGE === "watch"; }
+    if (wl) { const u = watchUrl(item, s0, e0); wl.href = u || "watch.html"; wl.hidden = !u; }
     if (!item.is_custom && state.sb && Number.isSafeInteger(Number(item.id))) {
       try {
         const { data, error } = await state.sb.from("custom_streams").select("stream_url").eq("tmdb_id", Number(item.id)).maybeSingle();
@@ -2623,12 +2751,18 @@
       subscribe();
       // Personal row: computed after history is known; re-renders when ready.
       buildRecommendations().then(() => { if (!$("rows").hidden) renderRows(); }).catch(() => {});
+      backfillPosters().catch(() => {});
     } else {
       if (state.channel && state.sb) state.sb.removeChannel(state.channel);
       state.channel = null; state.watch = []; state.myHistory = []; state.recs = [];
       await loadCustom();
     }
     paintAccount(); renderRows(); paintAdmin(); renderMyListGrid();
+    // Signed in from the account screen: open it now.
+    if (state.user && state.pendingAccount) {
+      state.pendingAccount = false;
+      setTimeout(() => { if (!$("authModal").hidden) closeModal("authModal"); openAccountPage(); }, 60);
+    }
     // Signed in after pressing Play: start that title now.
     if (state.user && state.pendingPlay) {
       const p = state.pendingPlay;
@@ -2670,7 +2804,7 @@
     // "Link a TV" is for the phone/desktop side only; a TV never needs it.
     $("menuLinkTv").hidden = !(on && state.sb) || (typeof TV !== "undefined" && TV.on);
     $("menuAdminPage").hidden = !admin || document.body.classList.contains("admin-page");
-    $("menuAccountPage").hidden = !on || PAGE === "account";
+    $("menuAccountPage").hidden = !on;
     paintSessionBanner();
     // Only switch labels to "Sign in to watch" once the saved session has been
     // checked, so signed-in members never see it flash on load.
@@ -3861,9 +3995,19 @@
   const seriesKey = (item) => "tv:" + Number(item.id);
 
   /* Fetch the show's seasons (and the episodes of the one being watched). */
+  /* If the real episode list cannot be loaded, offer plain numbers so the
+     pickers and Prev/Next still work (instead of a single "Episode 1" that
+     made Next claim "This is the last episode" on episode 1). */
+  function fallbackPickers(season, episode) {
+    const s = Math.max(1, season || 1), e = Math.max(1, episode || 1);
+    const sMax = Math.max(s, 10), eMax = Math.max(e, 30);
+    setSelectOptions($("seasonIn"), Array.from({ length: sMax }, (_, i) => [i + 1, "Season " + (i + 1)]), s);
+    setSelectOptions($("episodeIn"), Array.from({ length: eMax }, (_, i) => [i + 1, "Episode " + (i + 1)]), e);
+  }
   async function loadSeriesStructure(item, season, episode) {
     const id = Number(item.id);
-    if (!Number.isSafeInteger(id) || id < 1 || !state.cfg.tmdbKey) return;
+    if (!Number.isSafeInteger(id) || id < 1) return;
+    if (!state.cfg.tmdbKey) { fallbackPickers(season, episode); return; }
     const key = seriesKey(item);
     let entry = seriesCache.get(key);
     if (!entry) {
@@ -3877,9 +4021,11 @@
         seriesCache.set(key, entry);
       } catch (e) {
         console.warn("[Flickerz Nest] seasons", e);
-        return;                                   // keep the typed values
+        if (state.playing && seriesKey(state.playing) === key) fallbackPickers(season, episode);
+        return;
       }
     }
+    if (!entry.seasons.length) { if (state.playing && seriesKey(state.playing) === key) fallbackPickers(season, episode); return; }
     if (!state.playing || seriesKey(state.playing) !== key) return;    // user moved on
     if (entry.seasons.length) {
       const target = entry.seasons.some((s) => s.n === season) ? season : entry.seasons[0].n;
@@ -4161,6 +4307,9 @@
       if (event === "PASSWORD_RECOVERY" || (state.recovering && event === "SIGNED_IN")) {
         state.recovering = true;
         closeAllModals();
+        $("newPassTitle").textContent = "Choose a new password";
+        $("newPassSub").textContent = "You are signed in through your reset link. Set a new password to finish.";
+        $("newPassClose").hidden = true;
         $("newPass1").value = ""; $("newPass2").value = "";
         $("newPassStatus").textContent = ""; $("newPassStatus").className = "status";
         openModal("newPassModal");
@@ -4199,13 +4348,52 @@
     if (!state.user) openAuth();           // on a TV, openAuth shows the code first
   }
 
-  /* account.html -> account overview with the "Link a TV" box */
-  function openAccountPage() {
-    if (!state.user) { openAuth(); return; }
-    openModal("linkTvModal");
-    $("linkTvCode").value = ""; $("linkTvStatus").textContent = "";
+  /* My account: opens in place (no page reload). Waits for the saved session
+     so a signed-in member is never asked to sign in again. */
+  async function openAccountPage() {
+    closeMenu();
+    if (!state.authReady && state.sessionReady) { try { await state.sessionReady; } catch {} }
+    if (!state.user) { state.pendingAccount = true; openAuth(); return; }
+    const name = state.profile?.display_name || state.user.user_metadata?.display_name || state.user.email.split("@")[0];
+    $("accName").textContent = name;
+    $("accEmail").textContent = state.user.email || "";
+    $("accAvatar").textContent = name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+    $("accAvatar").classList.toggle("owner", isAdmin());
+    const role = $("accRole");
+    role.textContent = isOwnerEmail(state.user.email) ? "owner" : (isAdmin() ? "admin" : "member");
+    role.className = "role " + (isOwnerEmail(state.user.email) ? "owner" : (isAdmin() ? "admin" : ""));
+    const watching = state.watch.filter((w) => w.status === "watching").length;
+    $("accStats").innerHTML = statCard(state.watch.length, "Saved") + statCard(watching, "Watching") + statCard((state.myHistory || []).length, "Plays");
+    $("accAdmin").hidden = !isAdmin();
+    $("accLinkTv").hidden = typeof TV !== "undefined" && TV.on;
+    openModal("accountModal");
+  }
+  function openChangePassword() {
+    closeModal("accountModal");
+    state.recovering = false;
+    $("newPassTitle").textContent = "Change password";
+    $("newPassSub").textContent = "Choose a new password for " + (state.user?.email || "your account") + ".";
+    $("newPassClose").hidden = false;
+    $("newPass1").value = ""; $("newPass2").value = "";
+    $("newPassStatus").textContent = ""; $("newPassStatus").className = "status";
+    openModal("newPassModal");
+    setTimeout(() => $("newPass1").focus(), 50);
   }
 
+  /* Share: the phone's share sheet when available, otherwise copy the link. */
+  async function shareTitle(href) {
+    const item = state.playing;
+    const tv = item && item.media_type === "tv";
+    const s = tv ? parseInt($("seasonIn").value, 10) || 1 : null, e = tv ? parseInt($("episodeIn").value, 10) || 1 : null;
+    const rel = (item && watchUrl(item, s, e)) || href || "index.html";
+    const url = new URL(rel, location.href).toString();
+    const title = item ? titleOf(item) + (tv ? " - S" + s + " E" + e : "") : "Flickerz Nest";
+    try {
+      if (navigator.share) { await navigator.share({ title, text: "Watch " + title + " on Flickerz Nest", url }); return; }
+    } catch (err) { if (err && err.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); toast("Link copied.", "ok"); }
+    catch { prompt("Copy this link:", url); }
+  }
   /* Share / open-in-new-page links for the player. */
   function watchUrl(item, s, e) {
     if (!item || item.is_custom) return "";
@@ -4386,7 +4574,7 @@
 
     // Which layer should receive navigation: top-most open dialog, else the page.
     const scope = () => {
-      const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden);
+      const m = topModal();
       if (m) return m;
       if (!$("profileMenu").hidden) return $("profileMenu");
       return document;
@@ -4564,10 +4752,16 @@
     return false;
   }
   function route() {
+    // Routes that depend on who is signed in wait for the saved session.
+    const needsAuth = isOwnerRoute() || ADMIN_PAGE || (PAGE && !state.pageRouted && ["watch", "tv", "login", "account"].includes(PAGE));
+    if (needsAuth && !state.authReady && state.sessionReady) {
+      state.sessionReady.then(() => { try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); } });
+      return;
+    }
     if (isOwnerRoute() || ADMIN_PAGE) {
-      if ($("adminModal").hidden === false || $("ownerModal").hidden === false) return;
-      if (isAdmin()) openAdmin("overview");
-      else openOwnerGate(false);
+      if ($("adminModal").hidden === false) return;
+      if (isAdmin()) { if (!$("ownerModal").hidden) closeModal("ownerModal"); openAdmin("overview"); }
+      else if ($("ownerModal").hidden) openOwnerGate(false);
       return;
     }
     // Dedicated page files open their section straight away (first route only).
@@ -4581,6 +4775,7 @@
       else if (PAGE === "tv") { openTvPage(); return; }
       else if (PAGE === "login") { showHome(); if (!state.user) openAuth(); return; }
       else if (PAGE === "account") { showHome(); openAccountPage(); return; }
+      // (watch/tv/login/account only reach here after the session is known)
     }
     const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
     if (raw !== state.curRoute) { state.prevRoute = state.curRoute || ""; state.curRoute = raw; }
@@ -4686,6 +4881,13 @@
     const mark = ev.target.closest("[data-mark-ep]");
     if (mark) { ev.stopPropagation(); const [s, e] = mark.dataset.markEp.split(":").map(Number); toggleSeen(state.playing || state.detail, s, e); return; }
     if (ev.target.closest("#playerReport")) { openReport(); return; }
+    if (ev.target.closest("#menuAccountPage")) { ev.preventDefault(); openAccountPage(); return; }
+    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCode").value = ""; $("linkTvStatus").textContent = ""; setTimeout(() => $("linkTvCode").focus(), 40); return; }
+    if (ev.target.closest("#accPassword")) { openChangePassword(); return; }
+    if (ev.target.closest("#accAdmin")) { closeModal("accountModal"); openAdmin("overview"); return; }
+    if (ev.target.closest("#accOut")) { closeModal("accountModal"); await signOut(); return; }
+    const share = ev.target.closest("#watchPageLink");
+    if (share) { ev.preventDefault(); shareTitle(share.getAttribute("href")); return; }
     if (ev.target.closest("#authForgot")) { openForgot(); return; }
     if (ev.target.closest("#forgotBack")) { closeModal("forgotModal"); openAuth(); return; }
     if (ev.target.closest("#repRefresh")) { loadReports(); return; }
@@ -4848,7 +5050,7 @@
   document.addEventListener("keydown", (e) => {
     if (TV.isBack(e)) {
       // TV remote Back / Escape: close the top-most layer, or go back a page.
-      const m = [...document.querySelectorAll(".backdrop")].reverse().find((b) => !b.hidden);
+      const m = topModal();
       if (m) { e.preventDefault(); closeMenu(); closeModal(m.id); return; }
       if (!$("profileMenu").hidden) { e.preventDefault(); closeMenu(); return; }
       if (!$("titlePage").hidden || VIEWS.some((v) => !$(v).hidden)) { e.preventDefault(); history.back(); return; }
@@ -4890,10 +5092,13 @@
     safe(() => renderRows(), "the catalog");
     safe(() => paintAccount(), "your profile");
     computeConfig();
-    try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); }
+    // Start restoring the saved sign-in BEFORE the first route, so pages that
+    // depend on it (account, player, admin, TV) can wait for it instead of
+    // wrongly showing "Welcome back - sign in" on every refresh.
     state.sessionReady = connect()
       .catch((e) => console.error("[Flickerz Nest] connect", e))
       .then(() => { state.authReady = true; paintAccount(); });
+    try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); }
     try { await Promise.all([state.sessionReady, loadCatalog()]); }
     catch (e) { console.error("[Flickerz Nest] boot", e); state.loading = false; renderRows(); }
     try { route(); } catch (e) { console.error("[Flickerz Nest] route2", e); }
