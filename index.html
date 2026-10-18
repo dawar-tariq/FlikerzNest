@@ -1076,6 +1076,19 @@
   .vjs-box .video-js .vjs-big-play-button{border-color:#fff;background:rgba(229,9,20,.85);border-radius:50%;width:2em;height:2em;line-height:2em;margin-left:-1em;margin-top:-1em}
   .vjs-box .video-js .vjs-play-progress,.vjs-box .video-js .vjs-volume-level{background:var(--red)}
   .stage-note{z-index:4}
+  /* audio language switch + host status marks */
+  .lang-switch{display:inline-flex;flex:0 0 auto;gap:2px;padding:3px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:#0e1015}
+  .lang-switch button{min-height:30px;padding:0 12px;border:0;border-radius:999px;background:none;color:#a6aab5;cursor:pointer;font-size:12px;font-weight:700}
+  .lang-switch button.active{background:#fff;color:#0c0d11}
+  .srv-ok{display:inline-block;width:7px;height:7px;margin-left:2px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px rgba(94,217,164,.25)}
+  .srv-tag{margin-left:2px;padding:1px 5px;border-radius:5px;background:rgba(255,176,32,.18);color:#ffc857;font-size:9.5px;font-weight:800;letter-spacing:.04em}
+  .player-sources .seg button.active .srv-tag{background:rgba(229,9,20,.15);color:var(--red)}
+  .lang-hint{margin:0;padding:0 clamp(12px,2.5vw,28px) 10px;color:#9aa0ad;font-size:11.5px;line-height:1.55}
+  .lang-hint b{color:#ffc857}
+  @media (max-width:620px){
+    .player-sources{flex-direction:column;align-items:stretch;gap:8px}
+    .lang-switch{align-self:flex-start}
+  }
   /* sources: more of them now, so a tidy horizontal scroller with a fade hint */
   .player-sources .seg{scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:24px}
   .player-sources .seg button{scroll-snap-align:start}
@@ -1396,9 +1409,13 @@
 
     <!-- 4. Sources: compact pills, scroll sideways on small screens -->
     <div class="player-sources">
-      <span class="player-sources-label">Source</span>
+      <div class="lang-switch" id="langSwitch" role="group" aria-label="Preferred audio">
+        <button type="button" data-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-lang="hi" aria-pressed="false">हिंदी</button>
+      </div>
       <div class="seg" id="srvList" role="group" aria-label="Stream server"></div>
     </div>
+    <p class="lang-hint" id="langHint" hidden>Hindi mode puts the hosts that carry Hindi audio first (marked <b>HI</b>). If a title still starts in English, open the audio or settings menu inside the player and choose Hindi. Not every title has a Hindi dub.</p>
 
     <!-- 5. Series only: season + episode pickers, then the episode list -->
     <div class="player-episodes ep" id="epControls" hidden>
@@ -2490,38 +2507,92 @@
      entry builds the URL for a film and for a TV episode from the TMDB id.
      Order = default order. The member's last choice is remembered.
      ===================================================================== */
+  /* Six hosts, chosen because they are actively maintained, accept TMDB ids,
+     and expose player settings. "hindi: true" = the host says it carries
+     multiple audio tracks including Hindi (availability still depends on the
+     title). lang is a link parameter that asks the player to START in Hindi,
+     only where the host documents one. Edit freely: domains change often. */
+  const ACCENT = "e50914";
   const PROVIDERS = [
-    { name: "VidLink",   movie: (id) => "https://vidlink.pro/movie/" + id,
-                         tv: (id, s, e) => "https://vidlink.pro/tv/" + id + "/" + s + "/" + e },
-    { name: "VidSrc.cc", movie: (id) => "https://vidsrc.cc/v2/embed/movie/" + id,
-                         tv: (id, s, e) => "https://vidsrc.cc/v2/embed/tv/" + id + "/" + s + "/" + e },
-    { name: "VidFast",   movie: (id) => "https://vidfast.vc/movie/" + id,
-                         tv: (id, s, e) => "https://vidfast.vc/tv/" + id + "/" + s + "/" + e },
-    { name: "Videasy",   movie: (id) => "https://player.videasy.net/movie/" + id,
-                         tv: (id, s, e) => "https://player.videasy.net/tv/" + id + "/" + s + "/" + e },
-    { name: "Embed.su",  movie: (id) => "https://www.embed.su/embed/movie/" + id,
-                         tv: (id, s, e) => "https://www.embed.su/embed/tv/" + id + "/" + s + "/" + e },
-    { name: "VidSrc.to", movie: (id) => "https://vidsrc.to/embed/movie/" + id,
-                         tv: (id, s, e) => "https://vidsrc.to/embed/tv/" + id + "/" + s + "/" + e },
-    { name: "VidSrc.me", movie: (id) => "https://vidsrcme.ru/embed/movie/" + id,
-                         tv: (id, s, e) => "https://vidsrcme.ru/embed/tv/" + id + "/" + s + "/" + e },
-    { name: "2Embed",    movie: (id) => "https://www.2embed.cc/embed/" + id,
-                         tv: (id, s, e) => "https://www.2embed.cc/embedtv/" + id + "&s=" + s + "&e=" + e },
-    { name: "MultiEmbed", movie: (id) => "https://multiembed.mov/?video_id=" + id + "&tmdb=1",
-                         tv: (id, s, e) => "https://multiembed.mov/?video_id=" + id + "&tmdb=1&s=" + s + "&e=" + e },
-    { name: "AutoEmbed", movie: (id) => "https://player.autoembed.cc/embed/movie/" + id,
-                         tv: (id, s, e) => "https://player.autoembed.cc/embed/tv/" + id + "/" + s + "/" + e }
+    { name: "VidLink", hindi: false,
+      movie: (id) => "https://vidlink.pro/movie/" + id + "?primaryColor=" + ACCENT + "&iconColor=ffffff&title=false&poster=true",
+      tv: (id, s, e) => "https://vidlink.pro/tv/" + id + "/" + s + "/" + e + "?primaryColor=" + ACCENT + "&iconColor=ffffff&title=false&nextbutton=true" },
+    { name: "VidFast", hindi: false,
+      movie: (id) => "https://vidfast.vc/movie/" + id + "?theme=" + ACCENT + "&title=false&autoPlay=true",
+      tv: (id, s, e) => "https://vidfast.vc/tv/" + id + "/" + s + "/" + e + "?theme=" + ACCENT + "&title=false&autoPlay=true&nextButton=true" },
+    { name: "Videasy", hindi: false,
+      movie: (id) => "https://player.videasy.net/movie/" + id + "?color=" + ACCENT,
+      tv: (id, s, e) => "https://player.videasy.net/tv/" + id + "/" + s + "/" + e + "?color=" + ACCENT + "&nextEpisode=true" },
+    { name: "VidCore", hindi: true,
+      movie: (id) => "https://vidcore.org/embed/movie/" + id + "?theme=" + ACCENT,
+      tv: (id, s, e) => "https://vidcore.org/embed/tv/" + id + "/" + s + "/" + e + "?theme=" + ACCENT },
+    { name: "VidBolt", hindi: true, lang: (hi) => hi ? "&audio=hindi" : "",
+      movie: (id) => "https://vidbolt.xyz/movie/" + id + "?theme=" + ACCENT,
+      tv: (id, s, e) => "https://vidbolt.xyz/tv/" + id + "/" + s + "/" + e + "?theme=" + ACCENT },
+    { name: "VidSrc.cc", hindi: false,
+      movie: (id) => "https://vidsrc.cc/v2/embed/movie/" + id,
+      tv: (id, s, e) => "https://vidsrc.cc/v2/embed/tv/" + id + "/" + s + "/" + e }
   ];
   // Server numbers: 0 = your own stream (custom override), 1..N = PROVIDERS.
   const SERVER_NAMES = (() => { const m = { 0: "Your stream" }; PROVIDERS.forEach((p, i) => { m[i + 1] = p.name; }); return m; })();
-  const SRV_KEY = "flickerz.server.v2";
-  const savedServer = () => { try { const n = parseInt(localStorage.getItem(SRV_KEY), 10); return n >= 1 && n <= PROVIDERS.length ? n : 1; } catch { return 1; } };
-  const rememberServer = (n) => { if (n >= 1) { try { localStorage.setItem(SRV_KEY, String(n)); } catch {} } };
+
+  /* Preferences are stored by host NAME (not position), so editing the list
+     never sends a member to the wrong host. */
+  const SRV_KEY = "flickerz.server.v3", LANG_KEY = "flickerz.audio.v1", HEALTH_KEY = "flickerz.health.v1";
+  const idxOf = (name) => { const i = PROVIDERS.findIndex((p) => p.name === name); return i >= 0 ? i + 1 : 0; };
+  const audioLang = () => { try { return localStorage.getItem(LANG_KEY) === "hi" ? "hi" : "en"; } catch { return "en"; } };
+  const setAudioLang = (l) => { try { localStorage.setItem(LANG_KEY, l === "hi" ? "hi" : "en"); } catch {} };
+  const health = () => { try { return JSON.parse(localStorage.getItem(HEALTH_KEY) || "{}"); } catch { return {}; } };
+  // A host counts as "working" if it actually played something here in the last 3 days.
+  const recentlyOk = (name) => Date.now() - (health()[name] || 0) < 3 * 864e5;
+  function markHealthy(n) {
+    const p = PROVIDERS[n - 1]; if (!p) return;
+    const h = health(); h[p.name] = Date.now();
+    try { localStorage.setItem(HEALTH_KEY, JSON.stringify(h)); } catch {}
+  }
+  /* Display / fallback order: hosts that recently played come first; in Hindi
+     mode, Hindi-capable hosts come first. Otherwise the list order above. */
+  function serverOrder() {
+    const hi = audioLang() === "hi";
+    return PROVIDERS.map((p, i) => i + 1).sort((a, b) => {
+      const pa = PROVIDERS[a - 1], pb = PROVIDERS[b - 1];
+      if (hi && pa.hindi !== pb.hindi) return pa.hindi ? -1 : 1;
+      const ra = recentlyOk(pa.name), rb = recentlyOk(pb.name);
+      if (ra !== rb) return ra ? -1 : 1;
+      return a - b;
+    });
+  }
+  const savedServer = () => {
+    let n = 0;
+    try { n = idxOf(localStorage.getItem(SRV_KEY) || ""); } catch {}
+    // In Hindi mode, a saved English-only host gives way to the best Hindi one.
+    if (n && audioLang() === "hi" && !PROVIDERS[n - 1].hindi) n = 0;
+    return n || serverOrder()[0];
+  };
+  const rememberServer = (n) => { const p = PROVIDERS[n - 1]; if (p) { try { localStorage.setItem(SRV_KEY, p.name); } catch {} } };
+  const nextServer = (n) => { const o = serverOrder(); const i = o.indexOf(n); return o[(i + 1) % o.length]; };
 
   function streamSource(server, media, id, s, e) {
     const p = PROVIDERS[(server || 1) - 1] || PROVIDERS[0];
-    return media === "tv" ? p.tv(id, s, e) : p.movie(id);
+    const url = media === "tv" ? p.tv(id, s, e) : p.movie(id);
+    return url + (p.lang ? p.lang(audioLang() === "hi") : "");
   }
+
+  /* Many of these players report progress to the page with postMessage. Any
+     such message from the active frame proves the video is really playing:
+     hide the overlay and remember this host as working. */
+  window.addEventListener("message", (ev) => {
+    const f = $("frame");
+    if (!f || ev.source !== f.contentWindow || !state.playing || !(state.server >= 1)) return;
+    const d = ev.data;
+    let s = "";
+    try { s = typeof d === "string" ? d : JSON.stringify(d || {}); } catch { return; }
+    // Only real playback signals count (a "player ready" message does not).
+    if (!/timeupdate|currentTime|progress|"playing"|PLAYER_EVENT|media_data|watched/i.test(s)) return;
+    if (!state.loadedOk) { state.loadedOk = true; hideNote(); }
+    if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
+    if (!state.healthMarked) { state.healthMarked = true; markHealthy(state.server); paintServers(); }
+  });
 
   /* Draws the source pills. "Your stream" appears first when the owner has
      added a custom stream for this title. */
@@ -2532,10 +2603,21 @@
     const hasCustom = Boolean(state.override && item && !item.is_custom);
     const pills = [];
     if (hasCustom) pills.push([0, "Your stream"]);
-    if (!(item && item.is_custom)) PROVIDERS.forEach((p, i) => pills.push([i + 1, p.name]));
-    box.innerHTML = pills.map(([n, name]) =>
-      '<button type="button" data-server="' + n + '" class="' + (n === state.server ? "active" : "") + '" aria-pressed="' + (n === state.server) + '">' +
-      '<span class="srv-num">' + (n === 0 ? "\u2605" : n) + '</span><span class="srv-name">' + esc(name) + "</span></button>").join("");
+    if (!(item && item.is_custom)) serverOrder().forEach((n) => pills.push([n, PROVIDERS[n - 1].name]));
+    const hi = audioLang() === "hi";
+    box.innerHTML = pills.map(([n, name], i) => {
+      const p = PROVIDERS[n - 1];
+      const ok = p && recentlyOk(p.name);
+      const tags = (ok ? '<i class="srv-ok" title="Played recently on this device"></i>' : "") +
+                   (p && p.hindi ? '<span class="srv-tag" title="Says it carries Hindi audio for some titles">HI</span>' : "");
+      return '<button type="button" data-server="' + n + '" class="' + (n === state.server ? "active" : "") + '" aria-pressed="' + (n === state.server) + '">' +
+        '<span class="srv-num">' + (n === 0 ? "\u2605" : i + (hasCustom ? 0 : 1)) + '</span><span class="srv-name">' + esc(name) + "</span>" + tags + "</button>";
+    }).join("");
+    const lb = $("langSwitch");
+    if (lb) {
+      lb.hidden = Boolean(item && item.is_custom);
+      lb.querySelectorAll("[data-lang]").forEach((b) => { const on = (b.dataset.lang === "hi") === hi; b.classList.toggle("active", on); b.setAttribute("aria-pressed", String(on)); });
+    }
     const act = box.querySelector(".active");
     if (act && act.scrollIntoView) act.scrollIntoView({ block: "nearest", inline: "center" });
   }
@@ -2611,7 +2693,7 @@
      many providers load slowly or skip the load event entirely - killing the
      stream here is what made working videos appear broken. */
   function slowState(item, n) {
-    const next = n >= PROVIDERS.length ? 1 : n + 1;
+    const next = n >= 1 ? nextServer(n) : serverOrder()[0];
     const insideFrame = window.self !== window.top;
     const brave = Boolean(navigator.brave);
     setNote("fail", "Still loading " + (SERVER_NAMES[n] || "this source"),
@@ -2631,6 +2713,8 @@
     const item = state.playing;
     if (n === 0 && !(state.override && item && !item.is_custom)) n = savedServer();
     state.server = n;
+    state.healthMarked = false;
+    state.loadedOk = false;
     paintServers();
     if (!item) return;
     if (state.playTimer) { clearTimeout(state.playTimer); state.playTimer = null; }
@@ -2704,6 +2788,7 @@
     state.override = item.is_custom ? httpsUrl(item.custom_stream_url) : "";
     state.server = savedServer();
     state.loadedOk = false;
+    $("langHint").hidden = audioLang() !== "hi" || Boolean(item.is_custom);
     paintServers();
     state.loadToken = (state.loadToken || 0) + 1;
     $("playerTitle").textContent = titleOf(item);
@@ -5134,6 +5219,19 @@
     }
     if (e.target.closest("#popOut") || e.target.closest("#failPop")) { e.preventDefault(); popOut(); }
     if (e.target.closest("#playerFs")) { e.preventDefault(); playerFullscreen(); }
+    const lang = e.target.closest("[data-lang]");
+    if (lang && lang.closest("#langSwitch")) {
+      e.preventDefault();
+      const want = lang.dataset.lang === "hi" ? "hi" : "en";
+      const changed = want !== audioLang();
+      setAudioLang(want);
+      $("langHint").hidden = want !== "hi";
+      if (!changed || !state.playing) { paintServers(); return; }
+      // Switch to the best host for this language and reload the stream.
+      const keep = state.server >= 1 && (want === "en" || PROVIDERS[state.server - 1].hindi);
+      setServer(state.server === 0 ? 0 : (keep ? state.server : serverOrder()[0]));
+      toast(want === "hi" ? "Hindi mode: hosts with Hindi audio are listed first." : "English mode.", "");
+    }
     if (!e.target.closest("#reloadCatalog")) return;
     loadCatalog();
   });
