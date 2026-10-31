@@ -1,0 +1,8 @@
+# security.txt for https://flickerz.dpdns.org (RFC 9116)
+# How to report a security problem with Flickerz Nest.
+Contact: mailto:wanidawar03@gmail.com
+Expires: 2027-06-30T23:59:59.000Z
+Preferred-Languages: en, hi, ur
+Canonical: https://flickerz.dpdns.org/.well-known/security.txt
+Policy: https://flickerz.dpdns.org/about.html#contact
+# Renew the Expires date at least once a year.
