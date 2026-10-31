@@ -1,0 +1,28 @@
+# Flickerz Nest
+
+> Flickerz Nest (also called "Flickerz") is a free movie and TV show streaming website at https://flickerz.dpdns.org. Visitors browse trending movies, popular TV series and new releases, explore by genre, year, rating and language, keep a watchlist that syncs across devices, and continue watching where they left off on phone, desktop or smart TV.
+
+Key facts:
+
+- Name: Flickerz Nest. Short name: Flickerz. Founder: Dawar Tariq.
+- What it offers: a catalogue of movies and TV shows with trailers, cast, seasons and episodes; a search box; an Explore page with filters (genre, year, minimum rating, language including Hindi, English, Korean, Tamil, Telugu and more); a personal watchlist with statuses (Plan to watch, Watching, Completed); watch history and "Continue Watching"; episode progress for series.
+- Accounts: a free account is required to play titles. Browsing and searching work without signing in.
+- Devices: works in any modern browser on phones, tablets and desktops, with a remote-friendly TV mode. Smart TVs sign in by entering a short code shown on screen from the member's phone.
+- Updates: new features and notices are posted on the "What's new" page.
+- Catalogue data, posters and ratings come from The Movie Database (TMDB). This product uses the TMDB API but is not endorsed or certified by TMDB.
+- Flickerz Nest does not host video files; playback comes from third-party players.
+- Contact: wanidawar03@gmail.com
+
+## Main pages
+
+- [Home](https://flickerz.dpdns.org/): Trending movies, popular TV shows, top rated titles, personalised rows and search.
+- [Explore](https://flickerz.dpdns.org/explore.html): Browse every movie and TV show with genre, year, rating and language filters.
+- [Watch on TV](https://flickerz.dpdns.org/tv.html): The remote-control friendly version for smart TVs, with code sign-in.
+- [About Flickerz Nest](https://flickerz.dpdns.org/about.html): What the site is, how it works and credits.
+
+## Optional
+
+- [Contact](https://flickerz.dpdns.org/about.html#contact): Support and feedback.
+- [Privacy policy](https://flickerz.dpdns.org/about.html#privacy): What data is stored and why.
+- [Terms of use](https://flickerz.dpdns.org/about.html#terms): Rules for using the site.
+- [DMCA](https://flickerz.dpdns.org/about.html#dmca): How to report copyright concerns.

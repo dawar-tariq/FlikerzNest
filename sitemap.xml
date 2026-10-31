@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap for https://flickerz.dpdns.org
+  Lists only real, indexable addresses. Hash links (#explore, #title/movie/123)
+  are not separate pages to Google, so they are not listed here. When you add
+  real per-movie pages (see the SEO notes), add them to this file.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://flickerz.dpdns.org/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://image.tmdb.org/t/p/w1280/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg</image:loc>
+    </image:image>
+  </url>
+</urlset>

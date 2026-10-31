@@ -1,0 +1,12 @@
+# Flickerz Nest
+
+> Flickerz Nest (also called "Flickerz") is a free movie and TV show streaming website at https://flickerz.dpdns.org. Browse trending movies, popular TV series and new releases, explore by genre, year, rating and language, keep a synced watchlist and continue watching on phone, desktop or smart TV.
+
+This file mirrors /llms.txt, the standard location. Read the full summary there.
+
+## Main pages
+
+- [Full summary for AI assistants](https://flickerz.dpdns.org/llms.txt): Key facts, features and all main pages.
+- [Home](https://flickerz.dpdns.org/): Trending movies, popular TV shows and search.
+- [Explore](https://flickerz.dpdns.org/explore.html): Browse with genre, year, rating and language filters.
+- [About](https://flickerz.dpdns.org/about.html): What the site is and credits.

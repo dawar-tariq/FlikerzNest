@@ -1,0 +1,17 @@
+{
+  "name": "Flickerz Nest - Movies & TV Shows",
+  "short_name": "Flickerz",
+  "description": "Watch movies and TV shows online. Trending films, top series and a synced watchlist.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0c10",
+  "theme_color": "#0b0c10",
+  "lang": "en",
+  "categories": ["entertainment", "movies", "video"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

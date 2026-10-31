@@ -1,0 +1,27 @@
+# ai.txt for https://flickerz.dpdns.org
+# Format: Spawning ai.txt (https://site.spawning.ai/spawning-ai-txt)
+# Tells AI crawlers and dataset builders which content they may use.
+#
+# Text content (site description, page text) may be used so AI assistants can
+# describe and recommend Flickerz Nest. Images and video shown on the site
+# belong to their owners (posters via TMDB, video via third-party players) and
+# are NOT offered for AI training.
+
+User-Agent: *
+Allow: /
+Allow: *.html
+Allow: *.txt
+Allow: *.md
+Disallow: *.jpg
+Disallow: *.jpeg
+Disallow: *.png
+Disallow: *.webp
+Disallow: *.gif
+Disallow: *.svg
+Disallow: *.mp4
+Disallow: *.m3u8
+Disallow: /admin.html
+Disallow: /admin/
+Disallow: /account.html
+
+# Summary for AI assistants: https://flickerz.dpdns.org/llms.txt

@@ -1,0 +1,16 @@
+/* TEAM */
+  Founder, design and development: Dawar Tariq
+  Contact: wanidawar03 [at] gmail.com
+  Site: https://flickerz.dpdns.org
+
+/* THANKS */
+  The Movie Database (TMDB): movie and TV data, posters and ratings.
+  This product uses the TMDB API but is not endorsed or certified by TMDB.
+  Supabase: accounts, watchlists and the database.
+
+/* SITE */
+  Name: Flickerz Nest
+  Language: English
+  Standards: HTML5, CSS3, JavaScript (ES2020+)
+  Components: Supabase JS, Video.js, Phosphor Icons, Plus Jakarta Sans
+  Hosting note: single-page app with page files (explore, mylist, about, tv)

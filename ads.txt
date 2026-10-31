@@ -1,0 +1,5 @@
+# ads.txt for flickerz.dpdns.org
+# This site does not sell advertising, so no sellers are authorised.
+# The line below is the official IAB "no authorised sellers" placeholder.
+# If you ever add ads, replace it with the lines your ad network gives you.
+placeholder.example.com, placeholder, DIRECT, placeholder
