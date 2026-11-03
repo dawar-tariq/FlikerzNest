@@ -148,46 +148,27 @@
 
   /* ---------------- TV pairing ---------------- */
   async function makeTvCode() {
-    if (!state.sb || !state.user) return { error: new Error("Sign in first, then link your TV.") };
-    let ses = null;
-    try { ses = (await state.sb.auth.getSession()).data?.session; } catch {}
-    if (!ses?.access_token || !ses?.refresh_token) return { error: new Error("Your session expired. Sign in again.") };
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(6);
-    try { crypto.getRandomValues(bytes); } catch { return { error: new Error("Secure code generation is unavailable in this browser.") }; }
-    const code = Array.from(bytes, b => chars[b % chars.length]).join("");
+    if (!state.sb) return { error: new Error("TV pairing needs Supabase.") };
     let res;
-    try {
-      res = await state.sb.rpc("create_tv_code", {
-        p_code: code,
-        p_access_token: ses.access_token,
-        p_refresh_token: ses.refresh_token
-      });
-    } catch (e) { res = { error: e }; }
-    if (res.error) return { error: new Error(res.error.message || "Could not create a TV sign-in code.") };
-    return { code };
+    try { res = await state.sb.rpc("tv_code_create"); } catch (e) { res = { error: e }; }
+    if (res.error) return { error: new Error(res.error.message || "Could not create a TV code.") };
+    const row = Array.isArray(res.data) ? res.data[0] : res.data;
+    return row?.code ? { code: row.code, secret: row.secret, expires_at: row.expires_at }
+      : { error: new Error("The server did not return a TV code.") };
   }
   async function claimTvCode(rawCode) {
     const code = String(rawCode || "").trim().toUpperCase();
     if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(code))
       return { error: new Error("Enter the 6-character code shown on your TV.") };
-    if (!state.sb) return { error: new Error("TV pairing needs Supabase.") };
+    if (!state.sb || !state.user) return { error: new Error("Sign in on this device first.") };
+    let ses = null;
+    try { ses = (await state.sb.auth.getSession()).data?.session; } catch {}
+    if (!ses?.refresh_token) return { error: new Error("Your session expired. Sign in again.") };
     let res;
-    try { res = await state.sb.rpc("claim_tv_code", { p_code: code }); }
+    try { res = await state.sb.rpc("tv_code_approve", { p_code: code, p_grant: ses.refresh_token }); }
     catch (e) { res = { error: e }; }
-    if (res.error) return { error: new Error(res.error.message || "Could not verify that TV code.") };
-    const row = Array.isArray(res.data) ? res.data[0] : res.data;
-    if (!row?.access_token || !row?.refresh_token)
-      return { error: new Error("That code is invalid, expired, or already used. Generate a new code on your phone.") };
-    let out;
-    try { out = await state.sb.auth.setSession({ access_token: row.access_token, refresh_token: row.refresh_token }); }
-    catch (e) { out = { error: e }; }
-    if (out.error || !out.data?.user)
-      return { error: new Error((out.error && out.error.message) || "Could not connect this TV. Generate a new code and try again.") };
-    state.user = out.data.user;
-    await loadProfile();
-    paintHeader();
-    return { user: state.user };
+    if (res.error) return { error: new Error(res.error.message || "Could not approve this TV.") };
+    return res.data ? { approved: true } : { error: new Error("Code not found, expired, or already approved. Generate a new code on the TV.") };
   }
 
   /* ---------------- header / footer ---------------- */
@@ -260,9 +241,11 @@
       if (act === "signout") { await signOut(); toast("Signed out.", "ok"); location.reload(); }
       if (act === "tv") { applyTvMode(!state.tv, true); paintHeader(); toast(state.tv ? "TV mode on." : "TV mode off.", "ok"); }
       if (act === "linktv") {
-        const r = await makeTvCode();
-        if (r.error) { toast(r.error.message, "error"); return; }
-        prompt("Give this code to your TV (valid 3 minutes, one use):", r.code);
+        const code = prompt("Enter the 6-character code shown on your TV:");
+        if (!code) return;
+        const r = await claimTvCode(code);
+        if (r.error) toast(r.error.message, "error");
+        else toast("TV approved. It will sign in automatically.", "ok");
       }
     }));
   }
