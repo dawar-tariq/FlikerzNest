@@ -1,13 +1,6 @@
-# Public discovery pages are crawlable; account and utility screens are excluded.
+# Public SEO pages are crawlable. Private/utility screens return X-Robots-Tag noindex.
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /account.html
-Disallow: /mylist.html
-Disallow: /player.html
-Disallow: /watch.html
-Disallow: /tv.html
 Disallow: /worker/
 Disallow: /*?page=admin
 Disallow: /*?page=account
@@ -16,9 +9,7 @@ Disallow: /*?page=mylist
 
 User-agent: GPTBot
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /account.html
+Disallow: /worker/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -28,9 +19,7 @@ Allow: /
 
 User-agent: ClaudeBot
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /account.html
+Disallow: /worker/
 
 User-agent: Claude-SearchBot
 Allow: /
