@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Sitemap for https://flickerz.dpdns.org
-  Lists only real, indexable addresses. Hash links (#explore, #title/movie/123)
-  are not separate pages to Google, so they are not listed here. When you add
-  real per-movie pages (see the SEO notes), add them to this file.
--->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url>
-    <loc>https://flickerz.dpdns.org/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://image.tmdb.org/t/p/w1280/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg</image:loc>
-    </image:image>
-  </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://flickerz.dpdns.org/</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movies</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv-shows</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/genres</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/guides</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/guides/how-to-build-a-watchlist</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/dune-part-two-693134</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/oppenheimer-872585</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/spider-man-across-the-spider-verse-569094</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/the-batman-414906</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/interstellar-157336</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/blade-runner-2049-335984</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/poor-things-792307</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/movie/avengers-endgame-299534</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/the-last-of-us-100088</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/severance-95396</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/house-of-the-dragon-94997</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/the-bear-136315</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/fallout-106379</loc><lastmod>2026-11-03</lastmod></url>
+  <url><loc>https://flickerz.dpdns.org/tv/wednesday-119051</loc><lastmod>2026-11-03</lastmod></url>
 </urlset>

@@ -1,6 +1,22 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "flikerz-nest.vercel.app" }],
+      "destination": "https://flickerz.dpdns.org/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/movie/:slug",
+      "destination": "/api/seo-page?type=movie&slug=:slug"
+    },
+    {
+      "source": "/tv/:slug",
+      "destination": "/api/seo-page?type=tv&slug=:slug"
+    },
     {
       "source": "/admin",
       "destination": "/admin.html"
