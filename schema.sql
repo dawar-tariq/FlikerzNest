@@ -1478,3 +1478,80 @@ $$;
 --        join public.profiles p on p.id = w.user_id
 --       order by w.added_at desc;
 -- ============================================================================
+
+-- ############################################################################
+--  STEP 12 - SECURE TV DEVICE PAIRING
+-- ############################################################################
+-- A signed-in phone/computer creates a short-lived code. The TV exchanges it
+-- through a SECURITY DEFINER RPC. Clients never receive direct table access.
+-- Codes are six characters to match the six TV input boxes and are one-use.
+
+create table if not exists public.tv_codes (
+  code          text primary key check (code ~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$'),
+  user_id       uuid not null references auth.users(id) on delete cascade,
+  access_token  text not null,
+  refresh_token text not null,
+  expires_at    timestamptz not null default (now() + interval '3 minutes'),
+  created_at    timestamptz not null default now()
+);
+
+create index if not exists tv_codes_expires_idx on public.tv_codes (expires_at);
+alter table public.tv_codes enable row level security;
+revoke all on table public.tv_codes from public, anon, authenticated;
+
+create or replace function public.create_tv_code(
+  p_code text,
+  p_access_token text,
+  p_refresh_token text
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if (select auth.uid()) is null then
+    raise exception 'Sign in before creating a TV code.' using errcode = '42501';
+  end if;
+  if p_code is null or p_code !~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$'
+     or p_access_token is null or p_refresh_token is null then
+    raise exception 'Invalid TV pairing request.' using errcode = '22023';
+  end if;
+
+  delete from public.tv_codes where expires_at <= pg_catalog.now();
+
+  insert into public.tv_codes (code, user_id, access_token, refresh_token, expires_at)
+  values (p_code, (select auth.uid()), p_access_token, p_refresh_token,
+          pg_catalog.now() + interval '3 minutes');
+end;
+$$;
+
+create or replace function public.claim_tv_code(p_code text)
+returns table (access_token text, refresh_token text)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if p_code is null or p_code !~ '^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$' then
+    return;
+  end if;
+
+  -- DELETE ... RETURNING makes the exchange atomic: exactly one TV can claim it.
+  return query
+    delete from public.tv_codes t
+     where t.code = p_code
+       and t.expires_at > pg_catalog.now()
+    returning t.access_token, t.refresh_token;
+end;
+$$;
+
+revoke all on function public.create_tv_code(text, text, text) from public, anon;
+grant execute on function public.create_tv_code(text, text, text) to authenticated;
+revoke all on function public.claim_tv_code(text) from public;
+grant execute on function public.claim_tv_code(text) to anon, authenticated;
+
+-- The table is deliberately inaccessible through PostgREST. Only the two
+-- narrowly scoped RPCs can create or consume pairing credentials.
+do $$ begin raise notice 'STEP 12 ok - secure one-time TV pairing enabled'; end $$;
+
