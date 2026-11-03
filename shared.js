@@ -151,43 +151,39 @@
     if (!state.sb || !state.user) return { error: new Error("Sign in first, then link your TV.") };
     let ses = null;
     try { ses = (await state.sb.auth.getSession()).data?.session; } catch {}
-    if (!ses) return { error: new Error("Your session expired. Sign in again.") };
+    if (!ses?.access_token || !ses?.refresh_token) return { error: new Error("Your session expired. Sign in again.") };
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-    for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    const bytes = new Uint8Array(6);
+    try { crypto.getRandomValues(bytes); } catch { return { error: new Error("Secure code generation is unavailable in this browser.") }; }
+    const code = Array.from(bytes, b => chars[b % chars.length]).join("");
     let res;
     try {
-      res = await state.sb.from("tv_codes").insert({
-        code: code, user_id: state.user.id,
-        access_token: ses.access_token, refresh_token: ses.refresh_token
+      res = await state.sb.rpc("create_tv_code", {
+        p_code: code,
+        p_access_token: ses.access_token,
+        p_refresh_token: ses.refresh_token
       });
     } catch (e) { res = { error: e }; }
-    if (res.error) {
-      const m = res.error.message || "";
-      return { error: new Error(/tv_codes|relation|schema cache|column/i.test(m)
-        ? "TV pairing is not set up yet. Run STEP 15 of schema.sql in Supabase." : m) };
-    }
-    return { code: code };
+    if (res.error) return { error: new Error(res.error.message || "Could not create a TV sign-in code.") };
+    return { code };
   }
   async function claimTvCode(rawCode) {
     const code = String(rawCode || "").trim().toUpperCase();
-    if (code.length < 4) return { error: new Error("Enter the code shown on your other device.") };
+    if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(code))
+      return { error: new Error("Enter the 6-character code shown on your TV.") };
     if (!state.sb) return { error: new Error("TV pairing needs Supabase.") };
     let res;
-    try { res = await state.sb.from("tv_codes").select("code,access_token,refresh_token,expires_at").eq("code", code).maybeSingle(); }
+    try { res = await state.sb.rpc("claim_tv_code", { p_code: code }); }
     catch (e) { res = { error: e }; }
-    const row = res.data;
-    if (res.error || !row) {
-      return { error: new Error(/tv_codes|relation|schema cache/i.test((res.error && res.error.message) || "")
-        ? "TV pairing is not set up on this site (run STEP 15 of schema.sql)."
-        : "That code is not valid. Generate a new one on your other device.") };
-    }
-    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) return { error: new Error("That code has expired. Generate a new one.") };
+    if (res.error) return { error: new Error(res.error.message || "Could not verify that TV code.") };
+    const row = Array.isArray(res.data) ? res.data[0] : res.data;
+    if (!row?.access_token || !row?.refresh_token)
+      return { error: new Error("That code is invalid, expired, or already used. Generate a new code on your phone.") };
     let out;
     try { out = await state.sb.auth.setSession({ access_token: row.access_token, refresh_token: row.refresh_token }); }
     catch (e) { out = { error: e }; }
-    if (out.error || !out.data?.user) return { error: new Error((out.error && out.error.message) || "Could not connect this TV.") };
-    try { await state.sb.from("tv_codes").delete().eq("code", code); } catch {}
+    if (out.error || !out.data?.user)
+      return { error: new Error((out.error && out.error.message) || "Could not connect this TV. Generate a new code and try again.") };
     state.user = out.data.user;
     await loadProfile();
     paintHeader();
