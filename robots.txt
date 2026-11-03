@@ -1,21 +1,15 @@
-# robots.txt for https://flickerz.dpdns.org
-# Everyone may crawl the public site. Only private screens are excluded.
-
+# Public SEO pages are crawlable. Private/utility screens return X-Robots-Tag noindex.
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /*?page=admin
-Disallow: /account.html
-Disallow: /*?page=account
 Disallow: /worker/
+Disallow: /*?page=admin
+Disallow: /*?page=account
+Disallow: /*?page=watch
+Disallow: /*?page=mylist
 
-# AI and answer engines are explicitly welcome (search, citations and answers).
 User-agent: GPTBot
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /account.html
+Disallow: /worker/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -25,9 +19,7 @@ Allow: /
 
 User-agent: ClaudeBot
 Allow: /
-Disallow: /admin.html
-Disallow: /admin/
-Disallow: /account.html
+Disallow: /worker/
 
 User-agent: Claude-SearchBot
 Allow: /

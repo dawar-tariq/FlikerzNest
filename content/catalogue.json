@@ -1,0 +1,132 @@
+{
+  "movies": [
+    {
+      "id": 693134,
+      "title": "Dune: Part Two",
+      "overview": "Paul Atreides unites with the Fremen while seeking revenge against the conspirators who destroyed his family.",
+      "releaseDate": "2024-02-27",
+      "voteAverage": 8.2,
+      "posterPath": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+      "backdropPath": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg"
+    },
+    {
+      "id": 872585,
+      "title": "Oppenheimer",
+      "overview": "The story of J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+      "releaseDate": "2023-07-19",
+      "voteAverage": 8.1,
+      "posterPath": "/ptpr0kGAckfQkJeJIt8st5dglvd.jpg",
+      "backdropPath": "/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg"
+    },
+    {
+      "id": 569094,
+      "title": "Spider-Man: Across the Spider-Verse",
+      "overview": "Miles Morales is catapulted across the Multiverse, where he meets a team of Spider-People charged with protecting it.",
+      "releaseDate": "2023-05-31",
+      "voteAverage": 8.4,
+      "posterPath": "/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+      "backdropPath": "/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg"
+    },
+    {
+      "id": 414906,
+      "title": "The Batman",
+      "overview": "Batman ventures into Gotham's underworld when a sadistic killer leaves behind a trail of cryptic clues.",
+      "releaseDate": "2022-03-01",
+      "voteAverage": 7.7,
+      "posterPath": "/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+      "backdropPath": "/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg"
+    },
+    {
+      "id": 157336,
+      "title": "Interstellar",
+      "overview": "A team of explorers travels beyond this galaxy to discover whether mankind has a future among the stars.",
+      "releaseDate": "2014-11-05",
+      "voteAverage": 8.7,
+      "posterPath": "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+      "backdropPath": "/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg"
+    },
+    {
+      "id": 335984,
+      "title": "Blade Runner 2049",
+      "overview": "A young blade runner discovers a secret that could destabilise what is left of society.",
+      "releaseDate": "2017-10-04",
+      "voteAverage": 8,
+      "posterPath": "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
+      "backdropPath": "/ilRyazdMJwN05exqhwK4tMKBYZs.jpg"
+    },
+    {
+      "id": 792307,
+      "title": "Poor Things",
+      "overview": "The fantastical evolution of Bella Baxter, a young woman brought back to life by an unorthodox scientist.",
+      "releaseDate": "2023-12-07",
+      "voteAverage": 7.8,
+      "posterPath": "/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg",
+      "backdropPath": "/bQS43HSLZzMjZkcHJz4fGc7fNdz.jpg"
+    },
+    {
+      "id": 299534,
+      "title": "Avengers: Endgame",
+      "overview": "The remaining Avengers assemble once more to undo Thanos's actions and restore balance to the universe.",
+      "releaseDate": "2019-04-24",
+      "voteAverage": 8.3,
+      "posterPath": "/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+      "backdropPath": "/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg"
+    }
+  ],
+  "tv": [
+    {
+      "id": 100088,
+      "title": "The Last of Us",
+      "overview": "Twenty years after civilisation fell, a hardened survivor is hired to smuggle a teenager out of a quarantine zone.",
+      "releaseDate": "2023-01-15",
+      "voteAverage": 8.6,
+      "posterPath": "/dmo6TYuuJgaYinXBPjrgG9mB5od.jpg",
+      "backdropPath": "/uDgy6hyPd82kOHh6I95FLtLnj6p.jpg"
+    },
+    {
+      "id": 95396,
+      "title": "Severance",
+      "overview": "Employees at a mysterious company undergo a procedure that separates their work and personal memories.",
+      "releaseDate": "2022-02-17",
+      "voteAverage": 8.7,
+      "posterPath": "/lFf6LLrQjYldcZItzOkGmMMigP7.jpg",
+      "backdropPath": "/pwBvk8LQ1a01Sc1jqj5jJ5uPlu1.jpg"
+    },
+    {
+      "id": 94997,
+      "title": "House of the Dragon",
+      "overview": "The history of House Targaryen, set 200 years before the events of Game of Thrones.",
+      "releaseDate": "2022-08-21",
+      "voteAverage": 8.4,
+      "posterPath": "/z2yahl2uefxDCl0nogcRBstwruJ.jpg",
+      "backdropPath": "/etj8E2o0Bud0HkONVQPjyCkIvpv.jpg"
+    },
+    {
+      "id": 136315,
+      "title": "The Bear",
+      "overview": "A young chef returns to Chicago to run his family's sandwich shop after a heartbreaking loss.",
+      "releaseDate": "2022-06-23",
+      "voteAverage": 8.3,
+      "posterPath": "/sHFlbKS3WLqMnp9t2ghADIJFnuQ.jpg",
+      "backdropPath": "/8bcn8vE2BV5O6s6a0C0z4cL88wJ.jpg"
+    },
+    {
+      "id": 106379,
+      "title": "Fallout",
+      "overview": "Two hundred years after the apocalypse, a sheltered vault dweller ventures into the violent wasteland.",
+      "releaseDate": "2024-04-10",
+      "voteAverage": 8.3,
+      "posterPath": "/AnsSKR9LuK0T9bAOcPkaFWwHsB4.jpg",
+      "backdropPath": "/a2tys4sD7xzVaogPnt7FA0ADQ5s.jpg"
+    },
+    {
+      "id": 119051,
+      "title": "Wednesday",
+      "overview": "Wednesday Addams navigates Nevermore Academy while solving a supernatural mystery.",
+      "releaseDate": "2022-11-23",
+      "voteAverage": 8.3,
+      "posterPath": "/9PFonBhy4cQy7Jz20NpMygczOkv.jpg",
+      "backdropPath": "/wIslnJNE9DFJb8YbyvMHfEcdwzH.jpg"
+    }
+  ]
+}
