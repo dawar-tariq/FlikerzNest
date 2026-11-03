@@ -1240,7 +1240,8 @@
   .maint-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(255,176,32,.35);border-radius:999px;background:rgba(255,176,32,.1);color:#ffc857;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
   .maint-pill i{width:8px;height:8px;border-radius:50%;background:#ffc857;animation:mPulse 1.8s ease-out infinite}
   @keyframes mPulse{0%{box-shadow:0 0 0 0 rgba(255,200,87,.6)}70%{box-shadow:0 0 0 9px rgba(255,200,87,0)}100%{box-shadow:0 0 0 0 rgba(255,200,87,0)}}
-  .maint-card h1{margin:16px 0 0;font-size:clamp(28px,6vw,40px);font-weight:800;letter-spacing:-.04em;line-height:1.1;background:linear-gradient(180deg,#fff,#c3c6cf);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1.hero-logo{margin-top:0;font-weight:800;line-height:1}
+  .maint-card h2{margin:16px 0 0;font-size:clamp(28px,6vw,40px);font-weight:800;letter-spacing:-.04em;line-height:1.1;background:linear-gradient(180deg,#fff,#c3c6cf);-webkit-background-clip:text;background-clip:text;color:transparent}
   #maintMsg{margin:12px auto 0;max-width:440px;color:#b5b9c2;font-size:14.5px;line-height:1.7;white-space:pre-line;overflow-wrap:anywhere}
   .maint-count{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:380px;margin:24px auto 0}
   .maint-count div{padding:12px 4px 10px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(255,255,255,.04)}
@@ -1371,7 +1372,7 @@
       <i class="ph-fill ph-gear-six g1"></i><i class="ph-fill ph-gear g2"></i><i class="ph-fill ph-gear-six g3"></i>
     </div>
     <span class="maint-pill"><i></i> Scheduled maintenance</span>
-    <h1 id="maintTitle">We'll be right back</h1>
+    <h2 id="maintTitle">We'll be right back</h2>
     <p id="maintMsg">Flickerz Nest is getting a quick upgrade.</p>
     <div class="maint-count" id="maintCount" hidden>
       <div><b>00</b><span>Days</span></div>
@@ -1460,9 +1461,10 @@
     <div class="hero-veil"></div>
     <div class="hero-glow"></div>
     <div class="hero-inner">
-      <div class="hero-logo"><i>F</i><b>Flickerz&nbsp;</b><em style="font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent">Nest</em></div>
+      <!-- The page's one main heading is the brand, so Google ties the home page to "Flickerz Nest". -->
+      <h1 class="hero-logo" aria-label="Flickerz Nest - Watch Movies and TV Shows Online"><i aria-hidden="true">F</i><b>Flickerz </b><em style="font-style:normal;background:linear-gradient(100deg,#ff5f69,#ff9a5f);-webkit-background-clip:text;background-clip:text;color:transparent">Nest</em></h1>
       <p class="eyebrow" id="heroKicker">Featured today</p>
-      <h1 class="hero-title" id="heroTitle">Find your next favourite.</h1>
+      <h2 class="hero-title" id="heroTitle">Find your next favourite.</h2>
       <div class="chips" id="heroMeta"></div>
       <p class="hero-copy" id="heroCopy">A calm, premium place to queue up your next movie night.</p>
       <div class="hero-actions">
