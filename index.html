@@ -9,7 +9,7 @@
      and structured data (JSON-LD) so search engines and AI assistants know
      exactly what Flickerz Nest is. Keep the domain below in sync with the one
      in robots.txt, sitemap.xml and llms.txt. -->
-<meta name="description" content="Flickerz Nest - watch movies and TV shows online. Browse trending films, top-rated series and new releases, build your watchlist and pick up where you left off on phone, desktop or TV.">
+<meta name="description" content="Flickerz Nest - watch movies and TV shows online. Browse trending films, top-rated series and new releases, build your watchlist and pick up where you left off on your phone, tablet or computer.">
 <meta name="keywords" content="Flickerz, Flickerz Nest, flickerz movies, watch movies online, movies online, free movies, watch TV shows online, TV series, trending movies, new movies, top rated movies, Hindi movies, Bollywood movies, Hollywood movies, movie watchlist, where to watch movies">
 <meta name="author" content="Dawar Tariq">
 <meta name="application-name" content="Flickerz Nest">
@@ -74,7 +74,7 @@
       "name": "Flickerz Nest",
       "url": "https://flickerz.dpdns.org/",
       "applicationCategory": "EntertainmentApplication",
-      "operatingSystem": "Any (web browser), Android, iOS, Smart TV",
+      "operatingSystem": "Any web browser, Android, iOS",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     }
   ]
@@ -876,7 +876,7 @@
   .filters{border-radius:var(--r-lg);background:rgba(255,255,255,.02)}
   .chip{border-radius:10px;padding:8px 13px}
   .ml-card{border-radius:var(--r-md)}
-  .value,.meta-cell,.contact-card,.link-tv{border-radius:var(--r-md)}
+  .value,.meta-cell,.contact-card{border-radius:var(--r-md)}
   .foot{border-top:1px solid rgba(255,255,255,.06);background:#07080b}
   .tabbar{background:rgba(9,10,14,.92);border-top-color:rgba(255,255,255,.06)}
   .tabbar a,.tabbar button{font-size:10px}
@@ -942,122 +942,21 @@
     .stage{max-height:none}
   }
   /* the player page (watch.html) shows nothing but the player */
-  body.watch-page .topbar,body.watch-page main,body.watch-page .foot,body.watch-page .tabbar,body.watch-page .tv-help{display:none!important}
+  body.watch-page .topbar,body.watch-page main,body.watch-page .foot,body.watch-page .tabbar{display:none!important}
   body.watch-page #playerModal{position:static;display:block;padding:0;background:#000;backdrop-filter:none;animation:none}
   /* inside a modal the footer is never visible - the body is locked - but the
      player page is not a modal, so hide the footer there explicitly too */
   body.locked .foot{visibility:hidden}
 
-  /* =================== v8: TV code sign-in, admin page mode =================== */
-  .tvcode-box{text-align:center;padding:10px 0 4px}
-  .tvcode{display:inline-flex;gap:10px;margin:14px 0 10px}
-  .tvcode span{display:grid;place-items:center;width:52px;height:68px;border:2px solid rgba(255,255,255,.25);border-radius:12px;background:#0e1015;font-size:34px;font-weight:800;letter-spacing:0}
-  body.tv .tvcode span{width:74px;height:96px;font-size:50px}
-  .tvcode-url{margin:6px 0 0;color:#fff;font-size:15px;word-break:break-all}
-  .tvcode-url b{color:var(--gold)}
-  .tvcode-wait{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:13px}
-  .tvcode-or{display:flex;align-items:center;gap:12px;margin:22px 0 14px;color:var(--muted);font-size:12px}
-  .tvcode-or::before,.tvcode-or::after{content:"";flex:1;height:1px;background:var(--line)}
-  .link-tv{margin-top:8px;padding:14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)}
-  .link-tv b{display:block;font-size:13px}
-  .link-tv p{margin:4px 0 10px;color:var(--muted);font-size:12px;line-height:1.5}
-  .link-tv form{display:flex;gap:8px}
-  .link-tv input{flex:1;min-width:0;min-height:42px;padding:0 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:#0e1015;color:#fff;font-size:18px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;text-align:center}
-  .menu-item.link-tv-btn{border-top:1px solid var(--line);margin-top:4px;padding-top:12px}
   /* admin page mode: the panel fills the page instead of floating as a dialog */
   body.admin-page{background:#0a0b0f}
-  body.admin-page .topbar,body.admin-page main,body.admin-page .foot,body.admin-page .tabbar,body.admin-page .tv-help{display:none!important}
+  body.admin-page .topbar,body.admin-page main,body.admin-page .foot,body.admin-page .tabbar{display:none!important}
   body.admin-page #adminModal{position:static;display:block;padding:0;background:none;backdrop-filter:none;animation:none}
   body.admin-page #adminModal .card{width:100%;max-width:none;min-height:100vh;max-height:none;border:0;border-radius:0;box-shadow:none}
   body.admin-page #adminModal .card-head{position:sticky;top:0;z-index:5;background:#0a0b0f}
   body.admin-page #adminModal [data-close="adminModal"]{display:none}
   body.admin-page .admin-home{display:inline-flex!important}
   .admin-home{display:none;align-items:center;gap:8px}
-  /* =================== v7: TV mode (remote / D-pad) =================== */
-  /* Base: a clear highlight on whatever element has keyboard focus. */
-  body.tv :focus{outline:none}
-  body.tv :focus-visible,body.tv .poster:focus-visible,body.tv .tv-focus{
-    outline:4px solid #fff!important;outline-offset:3px;box-shadow:0 0 0 8px rgba(255,255,255,.18),0 18px 40px rgba(0,0,0,.6)!important;
-    position:relative;z-index:5;border-radius:12px}
-  body.tv .poster:focus-visible,body.tv .poster.tv-focus{transform:scale(1.07)}
-  body.tv .chip:focus-visible,body.tv .ml-tab:focus-visible,body.tv .tab:focus-visible{outline-offset:2px}
-  body.tv{font-size:19px;cursor:none}
-  body.tv.tv-pointer{cursor:auto}
-  body.tv .shell,body.tv .view-page,body.tv .foot{padding-left:max(4vw,48px);padding-right:max(4vw,48px)}
-  body.tv .topbar{height:88px;padding:0 max(4vw,48px)}
-  body.tv .brand{font-size:26px}
-  body.tv .brand-mark{width:40px;height:40px;font-size:22px}
-  body.tv .nav-links{display:flex;gap:32px}
-  body.tv .nav-links a{padding:10px 16px;border-radius:12px;font-size:19px}
-  body.tv .icon-btn,body.tv .nav-search{width:52px;height:52px;font-size:24px}
-  body.tv .avatar{width:50px;height:50px;font-size:17px}
-  body.tv .menu{top:92px;width:320px}
-  body.tv .menu-item{padding:16px 18px;font-size:18px}
-  body.tv .hero{min-height:620px;height:72vh}
-  body.tv .hero-inner{left:max(4vw,48px);bottom:92px;width:min(860px,70vw)}
-  body.tv .hero-title{font-size:clamp(44px,5vw,72px)}
-  body.tv .hero-copy{font-size:20px;line-height:1.55;max-width:760px}
-  body.tv .eyebrow{font-size:14px}
-  body.tv .btn{min-height:60px;padding:0 30px;font-size:19px;border-radius:14px}
-  body.tv .btn-sm,body.tv .mini{min-height:48px;padding:0 20px;font-size:16px}
-  body.tv .row{margin-bottom:56px}
-  body.tv .row-head h2{font-size:30px}
-  body.tv .row-head p{font-size:16px}
-  body.tv .row-nav{display:none}
-  body.tv .strip{gap:22px;padding:14px 10px 20px;scroll-padding-left:10px}
-  body.tv .tile,body.tv .skeleton{flex-basis:230px}
-  body.tv .tile-name{font-size:18px;margin-top:12px}
-  body.tv .tile-sub{font-size:14px}
-  body.tv .save,body.tv .info-btn{width:44px;height:44px;font-size:20px;opacity:1;transform:none}
-  body.tv .info-btn{top:60px}
-  body.tv .score{font-size:14px;padding:5px 10px}
-  body.tv .tabbar{display:none}
-  body.tv{padding-bottom:0}
-  body.tv .pseg button,body.tv .chip,body.tv .ml-tab{min-height:50px;padding:0 20px;font-size:17px}
-  body.tv .fsel{min-height:52px;font-size:17px}
-  body.tv .fgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 22px}
-  body.tv .page-head h1{font-size:48px}
-  body.tv .page-head .sub{font-size:18px}
-  body.tv .prose p,body.tv .prose li{font-size:19px}
-  /* dialogs */
-  body.tv .card{border-radius:22px}
-  body.tv .card:not(.player-card){width:min(720px,92vw)}
-  body.tv .card-head h2{font-size:26px}
-  body.tv .field input,body.tv .field textarea{min-height:58px;font-size:19px}
-  body.tv .field label{font-size:16px}
-  body.tv .x{width:52px;height:52px;font-size:24px}
-  /* title page */
-  body.tv .tp-hero{min-height:70vh}
-  body.tv .tp-title{font-size:clamp(40px,4.5vw,64px)}
-  body.tv .tp-overview{font-size:19px;max-width:860px}
-  body.tv .tp-poster{width:260px}
-  /* player: controls stay reachable, the video gets most of the screen */
-  body.tv .player-head{padding:16px max(4vw,48px)}
-  body.tv .player-head h2{font-size:24px}
-  body.tv .seg button{min-height:48px;padding:0 18px;font-size:16px}
-  body.tv .srv-num{width:24px;height:24px;font-size:13px}
-  body.tv .pop-btn{min-height:48px;font-size:16px}
-  body.tv .stage{max-height:calc(100vh - 190px)}
-  body.tv .stage-note b{font-size:22px}
-  body.tv .stage-note span,body.tv .stage-note{font-size:17px}
-  body.tv .player-foot{padding:14px max(4vw,48px) 20px;font-size:16px}
-  body.tv .ep-sel{min-height:48px;height:48px;font-size:17px;min-width:200px}
-  body.tv .ep .mini{height:48px}
-  body.tv .ep-list{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
-  body.tv .ep-card{padding:12px}
-  body.tv .ep-thumb{flex-basis:140px}
-  body.tv .ep-info b{font-size:16px}
-  body.tv .ep-info p,body.tv .ep-info small{font-size:14px}
-  /* on-screen help + fullscreen hint */
-  .tv-help{position:fixed;z-index:60;right:24px;bottom:22px;display:none;gap:16px;padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:rgba(9,10,14,.9);color:#c9ccd3;font-size:14px;backdrop-filter:blur(14px)}
-  body.tv .tv-help{display:flex}
-  body.tv.locked .tv-help{display:none}
-  .tv-help kbd{display:inline-block;min-width:24px;padding:2px 7px;margin-right:4px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:rgba(255,255,255,.08);color:#fff;font:600 12px/1.4 inherit;text-align:center}
-  .tv-fs{position:fixed;z-index:60;left:50%;bottom:22px;transform:translateX(-50%);display:none;align-items:center;gap:10px;padding:12px 18px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(229,9,20,.92);color:#fff;font-size:15px;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,.5)}
-  .tv-fs.show{display:inline-flex}
-  .tv-fs button{min-height:36px;padding:0 14px;border:0;border-radius:999px;background:#fff;color:#111;font-weight:700;cursor:pointer}
-  body.tv .menu-tv{display:flex}
-  .menu-tv{display:none}
   /* v6: real season and episode pickers */
   .ep{flex-wrap:wrap}
   .ep-sel{width:auto;min-width:120px;max-width:200px;min-height:34px;height:34px;padding:0 30px 0 10px;font-size:12.5px;
@@ -1330,9 +1229,47 @@
   .acc-item small{display:block;margin-top:3px;color:#8b909c;font-size:12px;line-height:1.45}
   .acc-item .acc-go{color:#6b7080;font-size:14px}
   .acc-item.danger b,.acc-item.danger>i:first-child{color:#ff8087}
+
+  /* TV browsers are temporarily blocked while native TV support is rebuilt. */
+  #tvUnavailable{display:none;position:fixed;inset:0;z-index:999999;place-items:center;padding:clamp(24px,5vw,64px);background:radial-gradient(900px 600px at 50% 0%,rgba(229,9,20,.18),transparent 70%),linear-gradient(145deg,#090a0e,#11131b 65%,#090a0e);color:#f4f5f8;text-align:center}
+  html.fz-tv-unavailable #tvUnavailable{display:grid}
+  html.fz-tv-unavailable body{min-height:100vh;overflow:hidden}
+  html.fz-tv-unavailable body>*:not(#tvUnavailable){display:none!important}
+  .tv-unavailable-card{width:min(780px,100%);padding:clamp(28px,5vw,62px);border:1px solid rgba(255,255,255,.12);border-radius:28px;background:rgba(20,22,29,.88);box-shadow:0 32px 100px rgba(0,0,0,.55)}
+  .tv-unavailable-mark{width:62px;height:62px;display:grid;place-items:center;margin:0 auto 24px;border-radius:18px 18px 18px 5px;background:linear-gradient(140deg,#ff3342,#a30610);color:#fff;font-size:30px;font-weight:800;box-shadow:0 12px 34px rgba(229,9,20,.32)}
+  .tv-unavailable-kicker{margin:0 0 14px;color:#ff858c;font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+  .tv-unavailable-card h1{margin:0;font-size:clamp(32px,5vw,54px);line-height:1.08;letter-spacing:-.045em}
+  .tv-unavailable-copy{max-width:590px;margin:22px auto 0;color:#b5bac5;font-size:clamp(16px,2vw,21px);line-height:1.7}
+  .tv-unavailable-foot{margin:30px 0 0;color:#f0f1f5;font-size:15px;font-weight:700}
+  .tv-unavailable-note{margin:12px 0 0;color:#858b99;font-size:13px}
 </style>
+
+<script>
+(function () {
+  var ua = navigator.userAgent || "";
+  var knownTv = /(?:Smart[- ]?TV|Tizen|Web0S|WebOS|NetCast|BRAVIA|AppleTV|Apple TV|GoogleTV|Google TV|Android TV|AFT[A-Z0-9]*|Fire TV|Roku|Viera|Hisense|VIDAA|HbbTV|TiVo|Opera TV|Philips|SonyDTV)/i.test(ua);
+  var androidTv = /Android/i.test(ua) && !/Mobile/i.test(ua) && navigator.maxTouchPoints === 0 && !("ontouchstart" in window);
+  var blocked = knownTv || androidTv;
+  window.__FZ_TV_UNAVAILABLE__ = blocked;
+  if (blocked) document.documentElement.classList.add("fz-tv-unavailable");
+  var legacyTvRoute = /\\/tv(?:\\.html)?\\/?$/i.test(location.pathname) || /[?&]page=tv(?:&|$)/i.test(location.search) || /[?&#]tv=1(?:&|$)/i.test(location.search + location.hash);
+  if (!blocked && legacyTvRoute && !/\\/tv\\.html$/i.test(location.pathname)) location.replace("tv.html");
+})();
+</script>
 </head>
 <body>
+
+<div id="tvUnavailable" role="main" aria-live="polite">
+  <section class="tv-unavailable-card">
+    <div class="tv-unavailable-mark" aria-hidden="true">F</div>
+    <p class="tv-unavailable-kicker">Flickerz Nest</p>
+    <h1>Not available on TV yet</h1>
+    <p class="tv-unavailable-copy">Flickerz Nest isn't available on TV browsers right now. We're working to make the experience compatible with televisions.</p>
+    <p class="tv-unavailable-foot">For now, please use a phone, tablet or computer.</p>
+    <p class="tv-unavailable-note">Thank you for your patience.</p>
+  </section>
+</div>
+
 <!-- Splash: shown for a moment on first load of each visit, then fades away -->
 <div class="splash" id="splash" aria-hidden="true">
   <div class="splash-mark">
@@ -1405,12 +1342,11 @@
     <h1>Flickerz Nest - Watch Movies &amp; TV Shows Online</h1>
     <p>Flickerz Nest is a movie and TV show streaming website. Browse trending movies, popular TV series, top-rated films
        and new releases, explore by genre, year, rating and language (including Hindi, Bollywood and Hollywood titles),
-       keep a watchlist that syncs across devices, and continue watching where you left off on phone, desktop or smart TV.</p>
+       keep a watchlist that syncs across devices, and continue watching where you left off on your phone, tablet or computer.</p>
     <p>Please enable JavaScript to use Flickerz Nest.</p>
     <ul>
       <li><a href="/explore.html" style="color:#fff">Explore movies and TV shows</a></li>
       <li><a href="/mylist.html" style="color:#fff">My List</a></li>
-      <li><a href="/tv.html" style="color:#fff">Watch on TV</a></li>
       <li><a href="/about.html" style="color:#fff">About Flickerz Nest</a></li>
     </ul>
   </main>
@@ -1445,8 +1381,6 @@
     <button class="menu-item" type="button" id="menuAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span>Admin control room</span></button>
     <a class="menu-item" id="menuAdminPage" href="admin.html" hidden><i class="fa-solid fa-up-right-from-square"></i><span>Open full-screen admin page</span></a>
     <a class="menu-item" id="menuAccountPage" href="account.html" hidden><i class="fa-solid fa-user"></i><span>My account</span></a>
-    <button class="menu-item" type="button" id="menuTv"><i class="fa-solid fa-tv"></i><span id="menuTvLabel">TV mode</span></button>
-    <button class="menu-item link-tv-btn" type="button" id="menuLinkTv" hidden><i class="fa-solid fa-key"></i><span>Link a TV (Genarate code)</span></button>
     <button class="menu-item danger" type="button" id="menuLock" hidden><i class="fa-solid fa-lock"></i><span>Lock owner session</span></button>
     <button class="menu-item danger" type="button" id="menuOut" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
   </div>
@@ -1490,7 +1424,7 @@
   <div class="foot-grid">
     <div class="foot-brand-col">
       <div class="foot-brand brand"><span class="brand-mark">F</span><b>Flickerz&nbsp;<em>Nest</em></b></div>
-      <p class="foot-tag">Flickerz Nest is your home to watch movies and TV shows online. Discover trending films, popular series, Hindi, Bollywood and Hollywood titles, keep a synced watchlist and pick up where you left off on any screen.</p>
+      <p class="foot-tag">Flickerz Nest is your home to watch movies and TV shows online. Discover trending films, popular series, Hindi, Bollywood and Hollywood titles, and keep a synced watchlist across your devices.</p>
       <div class="tmdb-credit">
         <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" aria-label="The Movie Database (TMDB)">
           <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB logo" width="90" height="12" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'TMDB'}))">
@@ -1505,7 +1439,6 @@
       <a href="explore.html#explore/movie">Movies</a>
       <a href="explore.html#explore/tv">TV Shows</a>
       <a href="mylist.html#mylist">My List</a>
-      <a href="tv.html">Watch on TV</a>
       <a href="/movies">Curated movie catalogue</a>
       <a href="/tv-shows">Curated TV catalogue</a>
       <a href="/genres">Browse genres</a>
@@ -1615,7 +1548,7 @@
 <!-- My account -->
 <div class="backdrop" id="accountModal" role="dialog" aria-modal="true" aria-labelledby="accTitle" hidden>
   <div class="card">
-    <div class="card-head"><div><h2 id="accTitle">My account</h2><p>Your profile, devices and password.</p></div><button class="x" type="button" data-close="accountModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-head"><div><h2 id="accTitle">My account</h2><p>Your profile and password.</p></div><button class="x" type="button" data-close="accountModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
       <div class="acc-head">
         <span class="avatar" id="accAvatar">FN</span>
@@ -1625,29 +1558,9 @@
       <div class="stats acc-stats" id="accStats"></div>
       <div class="acc-list">
         <a class="acc-item" href="mylist.html#mylist" id="accList"><i class="fa-solid fa-bookmark"></i><span><b>My List and history</b><small>Saved titles, statuses and everything you have watched</small></span><i class="fa-solid fa-chevron-right acc-go"></i></a>
-        <button class="acc-item" type="button" id="accLinkTv"><i class="fa-solid fa-tv"></i><span><b>Link a TV</b><small>Enter the code shown on your TV to sign it in</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
         <button class="acc-item" type="button" id="accPassword"><i class="fa-solid fa-key"></i><span><b>Change password</b><small>Choose a new password for this account</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
         <button class="acc-item" type="button" id="accAdmin" hidden><i class="fa-solid fa-shield-halved"></i><span><b>Admin control room</b><small>Members, reports, streams and content</small></span><i class="fa-solid fa-chevron-right acc-go"></i></button>
         <button class="acc-item danger" type="button" id="accOut"><i class="fa-solid fa-arrow-right-from-bracket"></i><span><b>Sign out</b><small>Sign out on this device</small></span></button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Link a TV: member enters the code shown on the TV -->
-<div class="backdrop" id="linkTvModal" role="dialog" aria-modal="true" aria-labelledby="linkTvTitle" hidden>
-  <div class="card">
-    <div class="card-head"><div><h2 id="linkTvTitle"><i class="fa-solid fa-tv"></i> Link a TV</h2><p>Generate a sign-in code for your TV.</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="card-body">
-      <div class="link-tv">
-        <b>Generate a TV sign-in code</b>
-        <p>Generate a one-time code on this signed-in phone, then enter it on your TV. Your password is never typed on the TV.</p>
-        <div id="linkTvCodeDisplay" hidden style="font-size:32px;font-weight:800;letter-spacing:8px;text-align:center;padding:18px;border:1px solid var(--line);border-radius:12px;margin:12px 0" aria-live="polite"></div>
-        <div class="actions">
-          <button class="btn btn-primary" type="button" id="linkTvGenerate">Generate TV code</button>
-          <button class="mini" type="button" id="linkTvCopy" hidden>Copy code</button>
-        </div>
-        <p class="status" id="linkTvStatus" role="status" style="margin:10px 0 0"></p>
       </div>
     </div>
   </div>
@@ -1664,18 +1577,6 @@
       <button class="btn btn-glass" type="button" data-close="blockedModal">OK</button>
     </div>
   </div>
-</div>
-
-<div class="tv-help" id="tvHelp" aria-hidden="true">
-  <span><kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> Move</span>
-  <span><kbd>OK</kbd> Select</span>
-  <span><kbd>Back</kbd> Close</span>
-  <span><kbd>F</kbd> Full screen</span>
-</div>
-<div class="tv-fs" id="tvFs" role="status">
-  <span>Watching on a TV? Use full screen for the best view.</span>
-  <button type="button" id="tvFsGo">Go full screen</button>
-  <button type="button" id="tvFsNo" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)">Not now</button>
 </div>
 
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
@@ -1768,15 +1669,6 @@
   <div class="card">
     <div class="card-head"><div><h2 id="authTitle">Welcome back</h2><p id="authSub">Sign in to sync your watchlist.</p></div><button class="x" type="button" data-close="authModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
-      <!-- TV: sign in with a code from your phone (shown first on TVs) -->
-      <div class="tvcode-box" id="tvCodeBox" hidden>
-        <p class="eyebrow">Sign in with a code</p>
-        <p class="tvcode-url" id="tvCodeUrl">Generate a code on your phone, then enter it below.</p>
-        <div class="field" id="tvCodeEntry"><label for="tvCodeInput">6-character phone code</label><input id="tvCodeInput" type="text" maxlength="6" inputmode="text" autocomplete="one-time-code" placeholder="ABC123" aria-label="Code generated on phone"></div>
-        <div class="tvcode-wait" id="tvCodeWait">Enter the 6-character code from your phone.</div>
-        <div class="actions" style="justify-content:center;margin-top:14px"><button class="btn btn-primary" type="button" id="tvCodeRedeem">Connect this TV</button><button class="mini" type="button" id="tvCodeTyped">Use email and password</button></div>
-        <div class="tvcode-or" id="tvCodeOr" hidden>or</div>
-      </div>
       <form class="stack" id="authForm">
         <div class="field" id="nameField" hidden><label for="nameIn">Display name</label><input id="nameIn" type="text" maxlength="80" autocomplete="name" placeholder="How should we call you?"></div>
         <div class="field"><label for="emailIn">Email</label><input id="emailIn" type="email" autocomplete="email" required placeholder="you@example.com"></div>
@@ -1786,7 +1678,6 @@
       </form>
       <button class="link-btn" type="button" id="authSwap">New to Flickerz Nest? <span>Create an account</span></button>
       <button class="link-btn" type="button" id="authForgot">Forgot your password? <span>Reset it</span></button>
-      <button class="link-btn" type="button" id="authUseCode" hidden><i class="fa-solid fa-tv"></i> Watching on a TV? <span>Sign in with a code</span></button>
     </div>
   </div>
 </div>
@@ -2074,6 +1965,7 @@
 <script>
 (() => {
   "use strict";
+  if (window.__FZ_TV_UNAVAILABLE__) return;
 
   /* ================= OWNER CONFIGURATION (edit these values) =================
      Nothing secret lives here any more:
@@ -2191,8 +2083,6 @@
     m.hidden = false;
     m.style.zIndex = String(++zTop);
     syncLock();
-    // Remote users need focus inside the dialog, or OK does nothing.
-    if (document.body.classList.contains("tv")) setTimeout(() => TV.focusFirst(m), 40);
   }
   function closeModal(id) {
     // On the dedicated admin page the panel is the page: it never closes.
@@ -2209,12 +2099,10 @@
     if (id === "playerModal") stopPlayback();
     // Closing sign-in without signing in cancels the title they wanted to watch.
     if (id === "authModal" && !state.user) { state.pendingPlay = null; state.pendingAccount = false; }
-    if (id === "authModal") TVCODE.stop();
     // Dismissing a pop-up any way (outside tap, Back, Escape) counts as seen.
     if (id === "annModal" && !state.annPreview && state.annQueue) state.annQueue.forEach((a, i) => { if (i <= state.annIdx && a.popup === "once") markAnnSeen(a.id); });
     if (id === "annModal") state.annPreview = null;
     syncLock();
-    if (document.body.classList.contains("tv")) TV.restoreFocus();
   }
   function closeAllModals() {
     const adminPage = document.body.classList.contains("admin-page");
@@ -3329,9 +3217,7 @@
   }
   function openAuth() {
     closeMenu(); setMode("signin"); openModal("authModal");
-    // TVs get the code flow first; everyone else gets the normal form.
-    if (typeof TV !== "undefined" && TV.on) TVCODE.start(); else TVCODE.showForm();
-    setTimeout(() => { if (!(typeof TV !== "undefined" && TV.on)) $("emailIn").focus(); }, 30);
+    setTimeout(() => $("emailIn").focus(), 30);
   }
   function teardown() {
     if (state.channel && state.sb) state.sb.removeChannel(state.channel);
@@ -3433,16 +3319,12 @@
     $("adminShortcut").hidden = !admin;
     $("footAdmin").hidden = !admin;
     $("menuLock").hidden = !isOwnerSession();
-    // "Link a TV" is for the phone/desktop side only; a TV never needs it.
-    $("menuLinkTv").hidden = !(on && state.sb) || (typeof TV !== "undefined" && TV.on);
     $("menuAdminPage").hidden = !admin || document.body.classList.contains("admin-page");
     $("menuAccountPage").hidden = !on;
     paintSessionBanner();
     // Only switch labels to "Sign in to watch" once the saved session has been
     // checked, so signed-in members never see it flash on load.
     document.body.classList.toggle("guest", !state.user && Boolean(state.authReady));
-    const tvLabel = $("menuTvLabel");
-    if (tvLabel && typeof TV !== "undefined") tvLabel.textContent = TV.on ? "Turn off TV mode" : "TV mode (remote control)";
   }
   async function submitAuth(ev) {
     ev.preventDefault();
@@ -4454,7 +4336,6 @@
     closeMenu();
     setMode("signin");
     openModal("authModal");
-    if (typeof TV !== "undefined" && TV.on) TVCODE.start(); else TVCODE.showForm();
     if (!state.sb) {
       $("authStatus").textContent = "Sign-in is temporarily unavailable. Please try again in a moment.";
       $("authStatus").className = "status error";
@@ -4838,7 +4719,7 @@
   }
   function showAnnPopups() {
     if (document.documentElement.classList.contains("maint-on")) return;   // never on top of maintenance
-    if (PAGE === "admin" || PAGE === "watch" || (typeof TV !== "undefined" && TV.on)) return;   // never interrupt these
+    if (PAGE === "admin" || PAGE === "watch") return;   // never interrupt these
     let shown = false;
     try { shown = sessionStorage.getItem("fz.ann.session") === "1"; } catch {}
     if (shown) return;                                    // "every visit" = once per browser session
@@ -5400,14 +5281,6 @@
     play(item, { season: q.get("s"), episode: q.get("e") });
   }
 
-  /* tv.html -> TV mode on, code sign-in shown immediately for guests */
-  async function openTvPage() {
-    showHome();
-    if (typeof TV !== "undefined" && !TV.on) TV.enable("manual");
-    if (state.sessionReady) { try { await state.sessionReady; } catch {} }
-    if (!state.user) openAuth();           // on a TV, openAuth shows the code first
-  }
-
   /* My account: opens in place (no page reload). Waits for the saved session
      so a signed-in member is never asked to sign in again. */
   async function openAccountPage() {
@@ -5425,7 +5298,6 @@
     const watching = state.watch.filter((w) => w.status === "watching").length;
     $("accStats").innerHTML = statCard(state.watch.length, "Saved") + statCard(watching, "Watching") + statCard((state.myHistory || []).length, "Plays");
     $("accAdmin").hidden = !isAdmin();
-    $("accLinkTv").hidden = typeof TV !== "undefined" && TV.on;
     openModal("accountModal");
   }
   function openChangePassword() {
@@ -5462,104 +5334,6 @@
     return "watch.html?" + p.toString();
   }
 
-  /* =====================================================================
-     v8 - TV code sign-in (TV shows code, phone approves, TV gets a session)
-     ===================================================================== */
-  // Mobile generates a code; TV redeems it to sign in.
-  const TVCODE = (() => {
-    let code = "", timer = null, expires = 0, active = false;
-    const box = () => $("tvCodeBox");
-    async function start(force) {
-      if (!state.sb) { showForm(); return; }
-      if (box()) box().hidden = false;
-      $("authForm").hidden = true; $("authSwap").hidden = true; $("authUseCode").hidden = true;
-      $("tvCodeUrl").textContent = "Generate a code on your phone, then enter it below.";
-      $("authTitle").textContent = "Sign in on your TV";
-      $("authSub").textContent = "Enter the code generated by your signed-in phone.";
-      $("tvCodeEntry").hidden = false;
-      $("tvCodeWait").textContent = "Enter the 6-character code from your phone.";
-      active = false; clearTimeout(timer);
-      if (TV.on) setTimeout(() => TV.focusFirst($("tvCodeEntry")), 50);
-    }
-    async function redeem() {
-      const input = $("tvCodeInput");
-      const c = String(input?.value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
-      const status = $("tvCodeWait");
-      if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(c)) {
-        status.textContent = "Enter the 6-character code shown on your phone."; return;
-      }
-      status.textContent = "Connecting this TV...";
-      $("tvCodeRedeem").disabled = true;
-      try {
-        const { data, error } = await state.sb.rpc("tv_code_claim", { p_code: c });
-        if (error) throw error;
-        const row = Array.isArray(data) ? data[0] : data;
-        if (!row?.refresh_token) throw new Error("Code is invalid, expired, or already used. Generate a new code on your phone.");
-        const { data: sessionData, error: authError } = await state.sb.auth.refreshSession({ refresh_token: row.refresh_token });
-        if (authError) throw authError;
-        if (!sessionData?.session) throw new Error("Could not sign in this TV. Generate a new code and try again.");
-        status.textContent = "Connected. Signing in...";
-        await applyUser(sessionData.session.user);
-        toast("TV connected successfully.", "ok");
-        closeModal("authModal");
-      } catch (e) {
-        status.textContent = e.message || "Could not connect. Try a new code.";
-      } finally { $("tvCodeRedeem").disabled = false; }
-    }
-    function showForm() {
-      active = false; clearTimeout(timer);
-      if (box()) box().hidden = true;
-      $("authForm").hidden = false; $("authSwap").hidden = false;
-      $("authUseCode").hidden = true;
-    }
-    function stop() { active = false; clearTimeout(timer); timer = null; }
-    return { start, redeem, showForm, stop };
-  })();
-
-  // On a signed-in phone, generate a short-lived code for the TV to redeem.
-  async function generatePhoneTvCode() {
-    const st = $("linkTvStatus");
-    if (!state.sb || !state.user) { st.textContent = "Sign in on this phone first."; st.className = "status error"; return; }
-    $("linkTvGenerate").disabled = true;
-    st.textContent = "Generating a secure code...";
-    st.className = "status";
-    try {
-      // Refresh the persisted phone session before creating a TV pairing code.
-      // Supabase rotates refresh tokens; use the latest session returned by refreshSession.
-      const { data: refreshed, error: refreshError } = await state.sb.auth.refreshSession();
-      if (refreshError) throw new Error("Your phone sign-in session could not be refreshed. Sign out, sign in again, and retry.");
-      const session = refreshed?.session;
-      const rt = session?.refresh_token;
-      if (!session?.user || typeof rt !== "string" || rt.trim().length < 20) {
-        throw new Error("Your phone session has no valid refresh token. Sign out of Flickerz, sign in again, and retry.");
-      }
-      const bytes = new Uint8Array(6);
-      crypto.getRandomValues(bytes);
-      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      const code = Array.from(bytes, b => alphabet[b % alphabet.length]).join("");
-      const { error } = await state.sb.rpc("tv_code_create", { p_code: code, p_refresh_token: rt });
-      if (error) throw error;
-      $("linkTvCodeDisplay").textContent = code;
-      $("linkTvCodeDisplay").hidden = false;
-      $("linkTvCopy").hidden = false;
-      $("linkTvGenerate").textContent = "Generate another code";
-      st.textContent = "Enter this code on your TV. It expires in 3 minutes and works once.";
-      st.className = "status ok";
-      $("linkTvCopy").onclick = async () => {
-        try { await navigator.clipboard.writeText(code); st.textContent = "Code copied. Enter it on your TV."; }
-        catch { st.textContent = "Code: " + code; }
-      };
-    } catch (e) {
-      st.textContent = e.message || "Could not generate a TV code.";
-      st.className = "status error";
-    } finally { $("linkTvGenerate").disabled = false; }
-  }
-
-  $("linkTvGenerate").addEventListener("click", generatePhoneTvCode);
-  $("tvCodeRedeem").addEventListener("click", () => TVCODE.redeem());
-  $("tvCodeInput").addEventListener("keydown", ev => { if (ev.key === "Enter") TVCODE.redeem(); });
-  $("tvCodeTyped").addEventListener("click", () => TVCODE.showForm());
-
   /* ---- multi-page mode -----------------------------------------------------
      Each page is its own file (admin.html, watch.html, explore.html, ...) that
      loads this shared app with ?page=NAME. The app then opens that section
@@ -5569,7 +5343,7 @@
     if (q) return q[1].toLowerCase();
     const p = /\/([a-z-]+)(?:\.html)?\/?$/i.exec(location.pathname);
     const name = p ? p[1].toLowerCase() : "";
-    return ["admin", "watch", "explore", "mylist", "about", "contact", "privacy", "terms", "dmca", "tv", "login", "account"].includes(name) ? name : "";
+    return ["admin", "watch", "explore", "mylist", "about", "contact", "privacy", "terms", "dmca", "login", "account"].includes(name) ? name : "";
   })();
   const ADMIN_PAGE = PAGE === "admin";
   if (ADMIN_PAGE) {
@@ -5579,210 +5353,12 @@
   if (PAGE === "watch") document.body.classList.add("watch-page");
   // Links on every page go to the right file when the site is split.
   const PAGE_FILES = { explore: "explore.html", mylist: "mylist.html", about: "about.html", contact: "about.html#contact",
-    privacy: "about.html#privacy", terms: "about.html#terms", dmca: "about.html#dmca", admin: "admin.html", watch: "watch.html", tv: "tv.html" };
+    privacy: "about.html#privacy", terms: "about.html#terms", dmca: "about.html#dmca", admin: "admin.html", watch: "watch.html" };
   const onSplitSite = Boolean(PAGE) || /\/index\.html$/i.test(location.pathname) || location.pathname === "/" || /\/$/.test(location.pathname);
   function pageHref(name, hash) {
     const file = PAGE_FILES[name] || "index.html";
     return file + (hash ? (file.includes("#") ? "" : hash) : "");
   }
-
-  /* =====================================================================
-     v7 - TV mode: remote-control navigation, fullscreen, large UI
-     ===================================================================== */
-  const TV = (() => {
-    const ua = navigator.userAgent || "";
-    const uaTv = /\b(SmartTV|Smart-TV|SMART-TV|Tizen|Web0S|WebOS|NetCast|BRAVIA|AppleTV|GoogleTV|Android TV|AFT[A-Z]|CrKey|HbbTV|Roku|Viera|Hisense|VIDAA|TiVo|Opera TV|Philips|SonyDTV|Xbox|PlayStation|NEBULA)\b/i.test(ua)
-      || (/Android/i.test(ua) && !/Mobile/i.test(ua) && !("ontouchstart" in window));
-    // A screen with no touch AND no hover-capable pointer at all is a TV; a
-    // laptop trackpad still reports hover, a phone reports touch.
-    const noPointerAtAll = window.innerWidth >= 960 && !("ontouchstart" in window) && navigator.maxTouchPoints === 0 &&
-      matchMedia("(any-hover:none)").matches && matchMedia("(any-pointer:fine)").matches === false;
-    const bigNoTouch = noPointerAtAll;
-    let on = false, lastFocus = null, pointerTimer = null;
-    const prefs = (() => { try { return JSON.parse(localStorage.getItem("flickerz.tv") || "{}"); } catch { return {}; } })();
-    const savePrefs = () => { try { localStorage.setItem("flickerz.tv", JSON.stringify(prefs)); } catch {} };
-
-    const BACK_KEYS = { Escape: 1, GoBack: 1, BrowserBack: 1, XF86Back: 1, Backspace: 0 };
-    const BACK_CODES = { 27: 1, 461: 1, 10009: 1, 8: 0, 166: 1 };  // 461 LG/webOS, 10009 Samsung/Tizen, 166 BrowserBack
-    const OK_CODES = { 13: 1, 23: 1, 29443: 1 };                  // Enter, Android TV D-pad center, Samsung Enter
-    const DIRS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
-    const DIR_CODES = { 37: "left", 38: "up", 39: "right", 40: "down", 21: "left", 19: "up", 22: "right", 20: "down" };
-
-    const isBack = (e) => Boolean(BACK_KEYS[e.key] || BACK_CODES[e.keyCode]) &&
-      !(e.key === "Backspace" || e.keyCode === 8) &&
-      !["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement || {}).tagName);
-
-    const focusables = (root) => [...(root || document).querySelectorAll(
-      'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
-    )].filter((el) => {
-      if (el.closest("[hidden]") || el.closest(".tv-help")) return false;
-      const r = el.getBoundingClientRect();
-      if (!r.width && !r.height) return false;
-      const cs = getComputedStyle(el);
-      return cs.visibility !== "hidden" && cs.display !== "none" && cs.opacity !== "0";
-    });
-
-    // Which layer should receive navigation: top-most open dialog, else the page.
-    const scope = () => {
-      const m = topModal();
-      if (m) return m;
-      if (!$("profileMenu").hidden) return $("profileMenu");
-      return document;
-    };
-
-    // Spatial navigation: pick the nearest element in the pressed direction.
-    function move(dir) {
-      const cur = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
-      const list = focusables(scope()).filter((el) => el !== cur);
-      if (!list.length) return false;
-      if (!cur) { setFocus(list[0]); return true; }
-      const a = cur.getBoundingClientRect();
-      const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
-      let best = null, bestScore = Infinity;
-      for (const el of list) {
-        const b = el.getBoundingClientRect();
-        const bx = b.left + b.width / 2, by = b.top + b.height / 2;
-        const dx = bx - ax, dy = by - ay;
-        let primary, secondary, ok;
-        if (dir === "left")  { ok = b.right <= a.left + 4 || (dx < -4 && Math.abs(dy) < a.height); primary = -dx; secondary = Math.abs(dy); }
-        if (dir === "right") { ok = b.left >= a.right - 4 || (dx > 4 && Math.abs(dy) < a.height); primary = dx; secondary = Math.abs(dy); }
-        if (dir === "up")    { ok = b.bottom <= a.top + 4 || (dy < -4 && Math.abs(dx) < a.width); primary = -dy; secondary = Math.abs(dx); }
-        if (dir === "down")  { ok = b.top >= a.bottom - 4 || (dy > 4 && Math.abs(dx) < a.width); primary = dy; secondary = Math.abs(dx); }
-        if (!ok || primary <= 0) continue;
-        // Favour staying in the same row/column: overlap in the cross axis counts a lot.
-        const overlap = (dir === "left" || dir === "right")
-          ? Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top))
-          : Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
-        const score = primary + secondary * (overlap > 0 ? 0.6 : 2.4);
-        if (score < bestScore) { bestScore = score; best = el; }
-      }
-      if (!best) return false;
-      setFocus(best);
-      return true;
-    }
-
-    function setFocus(el) {
-      if (!el) return;
-      el.focus({ preventScroll: true });
-      el.classList.add("tv-focus");
-      document.querySelectorAll(".tv-focus").forEach((x) => { if (x !== el) x.classList.remove("tv-focus"); });
-      el.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
-      const r = el.getBoundingClientRect();
-      if (r.top < 100) window.scrollBy({ top: r.top - 140, behavior: "smooth" });
-    }
-    function focusFirst(root) {
-      const list = focusables(root);
-      const pick = list.find((el) => el.matches("input,select,textarea")) || list.find((el) => !el.matches(".x,[data-close]")) || list[0];
-      if (pick) setFocus(pick);
-    }
-    function restoreFocus() {
-      const target = lastFocus && document.contains(lastFocus) && !lastFocus.closest("[hidden]") ? lastFocus : focusables(document)[0];
-      if (target) setFocus(target);
-    }
-
-    function onKey(e) {
-      if (!on) return;
-      const ae = document.activeElement || document.body;
-      const typing = ae.tagName === "INPUT" || ae.tagName === "TEXTAREA";
-      const dir = DIRS[e.key] || DIR_CODES[e.keyCode];
-      if (dir) {
-        // Inside a text box, left/right edit text; up/down leaves it. Dropdowns keep up/down.
-        if (typing && (dir === "left" || dir === "right")) return;
-        if (ae.tagName === "SELECT" && (dir === "up" || dir === "down")) return;
-        if (move(dir)) e.preventDefault();
-        return;
-      }
-      if (OK_CODES[e.keyCode] && !typing && ae !== document.body && ae.tagName !== "SELECT" && ae.tagName !== "A" && ae.tagName !== "BUTTON") {
-        ae.click(); e.preventDefault();
-      }
-      if ((e.key === "f" || e.key === "F") && !typing) { e.preventDefault(); toggleFullscreen(); }
-      if ((e.key === "MediaPlayPause" || e.key === "MediaPlay" || e.keyCode === 415 || e.keyCode === 10252) && !state.playing) {
-        const btn = $("heroPlay"); if (btn && !$("homeHero").hidden) { btn.click(); e.preventDefault(); }
-      }
-    }
-
-    function toggleFullscreen() {
-      const d = document, el = d.documentElement;
-      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-      const exit = d.exitFullscreen || d.webkitExitFullscreen || d.mozCancelFullScreen || d.msExitFullscreen;
-      const active = d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement;
-      hideFsPrompt();
-      if (active && exit) { try { exit.call(d); } catch {} return; }
-      if (!req) { toast("This TV browser has no full-screen mode. Use the browser's own menu or zoom.", ""); return; }
-      // requestFullscreen returns a promise in modern browsers; older TV
-      // browsers return nothing, so handle both without throwing.
-      try {
-        const p = req.call(el, { navigationUI: "hide" });
-        if (p && p.catch) p.catch((err) => {
-          console.warn("[Flickerz Nest] fullscreen", err);
-          toast("Full screen was blocked. Press the full-screen key on your remote, or use the browser's menu.", "error");
-        });
-      } catch (err) {
-        console.warn("[Flickerz Nest] fullscreen", err);
-        toast("Full screen is not available in this browser.", "error");
-      }
-    }
-    function hideFsPrompt() { const p = $("tvFs"); if (p) p.classList.remove("show"); }
-    function offerFullscreen() {
-      if (prefs.fsDismissed || document.fullscreenElement) return;
-      const p = $("tvFs"); if (!p) return;
-      p.classList.add("show");
-      // Browsers only allow full screen from a real key press or click, so the
-      // remote's highlight lands on the "Go full screen" button: one press of OK.
-      setTimeout(() => { const b = $("tvFsGo"); if (b && p.classList.contains("show")) setFocus(b); }, 120);
-      setTimeout(hideFsPrompt, 30000);
-    }
-
-    function enable(reason) {
-      if (on) return;
-      on = true;
-      document.body.classList.add("tv");
-      document.querySelectorAll(".poster").forEach((p) => { if (!p.hasAttribute("tabindex")) p.setAttribute("tabindex", "0"); });
-      // Make poster tiles keyboard-selectable as they are rendered.
-      new MutationObserver(() => {
-        document.querySelectorAll(".poster:not([tabindex])").forEach((p) => p.setAttribute("tabindex", "0"));
-      }).observe(document.body, { childList: true, subtree: true });
-      document.addEventListener("focusin", (e) => {
-        if (e.target && e.target !== document.body && !e.target.closest(".backdrop")) lastFocus = e.target;
-        if (e.target && e.target.classList) {
-          document.querySelectorAll(".tv-focus").forEach((x) => x.classList.remove("tv-focus"));
-          e.target.classList.add("tv-focus");
-        }
-      });
-      // Show the pointer only while a mouse / air-mouse is actually moving.
-      document.addEventListener("mousemove", () => {
-        document.body.classList.add("tv-pointer");
-        clearTimeout(pointerTimer);
-        pointerTimer = setTimeout(() => document.body.classList.remove("tv-pointer"), 2500);
-      }, { passive: true });
-      document.addEventListener("keydown", onKey, true);
-      $("tvFsGo").addEventListener("click", toggleFullscreen);
-      $("tvFsNo").addEventListener("click", () => { prefs.fsDismissed = true; savePrefs(); hideFsPrompt(); });
-      // Give the remote something to start from.
-      setTimeout(() => { if (!document.activeElement || document.activeElement === document.body) { const b = $("heroPlay"); if (b && !$("homeHero").hidden) setFocus(b); else { const f = focusables(document)[0]; if (f) setFocus(f); } } }, 900);
-      setTimeout(offerFullscreen, 1600);
-      // Any key press counts as a gesture: once the viewer presses OK anywhere
-      // after the prompt was dismissed by time, F still works.
-      if (reason === "auto") setTimeout(() => toast("TV mode is on - use the arrow keys and OK on your remote.", ""), 700);
-    }
-    function disable() {
-      on = false; prefs.mode = "off"; savePrefs();
-      document.body.classList.remove("tv", "tv-pointer");
-      document.removeEventListener("keydown", onKey, true);
-      location.reload();
-    }
-    function toggle() {
-      if (on) { disable(); return; }
-      prefs.mode = "on"; savePrefs(); enable("manual");
-      toast("TV mode on. Press F for full screen.", "ok");
-    }
-
-    // Auto-detect, unless the viewer has chosen otherwise.
-    const forced = /[?&#]tv(=1|&|$)/.test(location.search + location.hash) || /\/tv(\.html)?\/?$/i.test(location.pathname) || /[?&]page=tv(&|$)/.test(location.search);
-    const wanted = prefs.mode === "on" || (prefs.mode !== "off" && (uaTv || noPointerAtAll || forced)) || forced;
-    return { enable, disable, toggle, isBack, focusFirst, restoreFocus, wanted, detected: uaTv || bigNoTouch || noPointerAtAll, get on() { return on; } };
-  })();
-  if (TV.wanted) TV.enable("auto");
 
   /* ---------- routing ----------
      Owner routes are recognised from three places, in order of reliability:
@@ -5803,7 +5379,7 @@
   }
   function route() {
     // Routes that depend on who is signed in wait for the saved session.
-    const needsAuth = isOwnerRoute() || ADMIN_PAGE || (PAGE && !state.pageRouted && ["watch", "tv", "login", "account"].includes(PAGE));
+    const needsAuth = isOwnerRoute() || ADMIN_PAGE || (PAGE && !state.pageRouted && ["watch", "login", "account"].includes(PAGE));
     if (needsAuth && !state.authReady && state.sessionReady) {
       state.sessionReady.then(() => { try { route(); } catch (e) { console.error("[Flickerz Nest] route", e); } });
       return;
@@ -5822,10 +5398,9 @@
       else if (PAGE === "mylist" && h !== "mylist") { history.replaceState(null, "", location.pathname + location.search + "#mylist"); }
       else if (["about", "contact", "privacy", "terms", "dmca"].includes(PAGE) && !INFO_PAGES[h]) { history.replaceState(null, "", location.pathname + location.search + "#" + PAGE); }
       else if (PAGE === "watch") { openWatchPage(); return; }
-      else if (PAGE === "tv") { openTvPage(); return; }
       else if (PAGE === "login") { showHome(); if (!state.user) openAuth(); return; }
       else if (PAGE === "account") { showHome(); openAccountPage(); return; }
-      // (watch/tv/login/account only reach here after the session is known)
+      // (watch/login/account only reach here after the session is known)
     }
     const raw = (location.hash || "").toLowerCase().replace(/^#\/?/, "");
     if (raw !== state.curRoute) { state.prevRoute = state.curRoute || ""; state.curRoute = raw; }
@@ -5873,11 +5448,6 @@
     if (blk) { await setBlocked(blk.dataset.blockId, blk.dataset.block === "1"); return; }
     if (ev.target.closest("#actRefresh")) { await loadActivity(); return; }
     if (ev.target.closest("#tabSearch")) { openSearch(); return; }
-    if (ev.target.closest("#menuTv")) { closeMenu(); TV.toggle(); return; }
-    if (ev.target.closest("#menuLinkTv")) { closeMenu(); openModal("linkTvModal"); $("linkTvCodeDisplay").hidden = true; $("linkTvCopy").hidden = true; $("linkTvStatus").textContent = "Generate a code here, then enter it on your TV."; $("linkTvGenerate").textContent = "Generate TV code"; return; }
-    
-    
-    if (ev.target.closest("#authUseCode")) { TVCODE.start(); return; }
     const navLink = ev.target.closest("a[data-nav]");
     if (navLink) {
       // Same file, same hash: re-run the router (and scroll up for Home).
@@ -5933,7 +5503,6 @@
     if (mark) { ev.stopPropagation(); const [s, e] = mark.dataset.markEp.split(":").map(Number); toggleSeen(state.playing || state.detail, s, e); return; }
     if (ev.target.closest("#playerReport")) { openReport(); return; }
     if (ev.target.closest("#menuAccountPage")) { ev.preventDefault(); openAccountPage(); return; }
-    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCodeDisplay").hidden = true; $("linkTvCopy").hidden = true; $("linkTvStatus").textContent = "Generate a code here, then enter it on your TV."; $("linkTvGenerate").textContent = "Generate TV code"; return; }
     if (ev.target.closest("#accPassword")) { openChangePassword(); return; }
     if (ev.target.closest("#accAdmin")) { closeModal("accountModal"); openAdmin("overview"); return; }
     if (ev.target.closest("#accOut")) { closeModal("accountModal"); await signOut(); return; }
@@ -6114,14 +5683,6 @@
     $("frame").scrollIntoView({ behavior: "smooth", block: "start" });
   });
   document.addEventListener("keydown", (e) => {
-    if (TV.isBack(e)) {
-      // TV remote Back / Escape: close the top-most layer, or go back a page.
-      const m = topModal();
-      if (m) { e.preventDefault(); closeMenu(); closeModal(m.id); return; }
-      if (!$("profileMenu").hidden) { e.preventDefault(); closeMenu(); return; }
-      if (!$("titlePage").hidden || VIEWS.some((v) => !$(v).hidden)) { e.preventDefault(); history.back(); return; }
-      return;
-    }
     if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); openSearch(); }
     if (e.key.toLowerCase() === "a" && e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); isAdmin() ? openAdmin("overview") : openOwnerGate(false); }
   });
