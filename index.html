@@ -1252,8 +1252,8 @@
   var blocked = knownTv || androidTv;
   window.__FZ_TV_UNAVAILABLE__ = blocked;
   if (blocked) document.documentElement.classList.add("fz-tv-unavailable");
-  var legacyTvRoute = /\\/tv(?:\\.html)?\\/?$/i.test(location.pathname) || /[?&]page=tv(?:&|$)/i.test(location.search) || /[?&#]tv=1(?:&|$)/i.test(location.search + location.hash);
-  if (!blocked && legacyTvRoute && !/\\/tv\\.html$/i.test(location.pathname)) location.replace("tv.html");
+  var legacyTvRoute = /\/tv(?:\.html)?\/?$/i.test(location.pathname) || /[?&]page=tv(?:&|$)/i.test(location.search) || /[?&#]tv=1(?:&|$)/i.test(location.search + location.hash);
+  if (!blocked && legacyTvRoute && !/\/tv\.html$/i.test(location.pathname)) location.replace("tv.html");
 })();
 </script>
 </head>
@@ -2064,7 +2064,7 @@
   }
   /* Every dialog that opens goes on top of the ones already open. Before this,
      all dialogs shared one z-index, so a dialog written earlier in the page
-     (Report, Forgot password, Link a TV) opened BEHIND the player and only
+     (Report, Forgot password) opened BEHIND the player and only
      appeared after the player was closed. */
   var zTop = 130;
   function topModal() {
