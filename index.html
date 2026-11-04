@@ -5929,7 +5929,7 @@
     if (mark) { ev.stopPropagation(); const [s, e] = mark.dataset.markEp.split(":").map(Number); toggleSeen(state.playing || state.detail, s, e); return; }
     if (ev.target.closest("#playerReport")) { openReport(); return; }
     if (ev.target.closest("#menuAccountPage")) { ev.preventDefault(); openAccountPage(); return; }
-    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCode").value = ""; $("linkTvStatus").textContent = ""; setTimeout(() => $("linkTvCode").focus(), 40); return; }
+    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCodeDisplay").hidden = true; $("linkTvCopy").hidden = true; $("linkTvStatus").textContent = "Generate a code here, then enter it on your TV."; $("linkTvGenerate").textContent = "Generate TV code"; return; }
     if (ev.target.closest("#accPassword")) { openChangePassword(); return; }
     if (ev.target.closest("#accAdmin")) { closeModal("accountModal"); openAdmin("overview"); return; }
     if (ev.target.closest("#accOut")) { closeModal("accountModal"); await signOut(); return; }
