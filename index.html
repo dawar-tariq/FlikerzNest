@@ -1637,15 +1637,16 @@
 <!-- Link a TV: member enters the code shown on the TV -->
 <div class="backdrop" id="linkTvModal" role="dialog" aria-modal="true" aria-labelledby="linkTvTitle" hidden>
   <div class="card">
-    <div class="card-head"><div><h2 id="linkTvTitle"><i class="fa-solid fa-tv"></i> Link a TV</h2><p>Enter the 6-character code shown on your TV screen.</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="card-head"><div><h2 id="linkTvTitle"><i class="fa-solid fa-tv"></i> Link a TV</h2><p>Generate a sign-in code for your TV.</p></div><button class="x" type="button" data-close="linkTvModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="card-body">
       <div class="link-tv">
-        <b>TV code</b>
-        <p>Open Flickerz Nest on the TV, choose "Sign in with a code", and type the code here. The TV signs in to your account automatically. No password needed on the TV.</p>
-        <form id="linkTvForm" autocomplete="off">
-          <input id="linkTvCode" type="text" inputmode="text" maxlength="6" placeholder="ABC123" aria-label="TV code" required>
-          <button class="btn btn-primary" type="submit" id="linkTvGo">Approve</button>
-        </form>
+        <b>Generate a TV sign-in code</b>
+        <p>Generate a one-time code on this signed-in phone, then enter it on your TV. Your password is never typed on the TV.</p>
+        <div id="linkTvCodeDisplay" hidden style="font-size:32px;font-weight:800;letter-spacing:8px;text-align:center;padding:18px;border:1px solid var(--line);border-radius:12px;margin:12px 0" aria-live="polite"></div>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" id="linkTvGenerate">Generate TV code</button>
+          <button class="mini" type="button" id="linkTvCopy" hidden>Copy code</button>
+        </div>
         <p class="status" id="linkTvStatus" role="status" style="margin:10px 0 0"></p>
       </div>
     </div>
@@ -1770,10 +1771,10 @@
       <!-- TV: sign in with a code from your phone (shown first on TVs) -->
       <div class="tvcode-box" id="tvCodeBox" hidden>
         <p class="eyebrow">Sign in with a code</p>
-        <div class="tvcode" id="tvCodeDigits" aria-live="polite"><span>-</span><span>-</span><span>-</span><span>-</span><span>-</span><span>-</span></div>
-        <p class="tvcode-url">On your phone or computer, sign in and open <b id="tvCodeUrl">account.html</b> (or the account menu &rarr; <b>Link a TV</b>), then enter this code.</p>
-        <div class="tvcode-wait" id="tvCodeWait"><i class="fa-solid fa-spinner fa-spin"></i> Waiting for approval...</div>
-        <div class="actions" style="justify-content:center;margin-top:14px"><button class="mini" type="button" id="tvCodeNew"><i class="fa-solid fa-rotate"></i> New code</button><button class="mini" type="button" id="tvCodeTyped">Type email and password instead</button></div>
+        <p class="tvcode-url" id="tvCodeUrl">Generate a code on your phone, then enter it below.</p>
+        <div class="field" id="tvCodeEntry"><label for="tvCodeInput">6-character phone code</label><input id="tvCodeInput" type="text" maxlength="6" inputmode="text" autocomplete="one-time-code" placeholder="ABC123" aria-label="Code generated on phone"></div>
+        <div class="tvcode-wait" id="tvCodeWait">Enter the 6-character code from your phone.</div>
+        <div class="actions" style="justify-content:center;margin-top:14px"><button class="btn btn-primary" type="button" id="tvCodeRedeem">Connect this TV</button><button class="mini" type="button" id="tvCodeTyped">Use email and password</button></div>
         <div class="tvcode-or" id="tvCodeOr" hidden>or</div>
       </div>
       <form class="stack" id="authForm">
@@ -5465,110 +5466,95 @@
   /* =====================================================================
      v8 - TV code sign-in (TV shows code, phone approves, TV gets a session)
      ===================================================================== */
+  // Mobile generates a code; TV redeems it to sign in.
   const TVCODE = (() => {
-    let code = "", secret = "", timer = null, expires = 0, active = false;
+    let code = "", timer = null, expires = 0, active = false;
     const box = () => $("tvCodeBox");
-    function paint(c) {
-      const cells = $("tvCodeDigits").querySelectorAll("span");
-      cells.forEach((el, i) => { el.textContent = c && c[i] ? c[i] : "-"; });
-    }
-    function showForm(fromTv) {
-      stop();
-      if (box()) box().hidden = true;
-      $("authForm").hidden = false; $("authSwap").hidden = false;
-      // Only offer code sign-in on a TV. Phones and desktops never see it.
-      $("authUseCode").hidden = !(state.sb && TV.on);
-      if (fromTv) setTimeout(() => $("emailIn").focus(), 30);
-    }
     async function start(force) {
       if (!state.sb) { showForm(); return; }
       if (box()) box().hidden = false;
       $("authForm").hidden = true; $("authSwap").hidden = true; $("authUseCode").hidden = true;
-      $("tvCodeUrl").textContent = location.host + location.pathname.replace(/[^/]*$/, "") + "account.html";
+      $("tvCodeUrl").textContent = "Generate a code on your phone, then enter it below.";
       $("authTitle").textContent = "Sign in on your TV";
-      $("authSub").textContent = "No typing on the remote. Approve this TV from your phone.";
-      active = true;
-      if (!force && code && Date.now() < expires - 15000) { paint(code); poll(); return; }
-      paint(""); $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting a code...';
+      $("authSub").textContent = "Enter the code generated by your signed-in phone.";
+      $("tvCodeEntry").hidden = false;
+      $("tvCodeWait").textContent = "Enter the 6-character code from your phone.";
+      active = false; clearTimeout(timer);
+      if (TV.on) setTimeout(() => TV.focusFirst($("tvCodeEntry")), 50);
+    }
+    async function redeem() {
+      const input = $("tvCodeInput");
+      const c = String(input?.value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const status = $("tvCodeWait");
+      if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(c)) {
+        status.textContent = "Enter the 6-character code shown on your phone."; return;
+      }
+      status.textContent = "Connecting this TV...";
+      $("tvCodeRedeem").disabled = true;
       try {
-        const { data, error } = await state.sb.rpc("tv_code_create");
+        const { data, error } = await state.sb.rpc("tv_code_claim", { p_code: c });
         if (error) throw error;
         const row = Array.isArray(data) ? data[0] : data;
-        if (!row || !row.code) throw new Error("No code returned");
-        code = row.code; secret = row.secret; expires = new Date(row.expires_at).getTime() || (Date.now() + 9 * 60000);
-        paint(code);
-        $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Waiting for approval from your phone...';
-        poll();
-        if (TV.on) setTimeout(() => TV.focusFirst($("tvCodeBox")), 50);
+        if (!row?.refresh_token) throw new Error("Code is invalid, expired, or already used. Generate a new code on your phone.");
+        const { data: sessionData, error: authError } = await state.sb.auth.refreshSession({ refresh_token: row.refresh_token });
+        if (authError) throw authError;
+        if (!sessionData?.session) throw new Error("Could not sign in this TV. Generate a new code and try again.");
+        status.textContent = "Connected. Signing in...";
+        await applyUser(sessionData.session.user);
+        toast("TV connected successfully.", "ok");
+        closeModal("authModal");
       } catch (e) {
-        const m = String(e.message || "");
-        $("tvCodeWait").innerHTML = /tv_code_create|function|schema cache/i.test(m)
-          ? "Code sign-in is not set up yet (the owner must run STEP 15 of schema.sql). Use email and password instead."
-          : "Could not get a code: " + esc(m);
-        setTimeout(() => { $("tvCodeOr").hidden = false; $("authForm").hidden = false; }, 10);
-      }
+        status.textContent = e.message || "Could not connect. Try a new code.";
+      } finally { $("tvCodeRedeem").disabled = false; }
     }
-    function poll() {
-      clearTimeout(timer);
-      if (!active || !code) return;
-      if (Date.now() > expires) { $("tvCodeWait").textContent = "This code expired. Press New code."; return; }
-      timer = setTimeout(async () => {
-        if (!active) return;
-        try {
-          const { data, error } = await state.sb.rpc("tv_code_poll", { p_code: code, p_secret: secret });
-          if (error) throw error;
-          const row = Array.isArray(data) ? data[0] : data;
-          if (row && row.status === "approved" && row.grant_token) { await finish(row.grant_token); return; }
-          if (row && row.status === "expired") { $("tvCodeWait").textContent = "This code expired. Press New code."; code = ""; return; }
-        } catch (e) { console.warn("[Flickerz Nest] tv poll", e); }
-        poll();
-      }, 2500);
-    }
-    async function finish(refreshToken) {
-      $("tvCodeWait").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Approved - signing in...';
-      try {
-        // The phone's refresh token becomes this TV's own session (Supabase rotates it).
-        const { data, error } = await state.sb.auth.refreshSession({ refresh_token: refreshToken });
-        if (error) throw error;
-        if (!data || !data.session) throw new Error("No session");
-        code = ""; active = false;
-        toast("Signed in on this TV.", "ok");
-        await applyUser(data.session.user);
-        if (!$("authModal").hidden) closeModal("authModal");
-      } catch (e) {
-        $("tvCodeWait").textContent = "Sign-in failed: " + (e.message || "unknown error") + ". Press New code and try again.";
-        code = "";
-      }
+    function showForm() {
+      active = false; clearTimeout(timer);
+      if (box()) box().hidden = true;
+      $("authForm").hidden = false; $("authSwap").hidden = false;
+      $("authUseCode").hidden = true;
     }
     function stop() { active = false; clearTimeout(timer); timer = null; }
-    return { start, stop, showForm };
+    return { start, redeem, showForm, stop };
   })();
 
-  // Phone side: approve a code shown on a TV.
-  $("linkTvForm").addEventListener("submit", async (ev) => {
-    ev.preventDefault();
+  // On a signed-in phone, generate a short-lived code for the TV to redeem.
+  async function generatePhoneTvCode() {
     const st = $("linkTvStatus");
-    const c = ($("linkTvCode").value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-    if (c.length !== 6) { st.textContent = "Enter the 6-character code shown on the TV."; st.className = "status error"; return; }
-    if (!state.sb || !state.user) { st.textContent = "Sign in on this device first."; st.className = "status error"; return; }
-    $("linkTvGo").disabled = true; st.textContent = "Approving..."; st.className = "status";
+    if (!state.sb || !state.user) { st.textContent = "Sign in on this phone first."; st.className = "status error"; return; }
+    $("linkTvGenerate").disabled = true;
+    st.textContent = "Generating a secure code...";
+    st.className = "status";
     try {
-      const { data: sess } = await state.sb.auth.getSession();
-      const rt = sess && sess.session && sess.session.refresh_token;
-      if (!rt) throw new Error("No active session on this device. Sign out and in again.");
-      const { data, error } = await state.sb.rpc("tv_code_approve", { p_code: c, p_grant: rt });
+      const { data: sess, error: sessionError } = await state.sb.auth.getSession();
+      if (sessionError) throw sessionError;
+      const rt = sess?.session?.refresh_token;
+      if (!rt) throw new Error("Your session expired. Sign in again.");
+      const bytes = new Uint8Array(6);
+      crypto.getRandomValues(bytes);
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const code = Array.from(bytes, b => alphabet[b % alphabet.length]).join("");
+      const { error } = await state.sb.rpc("tv_code_create", { p_code: code, p_refresh_token: rt });
       if (error) throw error;
-      if (!data) throw new Error("Code not found or already used. Ask the TV for a new code.");
-      st.textContent = "Approved. The TV will sign in within a few seconds."; st.className = "status ok";
-      // The TV consumes this refresh token; refresh ours so this device stays signed in.
-      setTimeout(async () => { try { await state.sb.auth.refreshSession(); } catch {} }, 4000);
-      setTimeout(() => closeModal("linkTvModal"), 2500);
+      $("linkTvCodeDisplay").textContent = code;
+      $("linkTvCodeDisplay").hidden = false;
+      $("linkTvCopy").hidden = false;
+      $("linkTvGenerate").textContent = "Generate another code";
+      st.textContent = "Enter this code on your TV. It expires in 3 minutes and works once.";
+      st.className = "status ok";
+      $("linkTvCopy").onclick = async () => {
+        try { await navigator.clipboard.writeText(code); st.textContent = "Code copied. Enter it on your TV."; }
+        catch { st.textContent = "Code: " + code; }
+      };
     } catch (e) {
-      const m = String(e.message || "");
-      st.textContent = /tv_code_approve|function|schema cache/i.test(m) ? "TV linking is not set up yet (run STEP 15 of schema.sql)." : m;
+      st.textContent = e.message || "Could not generate a TV code.";
       st.className = "status error";
-    } finally { $("linkTvGo").disabled = false; }
-  });
+    } finally { $("linkTvGenerate").disabled = false; }
+  }
+
+  $("linkTvGenerate").addEventListener("click", generatePhoneTvCode);
+  $("tvCodeRedeem").addEventListener("click", () => TVCODE.redeem());
+  $("tvCodeInput").addEventListener("keydown", ev => { if (ev.key === "Enter") TVCODE.redeem(); });
+  $("tvCodeTyped").addEventListener("click", () => TVCODE.showForm());
 
   /* ---- multi-page mode -----------------------------------------------------
      Each page is its own file (admin.html, watch.html, explore.html, ...) that
@@ -5884,9 +5870,9 @@
     if (ev.target.closest("#actRefresh")) { await loadActivity(); return; }
     if (ev.target.closest("#tabSearch")) { openSearch(); return; }
     if (ev.target.closest("#menuTv")) { closeMenu(); TV.toggle(); return; }
-    if (ev.target.closest("#menuLinkTv")) { closeMenu(); openModal("linkTvModal"); $("linkTvCode").value = ""; $("linkTvStatus").textContent = ""; setTimeout(() => $("linkTvCode").focus(), 40); return; }
-    if (ev.target.closest("#tvCodeNew")) { TVCODE.start(true); return; }
-    if (ev.target.closest("#tvCodeTyped")) { TVCODE.showForm(true); return; }
+    if (ev.target.closest("#menuLinkTv")) { closeMenu(); openModal("linkTvModal"); $("linkTvCodeDisplay").hidden = true; $("linkTvCopy").hidden = true; $("linkTvStatus").textContent = "Generate a code here, then enter it on your TV."; $("linkTvGenerate").textContent = "Generate TV code"; return; }
+    
+    
     if (ev.target.closest("#authUseCode")) { TVCODE.start(); return; }
     const navLink = ev.target.closest("a[data-nav]");
     if (navLink) {
@@ -5943,7 +5929,7 @@
     if (mark) { ev.stopPropagation(); const [s, e] = mark.dataset.markEp.split(":").map(Number); toggleSeen(state.playing || state.detail, s, e); return; }
     if (ev.target.closest("#playerReport")) { openReport(); return; }
     if (ev.target.closest("#menuAccountPage")) { ev.preventDefault(); openAccountPage(); return; }
-    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCode").value = ""; $("linkTvStatus").textContent = ""; setTimeout(() => $("linkTvCode").focus(), 40); return; }
+    if (ev.target.closest("#accLinkTv")) { closeModal("accountModal"); openModal("linkTvModal"); $("linkTvCodeDisplay").hidden = true; $("linkTvCopy").hidden = true; $("linkTvStatus").textContent = "Generate a code here, then enter it on your TV."; $("linkTvGenerate").textContent = "Generate TV code"; return; }
     if (ev.target.closest("#accPassword")) { openChangePassword(); return; }
     if (ev.target.closest("#accAdmin")) { closeModal("accountModal"); openAdmin("overview"); return; }
     if (ev.target.closest("#accOut")) { closeModal("accountModal"); await signOut(); return; }
