@@ -5524,10 +5524,15 @@
     st.textContent = "Generating a secure code...";
     st.className = "status";
     try {
-      const { data: sess, error: sessionError } = await state.sb.auth.getSession();
-      if (sessionError) throw sessionError;
-      const rt = sess?.session?.refresh_token;
-      if (!rt) throw new Error("Your session expired. Sign in again.");
+      // Refresh the persisted phone session before creating a TV pairing code.
+      // Supabase rotates refresh tokens; use the latest session returned by refreshSession.
+      const { data: refreshed, error: refreshError } = await state.sb.auth.refreshSession();
+      if (refreshError) throw new Error("Your phone sign-in session could not be refreshed. Sign out, sign in again, and retry.");
+      const session = refreshed?.session;
+      const rt = session?.refresh_token;
+      if (!session?.user || typeof rt !== "string" || rt.trim().length < 20) {
+        throw new Error("Your phone session has no valid refresh token. Sign out of Flickerz, sign in again, and retry.");
+      }
       const bytes = new Uint8Array(6);
       crypto.getRandomValues(bytes);
       const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
