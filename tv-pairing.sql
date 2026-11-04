@@ -19,6 +19,7 @@ set search_path = ''
 as $$
 declare
   v_expiry timestamptz := pg_catalog.now() + interval '3 minutes';
+  v_secret text := pg_catalog.encode(extensions.gen_random_bytes(24), 'hex');
 begin
   if (select auth.uid()) is null then
     raise exception 'Sign in on your phone first.' using errcode = '42501';
@@ -35,8 +36,8 @@ begin
 
   -- Store only the refresh token required for this one-time TV sign-in.
   -- Keep the legacy secret/user_id/grant_token/claimed_at columns untouched.
-  insert into public.tv_codes (code, refresh_token, expires_at)
-  values (p_code, p_refresh_token, v_expiry);
+  insert into public.tv_codes (code, secret, refresh_token, expires_at)
+  values (p_code, v_secret, p_refresh_token, v_expiry);
 
   return query select p_code, v_expiry;
 end;
