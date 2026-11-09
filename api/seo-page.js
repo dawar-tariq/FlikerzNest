@@ -20,11 +20,15 @@ function safeImage(path, size) {
 function notFound(title, description, href) {
   return "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
-    "<meta name=\"robots\" content=\"noindex,nofollow\"><title>" + escapeHtml(title) + " | Flickerz Nest</title>" +
-    "<meta name=\"description\" content=\"" + escapeHtml(description) + "\"><link rel=\"stylesheet\" href=\"/seo.css\"></head>" +
+    "<meta name=\"robots\" content=\"noindex,follow\"><meta name=\"theme-color\" content=\"#090a10\">" +
+    "<title>" + escapeHtml(title) + " | Flickerz Nest</title>" +
+    "<meta name=\"description\" content=\"" + escapeHtml(description) + "\"><link rel=\"stylesheet\" href=\"/seo.css\">" +
+    "<style>body{background:#090a10;color:#f5f5fa}.seo-empty{text-align:center;padding:32px 0}.seo-robot{display:block;width:min(620px,100%);height:auto;margin:0 auto 10px}.seo-empty h1{font-size:clamp(36px,7vw,64px)}.seo-empty p{color:#aeb2c0}</style></head>" +
     "<body><main class=\"seo-wrap\"><a class=\"seo-brand\" href=\"/\">Flickerz <span>Nest</span></a>" +
-    "<section class=\"seo-empty\"><p class=\"seo-kicker\">Flickerz Nest</p><h1>" + escapeHtml(title) + "</h1>" +
-    "<p>" + escapeHtml(description) + "</p><p><a class=\"seo-button\" href=\"" + escapeHtml(href) + "\">Browse titles</a></p>" +
+    "<section class=\"seo-empty\"><img class=\"seo-robot\" src=\"/404-robot.svg\" alt=\"A confused robot looking at a screen showing 404\">" +
+    "<p class=\"seo-kicker\">Error 404</p><h1>Page Not Found</h1>" +
+    "<p>Oops! Our little robot is just as confused as you are. " + escapeHtml(description) + "</p>" +
+    "<p><a class=\"seo-button\" href=\"/\">Back to Home</a> <a class=\"seo-button\" href=\"" + escapeHtml(href) + "\">Browse titles</a></p>" +
     "</section></main></body></html>";
 }
 async function fetchDetails(type, id) {
